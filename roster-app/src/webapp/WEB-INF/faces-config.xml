@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+<faces-config>
+    <application>
+        <message-bundle>org.sakaiproject.tool.roster.bundle.Messages</message-bundle>
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>de</supported-locale>
+            <supported-locale>fr</supported-locale>
+            <supported-locale>es</supported-locale>
+        </locale-config>
+    </application>
+    <navigation-rule>
+        <from-view-id>/roster/*</from-view-id>
+        <navigation-case>
+            <from-outcome>main</from-outcome>
+            <to-view-id>/roster/main.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>displayCompleteProfile</from-outcome>
+            <to-view-id>/roster/displayCompleteProfile.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>displayPublicProfile</from-outcome>
+            <to-view-id>/roster/displayPublicProfile.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>profileNotFound</from-outcome>
+            <to-view-id>/roster/profileNotFound.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+    <!-- =================== Participant Image Servlet ============== -->
+    <managed-bean>
+        <description>Participant Image Servlet</description>
+        <managed-bean-name>ParticipantImageServlet</managed-bean-name>
+        <managed-bean-class> org.sakaiproject.tool.roster.ParticipantImageServlet </managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <description>Bean Dependency: Profile Manager</description>
+            <property-name>profileManager</property-name>
+            <value> #{Components["org.sakaiproject.api.app.profile.ProfileManager"]} </value>
+        </managed-property>
+    </managed-bean>
+    <!-- =================== Tool Beans ============== -->
+    <managed-bean>
+        <description>Roster Tool</description>
+        <managed-bean-name>RosterTool</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.RosterTool</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <description>Roster Manager</description>
+            <property-name>rosterManager</property-name>
+            <value>#{Components["org.sakaiproject.api.app.roster.RosterManager"]}</value>
+        </managed-property>
+        <managed-property>
+            <description>Profile Manager</description>
+            <property-name>profileManager</property-name>
+            <value>#{Components["org.sakaiproject.api.app.profile.ProfileManager"]}</value>
+        </managed-property>
+    </managed-bean>
+</faces-config>
