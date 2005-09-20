@@ -18,7 +18,7 @@
 				<p class="shorttext">
 			 	<sakai:panel_edit >	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_first_name}"/>
-					<h:outputText value="#{RosterTool.participant.profile.lastName}"/> 
+					<h:outputText value="#{RosterTool.participant.profile.firstName}"/> 
 					<h:outputLabel value="#{msgs.profile_last_name}"/>
 					<h:outputText value="#{RosterTool.participant.profile.lastName}"/>
 					<h:outputLabel value="#{msgs.profile_nick_name}"/>				
