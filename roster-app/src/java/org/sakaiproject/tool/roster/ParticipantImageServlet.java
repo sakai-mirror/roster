@@ -125,7 +125,7 @@ public class ParticipantImageServlet extends HttpServlet
     try
     {
       byte[] displayPhoto;
-      displayPhoto = getProfileManager().getInstitutionalPhotoByUserId(userId);
+      displayPhoto = getProfileManager().getInstitutionalPhotoByUserId(userId,true);
       if (displayPhoto != null && displayPhoto.length > 0)
       {
         LOG.debug("Display University ID photo for user:" + userId);
@@ -162,10 +162,9 @@ public class ParticipantImageServlet extends HttpServlet
         in = new BufferedInputStream((new URL(url)).openStream());
         String urlString = URLConnection.guessContentTypeFromStream(in);
         // get a image only
-        if (urlString != null && urlString.startsWith("image"))
+        if (urlString != null && (urlString.startsWith("image")||urlString.startsWith("text/html")) )
         {
-
-          response.setContentType(urlString);
+          response.setContentType(CONTENT_TYPE);
           byte pic[] = new byte[in.available()];
           in.read(pic);
           stream.write(pic);
