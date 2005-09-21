@@ -318,7 +318,7 @@ public class RosterTool
       this.customPhotoText = SHOW_PIC;
       this.showCustomPhoto = false;
       this.title = TITLE_VIEW_OFFICICAL;
-      this.facet = FACET_PICTURE;
+      this.facet = FACET_OFFICIAL;
     }
     else
       if (option != null && option.equals(SHOW_PIC))// show custom 
@@ -328,7 +328,7 @@ public class RosterTool
         this.showIdPhoto = false;
         this.showCustomPhoto = true;
         this.title = TITLE_VIEW_PICTURES;
-        this.facet = FACET_OFFICIAL;
+        this.facet = FACET_PICTURE;
       }
       else
       //hide all
