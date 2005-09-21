@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
@@ -78,7 +79,7 @@ public class RosterManagerImpl implements RosterManager
     LOG.debug("destroy()");
     ; // do nothing (for now)
   }
-
+//TODO: merge all users and getRoles
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#getRoles()
    */
@@ -97,7 +98,9 @@ public class RosterManagerImpl implements RosterManager
         while (roleIter.hasNext())
         {
           Role role = (Role) roleIter.next();
-          if (role != null) roleList.add(role);
+         // show roles only when users are there SAK - 2068
+          if (role != null && getParticipantByRole(role)!=null && getParticipantByRole(role).size()>0 ) 
+            roleList.add(role);
         }
       }
     }
@@ -108,6 +111,7 @@ public class RosterManagerImpl implements RosterManager
     return roleList;
   }
 
+  
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantByRole(org.sakaiproject.service.legacy.realm.Role)
    */
@@ -131,8 +135,13 @@ public class RosterManagerImpl implements RosterManager
           while (iter.hasNext())
           {
             User user = UserDirectoryService.getUser((String) iter.next());
-            users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
-                user.getLastName()));
+            // Check FERPA
+            if(!isFerpaRightEnvoked(user.getId()))
+            {
+                  users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
+                  user.getLastName()));
+            }
+            
           }
         }
       }
@@ -157,10 +166,13 @@ public class RosterManagerImpl implements RosterManager
     {
       try
       {
+        //Check for FERPA rights
         User user = UserDirectoryService.getUser(participantId);
-        Participant participant = new ParticipantImpl(user.getId(), user
+        if(!isFerpaRightEnvoked(participantId))
+        { return  new ParticipantImpl(user.getId(), user
             .getFirstName(), user.getLastName());
-        return participant;
+        }
+        return null;
       }
       catch (IdUnusedException e)
       {
@@ -189,9 +201,13 @@ public class RosterManagerImpl implements RosterManager
       for (int i = 0; i < users.size(); i++)
       {
         User user = (User) users.get(i);
-        Participant participant = new ParticipantImpl(user.getId(), user
-            .getFirstName(), user.getLastName());
-        roster.add(participant);
+        //Check for FERPA Tags
+        if(!isFerpaRightEnvoked(user.getId()))
+        {
+             Participant participant = new ParticipantImpl(user.getId(), user
+              .getFirstName(), user.getLastName());
+          roster.add(participant);
+        }
       }
     }
     catch (IdUnusedException e)
@@ -202,6 +218,23 @@ public class RosterManagerImpl implements RosterManager
     return roster;
   }
 
+  private boolean isFerpaRightEnvoked(String userId)
+  {
+    Profile profileSearch = null;
+    List userProfile =profileManager.findProfiles(userId);
+    if(userProfile !=null && userProfile.size()>0) 
+    {
+      Iterator iter = userProfile.iterator();
+      profileSearch = (Profile)iter.next();//get the first and only profile
+    }
+    if (profileSearch ==null || profileSearch.getHidePublicInfo()==true )
+    {
+      return true;
+      
+    }
+    return false;
+  }
+  
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#isInstructor()
    */
