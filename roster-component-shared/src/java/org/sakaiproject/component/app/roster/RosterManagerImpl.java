@@ -180,9 +180,16 @@ public class RosterManagerImpl implements RosterManager
           Iterator iter = usersByRole.iterator();
           while (iter.hasNext())
           {
-            User user = UserDirectoryService.getUser((String) iter.next());
-            users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
-                user.getLastName()));
+            try
+            {
+              User user = UserDirectoryService.getUser((String) iter.next());
+              users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
+                  user.getLastName()));
+            }
+            catch (IdUnusedException e)
+            {
+              LOG.error(e.getMessage(), e);
+            }
 
           }
         }
@@ -254,17 +261,24 @@ public class RosterManagerImpl implements RosterManager
       for (int i = 0; i < userIds.size(); i++)
       {
         String userId = (String) userIds.get(i);
-        User user = UserDirectoryService.getUser(userId);
-        Participant participant = new ParticipantImpl(user.getId(), user
-            .getFirstName(), user.getLastName());
-        roster.add(participant);
+        try
+        {
+          User user = UserDirectoryService.getUser(userId);
+          Participant participant = new ParticipantImpl(user.getId(), user
+              .getFirstName(), user.getLastName());
+          roster.add(participant);
+        }
+        catch (IdUnusedException e)
+        {
+          LOG.debug(e.getMessage(), e);
+        }
       }
-
     }
     catch (IdUnusedException e)
     {
       LOG.debug(e.getMessage(), e);
     }
+
     Collections.sort(roster, ParticipantImpl.LastNameComparator);
     return roster;
   }
