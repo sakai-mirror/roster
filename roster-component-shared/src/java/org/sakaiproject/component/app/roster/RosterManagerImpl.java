@@ -227,7 +227,7 @@ public class RosterManagerImpl implements RosterManager
       Iterator iter = userProfile.iterator();
       profileSearch = (Profile)iter.next();//get the first and only profile
     }
-    if (profileSearch ==null || profileSearch.getHidePublicInfo()==true )
+    if (profileSearch ==null || profileSearch.getHidePublicInfo().booleanValue()==true )
     {
       return true;
       
