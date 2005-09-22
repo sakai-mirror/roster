@@ -51,6 +51,31 @@
           <artifactId>commons-logging</artifactId>
           <version>1.0.4</version>
         </dependency> 
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-common-manager-api</artifactId>
+            <version>${pom.currentVersion}</version>
+        </dependency>
+          <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-common-edu-person-api</artifactId>
+            <version>${pom.currentVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-common-type-api</artifactId>
+            <version>${pom.currentVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-common-agent-api</artifactId>
+            <version>${pom.currentVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-common-superstructure-api</artifactId>
+            <version>${pom.currentVersion}</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>

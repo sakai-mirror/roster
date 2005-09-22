@@ -136,7 +136,7 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency> 
-        <!--<dependency>
+        <!--  <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-jsf-widgets-myfaces</artifactId>
             <version>${pom.currentVersion}</version>
@@ -144,7 +144,7 @@
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
-        </dependency> -->
+        </dependency>  -->
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-tool</artifactId>

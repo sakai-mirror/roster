@@ -32,10 +32,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.api.common.agent.Agent;
+import org.sakaiproject.api.common.agent.AgentGroupManager;
+import org.sakaiproject.api.common.edu.person.SakaiPerson;
+import org.sakaiproject.api.common.edu.person.SakaiPersonManager;
 import org.sakaiproject.api.kernel.tool.cover.ToolManager;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.legacy.realm.Realm;
@@ -54,6 +57,8 @@ public class RosterManagerImpl implements RosterManager
   private static final Log LOG = LogFactory.getLog(RosterManagerImpl.class);
   /** Dependency: ProfileManager */
   private ProfileManager profileManager;
+  private SakaiPersonManager sakaiPersonManager;
+  private AgentGroupManager agentGroupManager;
 
   /**
    * @param sakaiPersonManager
@@ -65,7 +70,36 @@ public class RosterManagerImpl implements RosterManager
       LOG.debug("setProfileManager(ProfileManager " + newProfileManager + ")");
     }
 
-    profileManager = newProfileManager;
+    this.profileManager = newProfileManager;
+  }
+
+  /**
+   * @param sakaiPersonManager
+   */
+  public void setSakaiPersonManager(SakaiPersonManager sakaiPersonManager)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug("setSakaiPersonManager(SakaiPersonManager "
+          + sakaiPersonManager + ")");
+    }
+
+    this.sakaiPersonManager = sakaiPersonManager;
+  }
+
+  /**
+   * @param agentGroupManager
+   *          The agentGroupManager to set.
+   */
+  public void setAgentGroupManager(AgentGroupManager agentGroupManager)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug("setAgentGroupManager(AgentGroupManager " + agentGroupManager
+          + ")");
+    }
+
+    this.agentGroupManager = agentGroupManager;
   }
 
   public void init()
@@ -79,7 +113,8 @@ public class RosterManagerImpl implements RosterManager
     LOG.debug("destroy()");
     ; // do nothing (for now)
   }
-//TODO: merge all users and getRoles
+
+  //TODO: merge all users and getRoles
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#getRoles()
    */
@@ -98,9 +133,9 @@ public class RosterManagerImpl implements RosterManager
         while (roleIter.hasNext())
         {
           Role role = (Role) roleIter.next();
-         // show roles only when users are there SAK - 2068
-          if (role != null && getParticipantByRole(role)!=null && getParticipantByRole(role).size()>0 ) 
-            roleList.add(role);
+          // show site Roles only when users are there for this Role SAK - 2068
+          if (role != null && getParticipantByRole(role) != null
+              && getParticipantByRole(role).size() > 0) roleList.add(role);
         }
       }
     }
@@ -111,7 +146,6 @@ public class RosterManagerImpl implements RosterManager
     return roleList;
   }
 
-  
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantByRole(org.sakaiproject.service.legacy.realm.Role)
    */
@@ -122,26 +156,34 @@ public class RosterManagerImpl implements RosterManager
       LOG.debug("getParticipantByRole(Role" + role + ")");
     }
     List users = new ArrayList();
+    List usersByRole = new ArrayList();
     if (role != null)
     {
       Realm realm;
       try
       {
         realm = RealmService.getRealm(getContextSiteId());
-        Set usersByRole = realm.getUsersWithRole(role.getId());
+        Set userSet = realm.getUsersWithRole(role.getId());
+        Iterator userSetIter = userSet.iterator();
+        while (userSetIter.hasNext())
+        {
+          usersByRole.add((String) userSetIter.next());
+        }
+        if (!isInstructor())
+
+        {
+          usersByRole = getNonFERPAMembers(usersByRole);
+        }
+
         if (usersByRole != null && usersByRole.size() > 0)
         {
           Iterator iter = usersByRole.iterator();
           while (iter.hasNext())
           {
             User user = UserDirectoryService.getUser((String) iter.next());
-            // Check FERPA
-            if(!isFerpaRightEnvoked(user.getId()))
-            {
-                  users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
-                  user.getLastName()));
-            }
-            
+            users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
+                user.getLastName()));
+
           }
         }
       }
@@ -150,6 +192,7 @@ public class RosterManagerImpl implements RosterManager
         LOG.error(e.getMessage(), e);
       }
     }
+    Collections.sort(users, ParticipantImpl.LastNameComparator);
     return users;
   }
 
@@ -166,13 +209,10 @@ public class RosterManagerImpl implements RosterManager
     {
       try
       {
-        //Check for FERPA rights
         User user = UserDirectoryService.getUser(participantId);
-        if(!isFerpaRightEnvoked(participantId))
-        { return  new ParticipantImpl(user.getId(), user
-            .getFirstName(), user.getLastName());
-        }
-        return null;
+        //TODO: individual ferpa checks
+        return new ParticipantImpl(user.getId(), user.getFirstName(), user
+            .getLastName());
       }
       catch (IdUnusedException e)
       {
@@ -191,50 +231,153 @@ public class RosterManagerImpl implements RosterManager
     LOG.debug("getAllUsers");
     List users = new ArrayList();
     List roster = new ArrayList();
-
     Realm realm;
-
     try
     {
       realm = RealmService.getRealm(getContextSiteId());
       users.addAll(UserDirectoryService.getUsers(realm.getUsers()));
-      for (int i = 0; i < users.size(); i++)
+      List userIds = new ArrayList();
+      if (users == null)
       {
-        User user = (User) users.get(i);
-        //Check for FERPA Tags
-        if(!isFerpaRightEnvoked(user.getId()))
-        {
-             Participant participant = new ParticipantImpl(user.getId(), user
-              .getFirstName(), user.getLastName());
-          roster.add(participant);
-        }
+        return null;
       }
+      Iterator userIterator = users.iterator();
+      while (userIterator.hasNext())
+      {
+        userIds.add(((User) userIterator.next()).getId());
+      }
+      // Get FERPA DETAILs only for non instructors
+      if (!isInstructor())
+      {
+        userIds = getNonFERPAMembers(userIds);
+      }
+      for (int i = 0; i < userIds.size(); i++)
+      {
+        String userId = (String) userIds.get(i);
+        User user = UserDirectoryService.getUser(userId);
+        Participant participant = new ParticipantImpl(user.getId(), user
+            .getFirstName(), user.getLastName());
+        roster.add(participant);
+      }
+
     }
     catch (IdUnusedException e)
     {
       LOG.debug(e.getMessage(), e);
     }
-
+    Collections.sort(roster, ParticipantImpl.LastNameComparator);
     return roster;
   }
 
-  private boolean isFerpaRightEnvoked(String userId)
+  /**
+   * @param siteUsers
+   * @return
+   */
+  private List getNonFERPAMembers(List siteUsers)
   {
-    Profile profileSearch = null;
-    List userProfile =profileManager.findProfiles(userId);
-    if(userProfile !=null && userProfile.size()>0) 
+    if (LOG.isDebugEnabled())
     {
-      Iterator iter = userProfile.iterator();
-      profileSearch = (Profile)iter.next();//get the first and only profile
+      LOG.debug("getNonFERPAMembers(List " + siteUsers + ")");
     }
-    if (profileSearch ==null || profileSearch.getHidePublicInfo().booleanValue()==true )
+    if (siteUsers == null || (siteUsers != null && siteUsers.size() < 1))
     {
-      return true;
-      
+      return null;
     }
-    return false;
+    List agentUuids = new ArrayList();
+    Iterator iter = siteUsers.iterator();
+    while (iter.hasNext())
+    {
+      String userId = (String) iter.next();
+      if (getAgentUuid(userId) != null)
+      {
+        agentUuids.add(getAgentUuid(userId));
+      }
+    }
+    List siteFerpaUsersAgentUuids = sakaiPersonManager
+        .isFerpaEnabled(agentUuids);
+    if (siteFerpaUsersAgentUuids == null
+        || (siteFerpaUsersAgentUuids != null && siteFerpaUsersAgentUuids.size() < 1))
+    {
+      LOG.debug("This site contains no FERPA user");
+      return siteUsers;
+    }
+    List siteFerpaUsersEnterpriseIds = new ArrayList();
+    Iterator iter2 = siteFerpaUsersAgentUuids.iterator();
+    while (iter2.hasNext())
+    {
+      SakaiPerson sp = (SakaiPerson) iter2.next();
+      String agentUuid = sp.getAgentUuid();
+      if (getUidByAgentUuid(agentUuid) != null)
+      {
+        siteFerpaUsersEnterpriseIds.add(getUidByAgentUuid(agentUuid));
+      }
+    }
+    List nonFerpaUsers = new ArrayList();
+    Iterator siteUserIter = siteUsers.iterator();
+    while (siteUserIter.hasNext())
+    {
+      String siteMember = (String) siteUserIter.next();
+      if (!siteFerpaUsersEnterpriseIds.contains(siteMember))
+      {
+        //Add non ferpa member
+        nonFerpaUsers.add(siteMember);
+      }
+    }
+    if (nonFerpaUsers.size() < 1)
+    {
+      //all the site members are ferpa users
+      return null;
+    }
+    return nonFerpaUsers;
   }
-  
+
+  private String getAgentUuid(String uid)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug(" getAgentUuid(String " + uid + ")");
+    }
+    if (uid == null || (uid != null && uid.trim().length() < 0))
+    {
+      return null;
+    }
+
+    Agent agent = agentGroupManager.getAgentByEnterpriseId(uid);
+    if (agent == null)
+    {
+      agent = agentGroupManager.createAgent(agentGroupManager
+          .getDefaultContainer(), uid, uid, uid, agentGroupManager
+          .getDefaultAgentType());
+    }
+    return agent.getUuid();
+  }
+
+  /**
+   * @param agentUuid
+   * @return
+   */
+  private String getUidByAgentUuid(String agentUuid)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug(" getUid(String " + agentUuid + ")");
+    }
+    if (agentUuid == null
+        || (agentUuid != null && agentUuid.trim().length() < 0))
+    {
+      return null;
+    }
+
+    Agent agent = agentGroupManager.getAgentByUuid(agentUuid);
+    if (agent == null)
+    {
+      LOG.debug("No agent found for Uuid" + agentUuid);
+      return null;
+    }
+    return agent.getEnterpriseId();
+
+  }
+
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#isInstructor()
    */
