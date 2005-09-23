@@ -50,7 +50,7 @@
 			 </sakai:panel_edit> </p>
 			 
 		  	 <h:panelGrid>
-			 	<h:commandButton  id="submit"  value="#{msgs.cancel}" action="#{RosterTool.processCancel}" onclick="window.close()" />
+			 	<h:commandButton  id="submit"  value="#{msgs.cancel}" onclick="window.close()" />
 			 </h:panelGrid>	
   		</sakai:view_content>
 	</sakai:view_container>

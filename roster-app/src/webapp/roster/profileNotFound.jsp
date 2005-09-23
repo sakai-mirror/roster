@@ -26,7 +26,7 @@
 			</h:panelGrid>
 			 	
  		 	 <h:panelGrid>
-			 	<h:commandButton  id="submit" action="#{RosterTool.processCancel}"  value="#{msgs.cancel}"  onclick="window.close()" />
+			 	<h:commandButton  id="submit"  value="#{msgs.cancel}"  onclick="window.close()" />
 			 </h:panelGrid>	
 	</sakai:view_content>	
 	</sakai:view_container>	

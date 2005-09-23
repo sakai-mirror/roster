@@ -5,6 +5,7 @@
 <%--@ taglib uri="http://sakaiproject.org/jsf/profile" prefix="profile" --%> 
  <% response.setContentType("text/html; charset=UTF-8"); %>
 <f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
+ <link href='/sakai-roster-tool/css/roster.css' rel='stylesheet' type='text/css' /> 
 <%--TODO : apply stylesheet --%>
 <f:view>
 	<sakai:view_container title="Roster List">
@@ -30,11 +31,12 @@
 		</h:form>
 		 <h:form target="neWindow">
 		 	<%--********************* Users View by Role*********************--%>
-			<h:panelGrid width="70%" rendered="#{RosterTool.displayByRole}">
-				<sakai:flat_list value="#{RosterTool.roles}" var="searchResultRoles">
+		   		<h:dataTable width="90%" id="allRoles"  rendered="#{RosterTool.displayByRole}" value="#{RosterTool.roles}" var="searchResultRoles">
 				 	<h:column>				
-					 	<h:outputText value="#{searchResultRoles.role.id}(#{searchResultRoles.userCount})" />					
-		 		 		<sakai:flat_list value="#{searchResultRoles.users}" var="searchResult">
+					 	<f:verbatim><h4></f:verbatim>
+					 		<h:outputText value="#{searchResultRoles.role.id} (#{searchResultRoles.userCount})" />					
+		 		 		<f:verbatim></h4></f:verbatim>
+		 		 		<h:dataTable columnClasses="rosterGroupByRoleColumns_1,rosterGroupByRoleColumns_2" styleClass="listHier"  id="participantsByRole"  value="#{searchResultRoles.users}" var="searchResult">
 		 		 		<%--<x:dataTable cellpadding="3" cellspacing="3"
 							id="participantByRoleTable"
 							value="#{searchResultRoles.users}"
@@ -42,7 +44,7 @@
 							sortColumn="#{RosterTool.sortColumn}"
 				            sortAscending="#{RosterTool.sortAscending}">--%>
 							<%--TODO merge the two sakai flat lists --%>
-							<h:column>	
+							<h:column rendered="#{RosterTool.renderPhotoColumn}">	
 								<f:facet name="header">
 									<h:outputText value="#{RosterTool.facet}" />
 								</f:facet>
@@ -76,15 +78,19 @@
 								<h:outputText value="#{searchResult.participant.id}" /> 						
 							</h:column>
 						<%--	</x:dataTable> --%>
-						</sakai:flat_list>
+						</h:dataTable>
 					</h:column>	
-				</sakai:flat_list> 	
-			</h:panelGrid> 
+				</h:dataTable> 	
+		 
 			<%--********************* All Users View *********************--%>
-			<h:panelGrid width="70%" rendered="#{RosterTool.displayAllUsers}">
-				<h:outputText value="All Users(#{RosterTool.allUserCount})" />							 		 		
-				<sakai:flat_list value="#{RosterTool.allUsers}" var="searchResultAll">
-					<h:column>	
+			<h:dataTable width="90%"  id="allUserRosterDisplay" rendered="#{RosterTool.displayAllUsers}" value="1">
+				<h:column>
+					<f:verbatim><h4></f:verbatim>
+						<h:outputText value="All Users (#{RosterTool.allUserCount})" />							 		 		
+					<f:verbatim></h4></f:verbatim>
+			 
+					<h:dataTable styleClass="listHier" id="allUserRoster" value="#{RosterTool.allUsers}" var="searchResultAll">
+					<h:column rendered="#{RosterTool.renderPhotoColumn}">	
 							<f:facet name="header">
 								<h:outputText value="#{RosterTool.facet}" />
 							</f:facet>
@@ -115,8 +121,9 @@
 							</f:facet>								
 							<h:outputText value="#{searchResultAll.participant.id}" /> 						
 						</h:column>
-				 </sakai:flat_list> 
-			</h:panelGrid> 
+				 </h:dataTable> 
+				  </h:column>
+			</h:dataTable> 
 		 </h:form>
   </sakai:view_content>	
 </sakai:view_container>

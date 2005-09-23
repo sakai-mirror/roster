@@ -143,6 +143,7 @@ public class RosterManagerImpl implements RosterManager
     {
       LOG.error(e.getMessage(), e);
     }
+    Collections.sort(roleList);
     return roleList;
   }
 

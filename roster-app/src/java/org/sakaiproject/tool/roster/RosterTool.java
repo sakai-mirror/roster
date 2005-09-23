@@ -248,6 +248,14 @@ public class RosterTool
     Log.debug("isUpdateAccess()");
     return rosterManager.isInstructor();
   }
+  
+  public boolean isRenderPhotoColumn()
+  {
+    Log.debug("isRenderPhotoColumn()");
+    return (isShowIdPhoto()||isShowCustomPhoto());
+  }
+  
+  
 
   public List getRoles()
   {
@@ -280,9 +288,11 @@ public class RosterTool
     Log.debug("getAllUsers()");
     List users = new ArrayList();
     List tempUserList = rosterManager.getAllUsers();
-    //rosterManager.sortParticipants(tempUserList, getSortColumn(),isSortAscending());
-    if (tempUserList != null && tempUserList.size() > 0)
+   
+    if (tempUserList==null || tempUserList.size() < 1)
     {
+      return null;
+    }
       this.allUserCount = tempUserList.size();
       Iterator iter = tempUserList.iterator();
 
@@ -290,8 +300,6 @@ public class RosterTool
       {
         users.add(new DecoratedParticipant((Participant) iter.next()));
       }
-    }
-
     return users;
   }
 
