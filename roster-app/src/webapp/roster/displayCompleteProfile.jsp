@@ -38,7 +38,9 @@
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_email}"/>
 					<h:outputText value="#{RosterTool.participant.profile.email} " />
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_homepage}"/>	
-					<h:outputText value="#{RosterTool.participant.profile.homepage}" />
+					<h:outputLink target="_blank" value="#{RosterTool.participant.profile.homepage}" >
+						<h:outputText value="#{RosterTool.participant.profile.homepage}"/>
+					</h:outputLink>	 
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_work_phone}"/>
 					<h:outputText value="#{RosterTool.participant.profile.workPhone}"/>
 					<h:outputLabel value="#{msgs.profile_home_phone}"/>

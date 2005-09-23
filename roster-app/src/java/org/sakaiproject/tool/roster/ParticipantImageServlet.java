@@ -86,13 +86,11 @@ public class ParticipantImageServlet extends HttpServlet
             getProfileManager().getUserProfileById(userId)))
         {
 
-          if (getProfileManager().isDisplayUniversityPhoto(
-              getProfileManager().getUserProfileById(userId)))
+          if (getProfileManager().getUserProfileById(userId).isInstitutionalPictureIdPreferred().booleanValue())
           {
             LOG.debug("Custom Preference for user *" + userId
                 + "* is to display university  id photo ");
             displayUniversityIDPhoto(userId, stream, response);
-
           }
           else
           {
@@ -106,13 +104,13 @@ public class ParticipantImageServlet extends HttpServlet
             }
           }
         }
-        else
-        {
-          LOG.debug("Custom Preference for user *" + userId
-              + "* is to display no photo");
-          displayLocalImage(stream, CUSTOM_IMAGE_UNAVAILABLE);
-        }
+
       }
+      // In any other case show custom picture is not available
+      LOG.debug("Custom Preference for user *" + userId
+          + "* is to display no photo");
+      displayLocalImage(stream, CUSTOM_IMAGE_UNAVAILABLE);
+
     }
   }
 
@@ -125,7 +123,8 @@ public class ParticipantImageServlet extends HttpServlet
     try
     {
       byte[] displayPhoto;
-      displayPhoto = getProfileManager().getInstitutionalPhotoByUserId(userId,true);
+      displayPhoto = getProfileManager().getInstitutionalPhotoByUserId(userId,
+          true);
       if (displayPhoto != null && displayPhoto.length > 0)
       {
         LOG.debug("Display University ID photo for user:" + userId);
@@ -162,7 +161,9 @@ public class ParticipantImageServlet extends HttpServlet
         in = new BufferedInputStream((new URL(url)).openStream());
         String urlString = URLConnection.guessContentTypeFromStream(in);
         // get a image only
-        if (urlString != null && (urlString.startsWith("image")||urlString.startsWith("text/html")) )
+        if (urlString != null
+            && (urlString.startsWith("image") || urlString
+                .startsWith("text/html")))
         {
           response.setContentType(CONTENT_TYPE);
           byte pic[] = new byte[in.available()];

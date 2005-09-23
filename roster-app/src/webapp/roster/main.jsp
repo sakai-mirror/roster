@@ -16,11 +16,10 @@
 			 </sakai:tool_bar>
 			 <sakai:view_title  value="#{RosterTool.title}"/>
 			 <sakai:instruction_message value="#{msgs.title_msg}"/>
-			 <h:panelGroup rendered="#{!RosterTool.updateAccess}" > 
-			  <f:verbatim> <a href="http://kb.iu.edu/data/ahob.html" target="_blank"></f:verbatim>
-			 	 <sakai:instruction_message value="#{msgs.title_missing_participants}"/>
-			  <f:verbatim></a></f:verbatim>
-	  		 </h:panelGroup>
+	 	  	  <h:outputLink rendered="#{!RosterTool.updateAccess}" value="#{msgs.title_missing_participants_link}" target="_blank" >
+			  	 <sakai:instruction_message value="#{msgs.title_missing_participants}"/>
+			  </h:outputLink>
+	  		 
 	  		 <sakai:panel_edit>
 	 			<h:outputText value="#{msgs.roster_view}"/>
 		 		<h:selectOneMenu  onchange="this.form.submit();"  valueChangeListener="#{RosterTool.processValueChangeForView}" value="#{RosterTool.displayView}">  
