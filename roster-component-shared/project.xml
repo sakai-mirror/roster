@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <pomVersion>3</pomVersion>
+    <extend>../../master/project.xml</extend>
     <name>Sakai Roster Components Shared</name>
     <groupId>sakaiproject</groupId>
     <id>sakai-roster-component-shared</id>
-    <currentVersion>2.0.0</currentVersion>
+    <currentVersion>${sakai.version}</currentVersion>
     <organization>
         <name>Sakai Project</name>
         <url>http://sakaiproject.org/</url>
@@ -18,7 +19,7 @@
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-roster-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
             <properties>
                 <deploy.target>shared</deploy.target>
             </properties>
@@ -26,7 +27,7 @@
            <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-profile-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
             <properties>
                 <deploy.target>shared</deploy.target>
             </properties>
@@ -34,17 +35,17 @@
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-legacy-service</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-tool</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-session</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
           <groupId>commons-logging</groupId>
@@ -54,27 +55,27 @@
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-manager-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
           <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-edu-person-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-type-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-agent-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-superstructure-api</artifactId>
-            <version>${pom.currentVersion}</version>
+            <version>${sakai.version}</version>
         </dependency>
     </dependencies>
     <build>
