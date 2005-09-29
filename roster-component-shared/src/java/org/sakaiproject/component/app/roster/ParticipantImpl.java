@@ -27,6 +27,7 @@ import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
 
 /**
@@ -39,6 +40,7 @@ public class ParticipantImpl implements Participant
   private String id;
   private String firstName;
   private String lastName;
+  private Profile profile;
   public static Comparator LastNameComparator;
   public static Comparator FirstNameComparator;
   public static Comparator UserIdComparator;
@@ -48,8 +50,9 @@ public class ParticipantImpl implements Participant
    * @param id
    * @param fname
    * @param lname
+   * @param profile TODO
    */
-  public ParticipantImpl(String id, String fname, String lname)
+  public ParticipantImpl(String id, String fname, String lname, Profile profile)
   {
     if (Log.isDebugEnabled())
     {
@@ -59,6 +62,7 @@ public class ParticipantImpl implements Participant
     setId(id);
     setFirstName(fname);
     setLastName(lname);
+    setProfile(profile);
   }
 
   /* (non-Javadoc)
@@ -228,6 +232,21 @@ public class ParticipantImpl implements Participant
 
       }
     };
+  }
+
+  public Profile getProfile()
+  {
+    Log.debug("getProfile()");
+    return profile;
+  }
+
+  public void setProfile(Profile profile)
+  {
+    if (Log.isDebugEnabled())
+    {
+      Log.debug("setProfile(Profile" + profile + ")");
+    }
+    this.profile = profile;    
   }
 
 }

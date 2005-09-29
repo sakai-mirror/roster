@@ -65,4 +65,16 @@
             <value>#{Components["org.sakaiproject.api.app.profile.ProfileManager"]}</value>
         </managed-property>
     </managed-bean>
+    <!-- =================== Component to display richtext  ============== -->
+    <component>
+        <component-type>RosterDisplayHTML</component-type>
+        <component-class>org.sakaiproject.jsf.roster.RosterDisplayHTMLComponent</component-class>
+    </component>
+    <render-kit>
+        <renderer>
+            <component-family>RosterDisplayHTML</component-family>
+            <renderer-type>RosterDisplayHTMLRender</renderer-type>
+            <renderer-class>org.sakaiproject.jsf.roster.RosterDisplayHTMLRender</renderer-class>
+        </renderer>
+    </render-kit>
 </faces-config>

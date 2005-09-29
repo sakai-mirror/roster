@@ -48,7 +48,9 @@
 								<f:facet name="header">
 									<h:outputText value="#{RosterTool.facet}" />
 								</f:facet>
-								<h:graphicImage value="ParticipantImageServlet.prf?customPhoto=#{searchResult.participant.id}" height="75" width="75" rendered="#{RosterTool.showCustomPhoto}"/>
+								<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{searchResult.showCustomPhotoUnavailable}"/>
+								<h:graphicImage value="#{searchResult.participant.profile.pictureUrl}" height="75" width="75" rendered="#{searchResult.showURLPhoto}"/>
+								<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResult.participant.id}"  width="75" rendered="#{searchResult.showCustomIdPhoto}"/>
 								<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResult.participant.id}" width="75" rendered="#{RosterTool.showIdPhoto}"/>
 							</h:column>	
 							<h:column>
@@ -94,7 +96,9 @@
 							<f:facet name="header">
 								<h:outputText value="#{RosterTool.facet}" />
 							</f:facet>
-							<h:graphicImage value="ParticipantImageServlet.prf?customPhoto=#{searchResultAll.participant.id}" height="75" width="75" rendered="#{RosterTool.showCustomPhoto}"/>
+							<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{searchResultAll.showCustomPhotoUnavailable}"/>
+							<h:graphicImage value="#{searchResultAll.participant.profile.pictureUrl}" height="75" width="75" rendered="#{searchResultAll.showURLPhoto}"/>
+							<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  width="75" rendered="#{searchResultAll.showCustomIdPhoto}"/>
 							<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}" width="75" rendered="#{RosterTool.showIdPhoto}"/>
 						</h:column>	
 						<h:column>

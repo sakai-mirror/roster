@@ -248,14 +248,12 @@ public class RosterTool
     Log.debug("isUpdateAccess()");
     return rosterManager.isInstructor();
   }
-  
+
   public boolean isRenderPhotoColumn()
   {
     Log.debug("isRenderPhotoColumn()");
-    return (isShowIdPhoto()||isShowCustomPhoto());
+    return (isShowIdPhoto() || isShowCustomPhoto());
   }
-  
-  
 
   public List getRoles()
   {
@@ -288,18 +286,18 @@ public class RosterTool
     Log.debug("getAllUsers()");
     List users = new ArrayList();
     List tempUserList = rosterManager.getAllUsers();
-   
-    if (tempUserList==null || tempUserList.size() < 1)
+
+    if (tempUserList == null || tempUserList.size() < 1)
     {
       return null;
     }
-      this.allUserCount = tempUserList.size();
-      Iterator iter = tempUserList.iterator();
+    this.allUserCount = tempUserList.size();
+    Iterator iter = tempUserList.iterator();
 
-      while (iter.hasNext())
-      {
-        users.add(new DecoratedParticipant((Participant) iter.next()));
-      }
+    while (iter.hasNext())
+    {
+      users.add(new DecoratedParticipant((Participant) iter.next()));
+    }
     return users;
   }
 
@@ -371,7 +369,7 @@ public class RosterTool
           break;
         }
       }
-      if (participant.getProfile() != null)
+      if (participant.getParticipant().getProfile() != null)
       {
         if (participant.isDisplayCompleteProfile())
         {
@@ -481,8 +479,9 @@ public class RosterTool
   {
 
     protected Participant decoratedParticipant;
-
-    protected Profile profile;
+    protected boolean showCustomPhotoUnavailable = false;
+    protected boolean showURLPhoto = false;
+    protected boolean showCustomIdPhoto = false;
 
     public DecoratedParticipant(Participant decParticipant)
     {
@@ -493,17 +492,66 @@ public class RosterTool
       this.decoratedParticipant = decParticipant;
     }
 
-    public Profile getProfile()
+    // User Profile: display a emplty url
+    public boolean isShowCustomPhotoUnavailable()
     {
-      Log.debug("getProfile()");
-      if (decoratedParticipant == null || decoratedParticipant.getId() == null
-          || decoratedParticipant.getId().trim().length() < 1)
+      Log.debug("isShowCustomPhotoUnavailable()");
+      if(!showCustomPhoto)
       {
-        return null;
+        return false;
       }
-      this.profile = profileManager.getUserProfileById(decoratedParticipant
-          .getId());
-      return profile;
+      if (decoratedParticipant.getProfile() == null)
+      {
+        return true;
+      }
+      if (!decoratedParticipant.getProfile()
+              .isInstitutionalPictureIdPreferred().booleanValue()
+          && (decoratedParticipant.getProfile().getPictureUrl() == null || decoratedParticipant
+              .getProfile().getPictureUrl().length() < 1))
+      {
+        return true;
+      }
+      return false;
+    }
+
+    //User Profile : display a non empty url 
+    public boolean isShowURLPhoto()
+    {
+      
+      Log.debug("isShowURLPhoto()");
+      if(!showCustomPhoto)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile() == null)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile().getPictureUrl() != null)
+      {
+        return true;
+      }
+      return false;
+    }
+
+    //User Profile : display id Photo 
+    public boolean isShowCustomIdPhoto()
+    {
+      Log.debug("isShowCustomIdPhoto()");
+      if(!showCustomPhoto)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile() == null)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile()
+              .isInstitutionalPictureIdPreferred().booleanValue())
+      {
+        return true;
+      }
+      return false;
     }
 
     public Participant getParticipant()
@@ -515,13 +563,15 @@ public class RosterTool
     public boolean isDisplayCompleteProfile()
     {
       Log.debug("isDisplayCompleteProfile()");
-      return profileManager.displayCompleteProfile(profile);
+      return profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile());
     }
 
     public boolean isHidePrivateInfo()
     {
       Log.debug("isHidePrivateInfo()");
-      return (!profileManager.displayCompleteProfile(profile));
+      return (!profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile()));
     }
   }
 

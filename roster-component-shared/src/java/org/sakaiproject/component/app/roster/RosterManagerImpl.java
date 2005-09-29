@@ -35,8 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
-import org.sakaiproject.api.common.agent.Agent;
-import org.sakaiproject.api.common.agent.AgentGroupManager;
 import org.sakaiproject.api.common.edu.person.SakaiPerson;
 import org.sakaiproject.api.common.edu.person.SakaiPersonManager;
 import org.sakaiproject.api.kernel.tool.cover.ToolManager;
@@ -58,7 +56,6 @@ public class RosterManagerImpl implements RosterManager
   /** Dependency: ProfileManager */
   private ProfileManager profileManager;
   private SakaiPersonManager sakaiPersonManager;
-  private AgentGroupManager agentGroupManager;
 
   /**
    * @param sakaiPersonManager
@@ -85,21 +82,6 @@ public class RosterManagerImpl implements RosterManager
     }
 
     this.sakaiPersonManager = sakaiPersonManager;
-  }
-
-  /**
-   * @param agentGroupManager
-   *          The agentGroupManager to set.
-   */
-  public void setAgentGroupManager(AgentGroupManager agentGroupManager)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug("setAgentGroupManager(AgentGroupManager " + agentGroupManager
-          + ")");
-    }
-
-    this.agentGroupManager = agentGroupManager;
   }
 
   public void init()
@@ -156,6 +138,7 @@ public class RosterManagerImpl implements RosterManager
     {
       LOG.debug("getParticipantByRole(Role" + role + ")");
     }
+
     List users = new ArrayList();
     List usersByRole = new ArrayList();
     if (role != null)
@@ -184,8 +167,7 @@ public class RosterManagerImpl implements RosterManager
             try
             {
               User user = UserDirectoryService.getUser((String) iter.next());
-              users.add(new ParticipantImpl(user.getId(), user.getFirstName(),
-                  user.getLastName()));
+              users.add(createParticipantByUser(user));
             }
             catch (IdUnusedException e)
             {
@@ -204,6 +186,16 @@ public class RosterManagerImpl implements RosterManager
     return users;
   }
 
+  private Participant createParticipantByUser(User user)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug("createParticipantByUser(User " + user + ")");
+    }
+    return new ParticipantImpl(user.getId(), user.getFirstName(), user
+        .getLastName(), profileManager.getUserProfileById(user.getId()));
+  }
+
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantById(java.lang.String)
    */
@@ -219,14 +211,12 @@ public class RosterManagerImpl implements RosterManager
       {
         User user = UserDirectoryService.getUser(participantId);
         //TODO: individual ferpa checks
-        return new ParticipantImpl(user.getId(), user.getFirstName(), user
-            .getLastName());
+        return createParticipantByUser(user);
       }
       catch (IdUnusedException e)
       {
         LOG.error(e.getMessage(), e);
       }
-
     }
     return null;
   }
@@ -265,9 +255,7 @@ public class RosterManagerImpl implements RosterManager
         try
         {
           User user = UserDirectoryService.getUser(userId);
-          Participant participant = new ParticipantImpl(user.getId(), user
-              .getFirstName(), user.getLastName());
-          roster.add(participant);
+          roster.add(createParticipantByUser(user));
         }
         catch (IdUnusedException e)
         {
@@ -303,9 +291,9 @@ public class RosterManagerImpl implements RosterManager
     while (iter.hasNext())
     {
       String userId = (String) iter.next();
-      if (getAgentUuid(userId) != null)
+      if (profileManager.getAgentUuidByEnterpriseId(userId) != null)
       {
-        agentUuids.add(getAgentUuid(userId));
+        agentUuids.add(profileManager.getAgentUuidByEnterpriseId(userId));
       }
     }
     List siteFerpaUsersAgentUuids = sakaiPersonManager
@@ -322,9 +310,10 @@ public class RosterManagerImpl implements RosterManager
     {
       SakaiPerson sp = (SakaiPerson) iter2.next();
       String agentUuid = sp.getAgentUuid();
-      if (getUidByAgentUuid(agentUuid) != null)
+      if (profileManager.getEnterpriseIdByAgentUuid(agentUuid) != null)
       {
-        siteFerpaUsersEnterpriseIds.add(getUidByAgentUuid(agentUuid));
+        siteFerpaUsersEnterpriseIds.add(profileManager
+            .getEnterpriseIdByAgentUuid(agentUuid));
       }
     }
     List nonFerpaUsers = new ArrayList();
@@ -344,53 +333,6 @@ public class RosterManagerImpl implements RosterManager
       return null;
     }
     return nonFerpaUsers;
-  }
-
-  private String getAgentUuid(String uid)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug(" getAgentUuid(String " + uid + ")");
-    }
-    if (uid == null || (uid != null && uid.trim().length() < 0))
-    {
-      return null;
-    }
-
-    Agent agent = agentGroupManager.getAgentByEnterpriseId(uid);
-    if (agent == null)
-    {
-      agent = agentGroupManager.createAgent(agentGroupManager
-          .getDefaultContainer(), uid, uid, uid, agentGroupManager
-          .getDefaultAgentType());
-    }
-    return agent.getUuid();
-  }
-
-  /**
-   * @param agentUuid
-   * @return
-   */
-  private String getUidByAgentUuid(String agentUuid)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug(" getUid(String " + agentUuid + ")");
-    }
-    if (agentUuid == null
-        || (agentUuid != null && agentUuid.trim().length() < 0))
-    {
-      return null;
-    }
-
-    Agent agent = agentGroupManager.getAgentByUuid(agentUuid);
-    if (agent == null)
-    {
-      LOG.debug("No agent found for Uuid" + agentUuid);
-      return null;
-    }
-    return agent.getEnterpriseId();
-
   }
 
   /* (non-Javadoc)

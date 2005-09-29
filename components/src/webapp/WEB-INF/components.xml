@@ -7,9 +7,6 @@
         </property>
         <property name="sakaiPersonManager">
             <ref bean="org.sakaiproject.api.common.edu.person.SakaiPersonManager"/>
-        </property>
-        <property name="agentGroupManager">
-            <ref bean="org.sakaiproject.api.common.agent.AgentGroupManager"/>
-        </property>
+        </property>        
     </bean>
 </beans>

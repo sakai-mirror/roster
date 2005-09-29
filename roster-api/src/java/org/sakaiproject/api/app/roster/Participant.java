@@ -22,6 +22,8 @@
  **********************************************************************************/
 package org.sakaiproject.api.app.roster;
 
+import org.sakaiproject.api.app.profile.Profile;
+
 
 /**
  * @author rshastri
@@ -62,4 +64,13 @@ public interface Participant
    */
   public  void setLastName(String lastName);
 
+  /**
+   * @return
+   */
+  public Profile getProfile();
+  
+  /**
+   * @param profile
+   */
+  public void setProfile(Profile profile);
 }
