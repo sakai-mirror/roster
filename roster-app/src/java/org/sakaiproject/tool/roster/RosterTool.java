@@ -33,7 +33,6 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
@@ -122,7 +121,7 @@ public class RosterTool
     if (Log.isDebugEnabled())
       Log.debug("processValueChangeForView(ValueChangeEvent " + vce + ")");
     String changeView = (String) vce.getNewValue();
-    if (changeView != null && changeView.equals(this.VIEW_ALL))
+    if (changeView != null && changeView.equals(VIEW_ALL))
     {
       setDisplayView(VIEW_ALL);
       getAllUsers();
@@ -234,13 +233,13 @@ public class RosterTool
   public boolean isDisplayByRole()
   {
     Log.debug("isDisplayByRole()");
-    return this.displayView.equals(this.VIEW_BY_ROLE);
+    return this.displayView.equals(VIEW_BY_ROLE);
   }
 
   public boolean isDisplayAllUsers()
   {
     Log.debug("isDisplayByRole()");
-    return this.displayView.equals(this.VIEW_ALL);
+    return this.displayView.equals(VIEW_ALL);
   }
 
   public boolean isUpdateAccess()
