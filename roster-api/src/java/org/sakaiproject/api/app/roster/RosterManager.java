@@ -24,7 +24,7 @@ package org.sakaiproject.api.app.roster;
 
 import java.util.List;
 
-import org.sakaiproject.service.legacy.realm.Role;
+import org.sakaiproject.service.legacy.authzGroup.Role;
 
 /**
  * @author rshastri 

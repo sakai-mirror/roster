@@ -39,9 +39,9 @@ import org.sakaiproject.api.common.edu.person.SakaiPerson;
 import org.sakaiproject.api.common.edu.person.SakaiPersonManager;
 import org.sakaiproject.api.kernel.tool.cover.ToolManager;
 import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.service.legacy.realm.Realm;
-import org.sakaiproject.service.legacy.realm.Role;
-import org.sakaiproject.service.legacy.realm.cover.RealmService;
+import org.sakaiproject.service.legacy.authzGroup.AuthzGroup;
+import org.sakaiproject.service.legacy.authzGroup.Role;
+import org.sakaiproject.service.legacy.authzGroup.cover.RealmService;
 import org.sakaiproject.service.legacy.security.cover.SecurityService;
 import org.sakaiproject.service.legacy.user.User;
 import org.sakaiproject.service.legacy.user.cover.UserDirectoryService;
@@ -104,10 +104,10 @@ public class RosterManagerImpl implements RosterManager
   {
     LOG.debug("getRoles()");
     List roleList = new ArrayList();
-    Realm realm;
+    AuthzGroup realm;
     try
     {
-      realm = RealmService.getRealm(getContextSiteId());
+      realm = RealmService.getAuthzGroup(getContextSiteId());
       Set roles = realm.getRoles();
       if (roles != null && roles.size() > 0)
       {
@@ -130,7 +130,7 @@ public class RosterManagerImpl implements RosterManager
   }
 
   /* (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantByRole(org.sakaiproject.service.legacy.realm.Role)
+   * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantByRole(org.sakaiproject.service.legacy.authzGroup.Role)
    */
   public List getParticipantByRole(Role role)
   {
@@ -143,11 +143,11 @@ public class RosterManagerImpl implements RosterManager
     List usersByRole = new ArrayList();
     if (role != null)
     {
-      Realm realm;
+      AuthzGroup realm;
       try
       {
-        realm = RealmService.getRealm(getContextSiteId());
-        Set userSet = realm.getUsersWithRole(role.getId());
+        realm = RealmService.getAuthzGroup(getContextSiteId());
+        Set userSet = realm.getUsersHasRole(role.getId());
         Iterator userSetIter = userSet.iterator();
         while (userSetIter.hasNext())
         {
@@ -229,10 +229,10 @@ public class RosterManagerImpl implements RosterManager
     LOG.debug("getAllUsers");
     List users = new ArrayList();
     List roster = new ArrayList();
-    Realm realm;
+    AuthzGroup realm;
     try
     {
-      realm = RealmService.getRealm(getContextSiteId());
+      realm = RealmService.getAuthzGroup(getContextSiteId());
       users.addAll(UserDirectoryService.getUsers(realm.getUsers()));
       List userIds = new ArrayList();
       if (users == null)

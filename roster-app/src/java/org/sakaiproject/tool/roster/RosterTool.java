@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
-import org.sakaiproject.service.legacy.realm.Role;
+import org.sakaiproject.service.legacy.authzGroup.Role;
 
 /**
  * @author rshastri <a href="mailto:rshastri@iupui.edu ">Rashmi Shastri</a>
