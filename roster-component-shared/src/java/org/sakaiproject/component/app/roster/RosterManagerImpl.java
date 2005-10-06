@@ -41,7 +41,7 @@ import org.sakaiproject.api.kernel.tool.cover.ToolManager;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.legacy.authzGroup.AuthzGroup;
 import org.sakaiproject.service.legacy.authzGroup.Role;
-import org.sakaiproject.service.legacy.authzGroup.cover.RealmService;
+import org.sakaiproject.service.legacy.authzGroup.cover.AuthzGroupService;
 import org.sakaiproject.service.legacy.security.cover.SecurityService;
 import org.sakaiproject.service.legacy.user.User;
 import org.sakaiproject.service.legacy.user.cover.UserDirectoryService;
@@ -107,7 +107,7 @@ public class RosterManagerImpl implements RosterManager
     AuthzGroup realm;
     try
     {
-      realm = RealmService.getAuthzGroup(getContextSiteId());
+      realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
       Set roles = realm.getRoles();
       if (roles != null && roles.size() > 0)
       {
@@ -146,7 +146,7 @@ public class RosterManagerImpl implements RosterManager
       AuthzGroup realm;
       try
       {
-        realm = RealmService.getAuthzGroup(getContextSiteId());
+        realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
         Set userSet = realm.getUsersHasRole(role.getId());
         Iterator userSetIter = userSet.iterator();
         while (userSetIter.hasNext())
@@ -232,7 +232,7 @@ public class RosterManagerImpl implements RosterManager
     AuthzGroup realm;
     try
     {
-      realm = RealmService.getAuthzGroup(getContextSiteId());
+      realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
       users.addAll(UserDirectoryService.getUsers(realm.getUsers()));
       List userIds = new ArrayList();
       if (users == null)
