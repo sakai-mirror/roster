@@ -503,6 +503,11 @@ public class RosterTool
       {
         return true;
       }
+      if(decoratedParticipant.getProfile()
+    		  .isInstitutionalPictureIdPreferred()==null)
+      {
+    	  return true;
+      }      
       if (!decoratedParticipant.getProfile()
               .isInstitutionalPictureIdPreferred().booleanValue()
           && (decoratedParticipant.getProfile().getPictureUrl() == null || decoratedParticipant
@@ -544,6 +549,11 @@ public class RosterTool
       if (decoratedParticipant.getProfile() == null)
       {
         return false;
+      }
+      if (decoratedParticipant.getProfile()
+              .isInstitutionalPictureIdPreferred()==null)
+      {
+    	  return false;
       }
       if (decoratedParticipant.getProfile()
               .isInstitutionalPictureIdPreferred().booleanValue())
