@@ -1,5 +1,6 @@
-/**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/trunk/sakai/roster/roster-app/src/java/org/sakaiproject/tool/roster/RosterTool.java $
+/*******************************************************************************************************
+ * $URL:
+ * https://source.sakaiproject.org/svn/trunk/sakai/roster/roster-app/src/java/org/sakaiproject/tool/roster/RosterTool.java $
  * $Id: RosterTool.java 1378 2005-08-25 16:25:41Z rshastri@iupui.edu $
  ***********************************************************************************
  *
@@ -41,7 +42,6 @@ import org.sakaiproject.service.legacy.authzGroup.Role;
 /**
  * @author rshastri <a href="mailto:rshastri@iupui.edu ">Rashmi Shastri</a>
  * @version $Id: RosterTool.java 1378 2005-08-25 16:25:41Z rshastri@iupui.edu $
- *  
  */
 public class RosterTool
 {
@@ -56,6 +56,7 @@ public class RosterTool
   private static final String TITLE_VIEW_OFFICICAL = "View Offficial Photo IDs";
   private static final String PARTICIPANT_ID = "participantId";
   private static final String SORT_LAST_NAME = "lastName";
+  private static final String SORT_USER_ID = "id";
 
   private static final String FACET_PICTURE = "Picture";
   private static final String FACET_OFFICIAL = "Photo ID";
@@ -74,13 +75,20 @@ public class RosterTool
 
   private boolean showIdPhoto = false;
   private boolean showCustomPhoto = false;
+  private boolean reloadAllUsers = true;
+  private boolean reloadRoles = true;
   private String facet = "";
   private String displayView = VIEW_BY_ROLE;
   private int allUserCount = 0;
   private List roles = null;
-  private String sortColumn = SORT_LAST_NAME;
-  private boolean sortAscending = true;
+  private List allDecoUsers = null;
+  private List alluserList = null;
 
+  // sort column
+  private boolean sortLastNameDescending = false;
+  private boolean sortUserIdDescending = false;
+  private boolean sortLastNameAscending = true;
+  private boolean sortUserIdAscending = false;
   public RosterTool()
   {
 
@@ -116,12 +124,110 @@ public class RosterTool
     return "main";
   }
 
-  public void processValueChangeForView(ValueChangeEvent vce)
+  public String toggleUserIdSort()
+  {
+    Log.debug("toggleUserIdSort()");
+    if (sortUserIdAscending)
+    {
+      setSort("descending", SORT_USER_ID);
+    }
+    else
+    {
+      setSort("ascending", SORT_USER_ID);
+    }
+    return "main";
+  }
+
+  public String toggleLastNameSort()
+  {
+    Log.debug("toggleLastNameSort()");
+    if (sortLastNameAscending)
+    {
+      setSort("descending", SORT_LAST_NAME);
+    }
+    else
+    {
+      setSort("ascending", SORT_LAST_NAME);
+    }
+    return "main";
+  }
+
+  private void setSort(String sortOrder, String sortBy)
+  {
+   // reloadAllUsers=true;
+    sortLastNameDescending = false;
+    sortUserIdDescending = false;
+    sortLastNameAscending = false;
+    sortUserIdAscending = false;
+    if (sortOrder.equals("ascending"))
+    {
+      if (sortBy.equals(SORT_USER_ID))
+      {
+        sortUserIdAscending = true; 
+        rosterManager.sortParticipants(alluserList,SORT_USER_ID,true);
+        this.allDecoUsers=getAllUsers(alluserList);
+        return;
+      }
+      if (sortBy.equals(SORT_LAST_NAME))
+      {
+        sortLastNameAscending = true;
+        rosterManager.sortParticipants(alluserList,SORT_LAST_NAME,true);
+        this.allDecoUsers=getAllUsers(alluserList);
+        return;
+      }
+    }
+    else
+      
+    {
+      if (sortBy.equals(SORT_USER_ID))
+      {
+        sortUserIdDescending = true;
+        rosterManager.sortParticipants(alluserList,SORT_USER_ID,false);
+        this.allDecoUsers=getAllUsers(alluserList);
+        return;
+      }
+      if (sortBy.equals(SORT_LAST_NAME))
+      {
+        sortLastNameDescending = true;
+        rosterManager.sortParticipants(alluserList,SORT_LAST_NAME,false);
+        this.allDecoUsers=getAllUsers(alluserList);
+        return;
+      }
+
+    }
+
+  }
+
+  public boolean isSortLastNameAscending()
+  {
+    Log.debug("isSortLastNameAscending()");
+    return sortLastNameAscending;
+  }
+
+  public boolean isSortLastNameDescending()
+  {
+    Log.debug("isSortLastNameDescending()");
+    return sortLastNameDescending;
+  }
+
+  public boolean isSortUserIdAscending()
+  {
+    Log.debug("isSortUserIdAscending()");
+    return sortUserIdAscending;
+  }
+
+  public boolean isSortUserIdDescending()
+  {
+    Log.debug("isSortUserIdDescending()");
+    return sortUserIdDescending;
+  }
+
+  public String processValueChangeForView(ValueChangeEvent vce)
   {
     if (Log.isDebugEnabled())
       Log.debug("processValueChangeForView(ValueChangeEvent " + vce + ")");
     String changeView = (String) vce.getNewValue();
-    if (changeView != null && changeView.equals(VIEW_ALL))
+    if (changeView != null && changeView.equals(this.VIEW_ALL))
     {
       setDisplayView(VIEW_ALL);
       getAllUsers();
@@ -131,6 +237,7 @@ public class RosterTool
       setDisplayView(VIEW_BY_ROLE);
       getRoles();
     }
+    return "main";
   }
 
   public boolean isShowCustomPhoto()
@@ -257,47 +364,55 @@ public class RosterTool
   public List getRoles()
   {
     Log.debug("getRoles()");
-    roles = new ArrayList();
-    List tempRoleList = rosterManager.getRoles();
+    if (reloadRoles || roles == null)
     {
-      if (tempRoleList != null && tempRoleList.size() > 0)
+      roles = new ArrayList();
+      List tempRoleList = rosterManager.getRoles();
       {
-        Iterator iter = tempRoleList.iterator();
-
-        while (iter.hasNext())
+        if (tempRoleList != null && tempRoleList.size() > 0)
         {
-          roles.add(new DecoratedRole((Role) iter.next()));
+          Iterator iter = tempRoleList.iterator();
+
+          while (iter.hasNext())
+          {
+            roles.add(new DecoratedRole((Role) iter.next()));
+          }
         }
       }
+      reloadRoles = false;
     }
-    this.setRoles(roles);
     return roles;
 
-  }
-
-  public void setRoles(List roles)
-  {
-    this.roles = roles;
   }
 
   public List getAllUsers()
   {
     Log.debug("getAllUsers()");
-    List users = new ArrayList();
-    List tempUserList = rosterManager.getAllUsers();
+    if (reloadAllUsers || allDecoUsers == null)
+    {
+      alluserList = rosterManager.getAllUsers();
+      reloadAllUsers = false;
+      allDecoUsers = getAllUsers(alluserList);
+    }
+    return allDecoUsers;
+  }
 
-    if (tempUserList == null || tempUserList.size() < 1)
+  private List getAllUsers(List list)
+  {
+    Log.debug("getAllUsers()");
+    allDecoUsers = new ArrayList();
+    if (list == null || list.size() < 1)
     {
       return null;
     }
-    this.allUserCount = tempUserList.size();
-    Iterator iter = tempUserList.iterator();
+    this.allUserCount = list.size();
+    Iterator iter = list.iterator();
 
     while (iter.hasNext())
     {
-      users.add(new DecoratedParticipant((Participant) iter.next()));
+      allDecoUsers.add(new DecoratedParticipant((Participant) iter.next()));
     }
-    return users;
+    return allDecoUsers;
   }
 
   public int getAllUserCount()
@@ -307,7 +422,7 @@ public class RosterTool
   }
 
   /**
-   * Set variables for photo display
+   * Set variables for photo display 
    * @param option
    */
   private void setPhotoToggeling(String option)
@@ -316,7 +431,7 @@ public class RosterTool
     {
       Log.debug("setPhotoToggeling(String " + option + ")");
     }
-    if (option != null && option.equals(SHOW_ID_PHOTO))// show official 
+    if (option != null && option.equals(SHOW_ID_PHOTO))// show official
     {
       this.idPhotoText = HIDE_ID_PHOTO;
       this.showIdPhoto = true;
@@ -326,7 +441,7 @@ public class RosterTool
       this.facet = FACET_OFFICIAL;
     }
     else
-      if (option != null && option.equals(SHOW_PIC))// show custom 
+      if (option != null && option.equals(SHOW_PIC))// show custom
       {
         this.idPhotoText = SHOW_ID_PHOTO;
         this.customPhotoText = HIDE_PIC;
@@ -336,7 +451,7 @@ public class RosterTool
         this.facet = FACET_PICTURE;
       }
       else
-      //hide all
+      // hide all
       {
         this.idPhotoText = SHOW_ID_PHOTO;
         this.showIdPhoto = false;
@@ -389,41 +504,18 @@ public class RosterTool
     }
   }
 
-  public boolean isSortAscending()
-  {
-    Log.debug("isSortAscending()");
-    return sortAscending;
-  }
-
-  public void setSortAscending(boolean sortAscending)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setSortAscending(boolean" + sortAscending + ")");
-    }
-    this.sortAscending = sortAscending;
-  }
-
-  public String getSortColumn()
-  {
-    Log.debug("getSortColumn()");
-    return sortColumn;
-  }
-
-  public void setSortColumn(String sortColumn)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setSortColumn(String " + sortColumn + ")");
-    }
-    this.sortColumn = sortColumn;
-  }
-
   public class DecoratedRole
   {
     protected Role role;
-    protected List users = null;
-
+    protected List role_decoUsers = null;
+    protected List roleUserList = null;
+    private boolean role_sortLastNameDescending = false;
+    private boolean role_sortUserIdDescending = false;
+    private boolean role_sortLastNameAscending = true;
+    private boolean role_sortUserIdAscending = false;
+    private boolean role_currentSortAscending=false;
+    private String role_currentSortBy=SORT_LAST_NAME;
+    
     public DecoratedRole(Role decRole)
     {
       if (Log.isDebugEnabled())
@@ -432,25 +524,112 @@ public class RosterTool
       }
       role = decRole;
     }
+    
+    public void toggleUserIdSort()
+    {
+      Log.debug("toggleUserIdSort()");
+      if (role_sortUserIdAscending)
+      {
+        setSort("descending", SORT_USER_ID);
+      }
+      else
+      {
+        setSort("ascending", SORT_USER_ID);
+      }
+    }
 
+    public void toggleLastNameSort()
+    {
+      Log.debug("toggleLastNameSort()");
+      if (role_sortLastNameAscending)
+      {
+        setSort("descending", SORT_LAST_NAME);
+      }
+      else
+      {
+        setSort("ascending", SORT_LAST_NAME);
+      }
+     }
+    
+    private void setSort(String sortOrder, String sortBy)
+    {
+      role_sortLastNameDescending = false;
+      role_sortUserIdDescending = false;
+      role_sortLastNameAscending = false;
+      role_sortUserIdAscending = false;
+      
+      if (sortOrder.equals("ascending"))
+      {
+        if (sortBy.equals(SORT_USER_ID))
+        {
+           role_sortUserIdAscending = true; 
+           role_currentSortAscending=true;
+           role_currentSortBy=SORT_USER_ID;  
+           return;
+        }
+        if (sortBy.equals(SORT_LAST_NAME))
+        {
+          role_sortLastNameAscending = true;
+          role_currentSortAscending=true;
+          role_currentSortBy=SORT_LAST_NAME;  
+          return;
+        }
+      }
+      else
+        
+      {
+        if (sortBy.equals(SORT_USER_ID))
+        {
+          role_sortUserIdDescending = true;
+          role_currentSortAscending=false;
+          role_currentSortBy=SORT_USER_ID; 
+          return;
+        }
+        if (sortBy.equals(SORT_LAST_NAME))
+        {
+          role_sortLastNameDescending = true;
+          role_currentSortAscending=false;
+          role_currentSortBy=SORT_LAST_NAME; 
+          return;
+        }
+
+      }
+
+    }
     public List getUsers()
     {
       Log.debug("getUsers()");
-      users = new ArrayList();
-      List tempUserList = rosterManager.getParticipantByRole(role);
-      //rosterManager.sortParticipants(tempUserList, getSortColumn(),
-      //    isSortAscending());
-      if (tempUserList != null && tempUserList.size() > 0)
+//      if (reloadRoleUsers || role_decoUsers == null)
+//      {
+        roleUserList = rosterManager.getParticipantByRole(role);
+        rosterManager.sortParticipants(roleUserList,role_currentSortBy,role_currentSortAscending);
+        role_decoUsers = getUsers(roleUserList);
+//        reloadRoleUsers = false;
+//      }
+      return role_decoUsers;
+    }
+
+    // will convert a participant list into decorated participant list
+    private List getUsers(List list)
+    {
+      if (Log.isDebugEnabled())
       {
-        Iterator iter = tempUserList.iterator();
+        Log.debug("getUsers(List " + list + ")");
+      }
+      role_decoUsers = new ArrayList();
+ 
+      if (list != null && list.size() > 0)
+      {
+        Iterator iter = list.iterator();
 
         while (iter.hasNext())
         {
-          users.add(new DecoratedParticipant((Participant) iter.next()));
+          role_decoUsers
+              .add(new DecoratedParticipant((Participant) iter.next()));
         }
       }
 
-      return users;
+      return role_decoUsers;
     }
 
     public Role getRole()
@@ -471,9 +650,32 @@ public class RosterTool
       }
       return 0;
     }
+    
+    public boolean isRole_sortLastNameAscending()
+    {
+      Log.debug("isRole_sortLastNameAscending()");
+      return role_sortLastNameAscending;
+    }
+
+    public boolean isRole_sortLastNameDescending()
+    {
+      Log.debug("isRole_sortLastNameDescending()");
+      return role_sortLastNameDescending;
+    }
+
+    public boolean isRole_sortUserIdAscending()
+    {
+      Log.debug("isRole_sortUserIdAscending()");
+      return role_sortUserIdAscending;
+    }
+
+    public boolean isRole_sortUserIdDescending()
+    {
+      Log.debug("isRole_sortUserIdDescending()");
+      return role_sortUserIdDescending;
+    }    
 
   }
-
   public class DecoratedParticipant
   {
 
@@ -495,7 +697,7 @@ public class RosterTool
     public boolean isShowCustomPhotoUnavailable()
     {
       Log.debug("isShowCustomPhotoUnavailable()");
-      if(!showCustomPhoto)
+      if (!showCustomPhoto)
       {
         return false;
       }
@@ -503,13 +705,12 @@ public class RosterTool
       {
         return true;
       }
-      if(decoratedParticipant.getProfile()
-    		  .isInstitutionalPictureIdPreferred()==null)
+      if (decoratedParticipant.getProfile().isInstitutionalPictureIdPreferred() == null)
       {
-    	  return true;
-      }      
+        return true;
+      }
       if (!decoratedParticipant.getProfile()
-              .isInstitutionalPictureIdPreferred().booleanValue()
+          .isInstitutionalPictureIdPreferred().booleanValue()
           && (decoratedParticipant.getProfile().getPictureUrl() == null || decoratedParticipant
               .getProfile().getPictureUrl().length() < 1))
       {
@@ -518,12 +719,12 @@ public class RosterTool
       return false;
     }
 
-    //User Profile : display a non empty url 
+    // User Profile : display a non empty url
     public boolean isShowURLPhoto()
     {
-      
+
       Log.debug("isShowURLPhoto()");
-      if(!showCustomPhoto)
+      if (!showCustomPhoto)
       {
         return false;
       }
@@ -538,11 +739,11 @@ public class RosterTool
       return false;
     }
 
-    //User Profile : display id Photo 
+    // User Profile : display id Photo
     public boolean isShowCustomIdPhoto()
     {
       Log.debug("isShowCustomIdPhoto()");
-      if(!showCustomPhoto)
+      if (!showCustomPhoto)
       {
         return false;
       }
@@ -550,13 +751,12 @@ public class RosterTool
       {
         return false;
       }
-      if (decoratedParticipant.getProfile()
-              .isInstitutionalPictureIdPreferred()==null)
+      if (decoratedParticipant.getProfile().isInstitutionalPictureIdPreferred() == null)
       {
-    	  return false;
+        return false;
       }
-      if (decoratedParticipant.getProfile()
-              .isInstitutionalPictureIdPreferred().booleanValue())
+      if (decoratedParticipant.getProfile().isInstitutionalPictureIdPreferred()
+          .booleanValue())
       {
         return true;
       }

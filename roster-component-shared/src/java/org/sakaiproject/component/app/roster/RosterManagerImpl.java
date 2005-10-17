@@ -167,11 +167,15 @@ public class RosterManagerImpl implements RosterManager
             try
             {
               User user = UserDirectoryService.getUser((String) iter.next());
-              users.add(createParticipantByUser(user));
+              if(user != null)
+        	  {
+        	  	users.add(createParticipantByUser(user));
+        	  }
             }
             catch (IdUnusedException e)
             {
-              LOG.error(e.getMessage(), e);
+              LOG.info("Swallow IdUnusedException");	
+              LOG.info(e.getMessage(), e);
             }
 
           }

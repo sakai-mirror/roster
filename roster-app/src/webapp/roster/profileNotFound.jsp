@@ -4,6 +4,7 @@
 <% response.setContentType("text/html; charset=UTF-8"); %>
 <f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
 <f:view >
+ <h:form>
 	<sakai:view_container title="Roster Profile">
 		<sakai:view_content >
 	 		<h:panelGrid>
@@ -26,8 +27,9 @@
 			</h:panelGrid>
 			 	
  		 	 <h:panelGrid>
-			 	<h:commandButton  id="submit"  value="#{msgs.cancel}"  onclick="window.close()" />
+			 	<h:commandButton  id="submit"  value="#{msgs.cancel}"  immediate="true" action="#{RosterTool.processCancel}" />
 			 </h:panelGrid>	
 	</sakai:view_content>	
 	</sakai:view_container>	
+	</h:form>
 </f:view> 

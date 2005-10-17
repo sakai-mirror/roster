@@ -2,7 +2,7 @@
 <projectDescription>
 	<name>roster</name>
 	<comment></comment>
-	<projects>		 
+	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -15,8 +15,13 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>com.ibm.etools.validation.validationbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-</projectDescription> 
+</projectDescription>

@@ -1,9 +1,7 @@
 <%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %> 
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
-<%--@ taglib uri="http://sakaiproject.org/jsf/profile" prefix="profile" --%> 
- <% response.setContentType("text/html; charset=UTF-8"); %>
+<% response.setContentType("text/html; charset=UTF-8"); %>
 <f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
  <link href='/sakai-roster-tool/css/roster.css' rel='stylesheet' type='text/css' /> 
 <%--TODO : apply stylesheet --%>
@@ -28,8 +26,6 @@
 					<f:selectItem itemValue="all" itemLabel="#{msgs.roster_viewAllLabel}" />
 				</h:selectOneMenu>
 			 </sakai:panel_edit> 	
-		</h:form>
-		 <h:form target="neWindow">
 		 	<%--********************* Users View by Role*********************--%>
 		   		<h:dataTable width="90%" id="allRoles"  rendered="#{RosterTool.displayByRole}" value="#{RosterTool.roles}" var="searchResultRoles">
 				 	<h:column>				
@@ -37,13 +33,7 @@
 					 		<h:outputText value="#{searchResultRoles.role.id} (#{searchResultRoles.userCount})" />					
 		 		 		<f:verbatim></h4></f:verbatim>
 		 		 		<h:dataTable columnClasses="rosterGroupByRoleColumns_1,rosterGroupByRoleColumns_2" styleClass="listHier"  id="participantsByRole"  value="#{searchResultRoles.users}" var="searchResult">
-		 		 		<%--<x:dataTable cellpadding="3" cellspacing="3"
-							id="participantByRoleTable"
-							value="#{searchResultRoles.users}"
-							var="searchResult"
-							sortColumn="#{RosterTool.sortColumn}"
-				            sortAscending="#{RosterTool.sortAscending}">--%>
-							<%--TODO merge the two sakai flat lists --%>
+		 		 		  <%--TODO merge the two sakai flat lists --%>
 							<h:column rendered="#{RosterTool.renderPhotoColumn}">	
 								<f:facet name="header">
 									<h:outputText value="#{RosterTool.facet}" />
@@ -57,16 +47,18 @@
 								<f:facet name="header">
 									<h:outputText value="#{msgs.facet_profile}" />
 								</f:facet>				
-								<h:commandLink  action="#{RosterTool.processActionDisplayProfile}" value="Profile">
+								<h:commandLink  target="_blank" action="#{RosterTool.processActionDisplayProfile}" value="Profile">
 									<f:param value="#{searchResult.participant.id}" name="participantId"/>
 								</h:commandLink>
 						 	</h:column>
 							
 							<h:column>
 								<f:facet name="header">
-								  <%--	<x:commandSortHeader columnName="lastName" immediate="true" arrow="true">--%>
-										<h:outputText value="#{msgs.facet_name}" />
-		           					<%--</x:commandSortHeader>	--%>								
+								   	<h:commandLink action="#{searchResultRoles.toggleLastNameSort}">
+								   		<h:outputText value="#{msgs.facet_name}" />
+								   		<h:graphicImage value="/images/sortdescending.gif" rendered="#{searchResultRoles.role_sortLastNameDescending}"/>
+								   		<h:graphicImage value="/images/sortascending.gif" rendered="#{searchResultRoles.role_sortLastNameAscending}"/>
+									</h:commandLink>
 								</f:facet>								
 								<h:outputText value="#{searchResult.participant.lastName}" /> 
 								<h:outputText value=", " /> 
@@ -75,7 +67,11 @@
 							
 							<h:column>
 								<f:facet name="header">
-									<h:outputText value="#{msgs.facet_userId}" />
+									<h:commandLink action="#{searchResultRoles.toggleUserIdSort}">
+										<h:outputText value="#{msgs.facet_userId}" />
+										<h:graphicImage value="/images/sortdescending.gif" rendered="#{searchResultRoles.role_sortUserIdDescending}"/>
+									   	<h:graphicImage value="/images/sortascending.gif" rendered="#{searchResultRoles.role_sortUserIdAscending}"/>
+								   	</h:commandLink>
 								</f:facet>								
 								<h:outputText value="#{searchResult.participant.id}" /> 						
 							</h:column>
@@ -112,7 +108,11 @@
 						
 						<h:column>
 							<f:facet name="header">
-								<h:outputText value="#{msgs.facet_name}" />
+								<h:commandLink action="#{RosterTool.toggleLastNameSort}">
+							   		<h:outputText value="#{msgs.facet_name}" />
+							   		<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortLastNameDescending}"/>
+							   		<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortLastNameAscending}"/>
+								</h:commandLink>
 							</f:facet>								
 							<h:outputText value="#{searchResultAll.participant.lastName}" /> 
 							<h:outputText value=", " /> 
@@ -121,7 +121,11 @@
 						
 						<h:column>
 							<f:facet name="header">
-								<h:outputText value="#{msgs.facet_userId}" />
+								<h:commandLink action="#{RosterTool.toggleUserIdSort}">
+									<h:outputText value="#{msgs.facet_userId}" />
+									<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortUserIdDescending}"/>
+								   	<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortUserIdAscending}"/>
+							   	</h:commandLink>
 							</f:facet>								
 							<h:outputText value="#{searchResultAll.participant.id}" /> 						
 						</h:column>

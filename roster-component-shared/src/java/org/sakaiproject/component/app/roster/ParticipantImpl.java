@@ -227,8 +227,8 @@ public class ParticipantImpl implements Participant
               + otherParticipant + ")");
         }
         String userId1 = ((Participant) participant).getId();
-        String userId2 = ((Participant) participant).getId();
-        return userId1.compareTo(userId1);
+        String userId2 = ((Participant) otherParticipant).getId();
+        return userId1.compareTo(userId2);
 
       }
     };
