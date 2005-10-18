@@ -10,22 +10,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.4-20040521.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-authentication-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-legacy-service-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-util-text-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-util-web-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-legacy-util-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-jsf-tool-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-jsf-app-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-jsf-widgets-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-jsf-widgets-sun-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-tool-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-component-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-session-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-tool-registration-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-common-manager-api-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-common-type-api-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-common-superstructure-api-2.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/sakaiproject/jars/sakai-profile-api-2.0.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/profile"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/legacy-service"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kernel"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

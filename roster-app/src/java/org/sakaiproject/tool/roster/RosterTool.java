@@ -227,7 +227,7 @@ public class RosterTool
     if (Log.isDebugEnabled())
       Log.debug("processValueChangeForView(ValueChangeEvent " + vce + ")");
     String changeView = (String) vce.getNewValue();
-    if (changeView != null && changeView.equals(this.VIEW_ALL))
+    if (changeView != null && changeView.equals(VIEW_ALL))
     {
       setDisplayView(VIEW_ALL);
       getAllUsers();
