@@ -2,7 +2,7 @@
  * $URL:
  * https://source.sakaiproject.org/svn/trunk/sakai/roster/roster-app/src/java/org/sakaiproject/tool/roster/RosterTool.java $
  * $Id: RosterTool.java 1378 2005-08-25 16:25:41Z rshastri@iupui.edu $
- ***********************************************************************************
+ * ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005 The Regents of the University of Michigan, Trustees of Indiana University,
  *                  Board of Trustees of the Leland Stanford, Jr., University, and The MIT Corporation
@@ -19,8 +19,8 @@
  * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **********************************************************************************/
+ * 
+ ******************************************************************************************************/
 package org.sakaiproject.tool.roster;
 
 import java.util.ArrayList;
@@ -89,6 +89,7 @@ public class RosterTool
   private boolean sortUserIdDescending = false;
   private boolean sortLastNameAscending = true;
   private boolean sortUserIdAscending = false;
+
   public RosterTool()
   {
 
@@ -154,7 +155,7 @@ public class RosterTool
 
   private void setSort(String sortOrder, String sortBy)
   {
-   // reloadAllUsers=true;
+    // reloadAllUsers=true;
     sortLastNameDescending = false;
     sortUserIdDescending = false;
     sortLastNameAscending = false;
@@ -163,34 +164,34 @@ public class RosterTool
     {
       if (sortBy.equals(SORT_USER_ID))
       {
-        sortUserIdAscending = true; 
-        rosterManager.sortParticipants(alluserList,SORT_USER_ID,true);
-        this.allDecoUsers=getAllUsers(alluserList);
+        sortUserIdAscending = true;
+        rosterManager.sortParticipants(alluserList, SORT_USER_ID, true);
+        this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
       if (sortBy.equals(SORT_LAST_NAME))
       {
         sortLastNameAscending = true;
-        rosterManager.sortParticipants(alluserList,SORT_LAST_NAME,true);
-        this.allDecoUsers=getAllUsers(alluserList);
+        rosterManager.sortParticipants(alluserList, SORT_LAST_NAME, true);
+        this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
     }
     else
-      
+
     {
       if (sortBy.equals(SORT_USER_ID))
       {
         sortUserIdDescending = true;
-        rosterManager.sortParticipants(alluserList,SORT_USER_ID,false);
-        this.allDecoUsers=getAllUsers(alluserList);
+        rosterManager.sortParticipants(alluserList, SORT_USER_ID, false);
+        this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
       if (sortBy.equals(SORT_LAST_NAME))
       {
         sortLastNameDescending = true;
-        rosterManager.sortParticipants(alluserList,SORT_LAST_NAME,false);
-        this.allDecoUsers=getAllUsers(alluserList);
+        rosterManager.sortParticipants(alluserList, SORT_LAST_NAME, false);
+        this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
 
@@ -422,7 +423,8 @@ public class RosterTool
   }
 
   /**
-   * Set variables for photo display 
+   * Set variables for photo display
+   * 
    * @param option
    */
   private void setPhotoToggeling(String option)
@@ -489,11 +491,10 @@ public class RosterTool
         {
           return "displayCompleteProfile";
         }
-        else
-          if (participant.isHidePrivateInfo())
-          {
-            return "displayPublicProfile";
-          }
+        if (participant.displayPublicProfile())
+        {
+          return "displayPublicProfile";
+        }
       }
       return "profileNotFound";
     }
@@ -513,9 +514,9 @@ public class RosterTool
     private boolean role_sortUserIdDescending = false;
     private boolean role_sortLastNameAscending = true;
     private boolean role_sortUserIdAscending = false;
-    private boolean role_currentSortAscending=false;
-    private String role_currentSortBy=SORT_LAST_NAME;
-    
+    private boolean role_currentSortAscending = false;
+    private String role_currentSortBy = SORT_LAST_NAME;
+
     public DecoratedRole(Role decRole)
     {
       if (Log.isDebugEnabled())
@@ -524,7 +525,7 @@ public class RosterTool
       }
       role = decRole;
     }
-    
+
     public void toggleUserIdSort()
     {
       Log.debug("toggleUserIdSort()");
@@ -549,63 +550,65 @@ public class RosterTool
       {
         setSort("ascending", SORT_LAST_NAME);
       }
-     }
-    
+    }
+
     private void setSort(String sortOrder, String sortBy)
     {
       role_sortLastNameDescending = false;
       role_sortUserIdDescending = false;
       role_sortLastNameAscending = false;
       role_sortUserIdAscending = false;
-      
+
       if (sortOrder.equals("ascending"))
       {
         if (sortBy.equals(SORT_USER_ID))
         {
-           role_sortUserIdAscending = true; 
-           role_currentSortAscending=true;
-           role_currentSortBy=SORT_USER_ID;  
-           return;
+          role_sortUserIdAscending = true;
+          role_currentSortAscending = true;
+          role_currentSortBy = SORT_USER_ID;
+          return;
         }
         if (sortBy.equals(SORT_LAST_NAME))
         {
           role_sortLastNameAscending = true;
-          role_currentSortAscending=true;
-          role_currentSortBy=SORT_LAST_NAME;  
+          role_currentSortAscending = true;
+          role_currentSortBy = SORT_LAST_NAME;
           return;
         }
       }
       else
-        
+
       {
         if (sortBy.equals(SORT_USER_ID))
         {
           role_sortUserIdDescending = true;
-          role_currentSortAscending=false;
-          role_currentSortBy=SORT_USER_ID; 
+          role_currentSortAscending = false;
+          role_currentSortBy = SORT_USER_ID;
           return;
         }
         if (sortBy.equals(SORT_LAST_NAME))
         {
           role_sortLastNameDescending = true;
-          role_currentSortAscending=false;
-          role_currentSortBy=SORT_LAST_NAME; 
+          role_currentSortAscending = false;
+          role_currentSortBy = SORT_LAST_NAME;
           return;
         }
 
       }
 
     }
+
     public List getUsers()
     {
       Log.debug("getUsers()");
-//      if (reloadRoleUsers || role_decoUsers == null)
-//      {
-        roleUserList = rosterManager.getParticipantByRole(role);
-        rosterManager.sortParticipants(roleUserList,role_currentSortBy,role_currentSortAscending);
-        role_decoUsers = getUsers(roleUserList);
-//        reloadRoleUsers = false;
-//      }
+      // if (reloadRoleUsers || role_decoUsers == null)
+      // {
+      roleUserList = rosterManager.getParticipantByRole(role);
+      rosterManager.sortParticipants(roleUserList, role_currentSortBy,
+          role_currentSortAscending);
+      role_decoUsers = getUsers(roleUserList);
+      // reloadRoleUsers = false;
+      // }
       return role_decoUsers;
     }
 
@@ -617,7 +620,7 @@ public class RosterTool
         Log.debug("getUsers(List " + list + ")");
       }
       role_decoUsers = new ArrayList();
- 
+
       if (list != null && list.size() > 0)
       {
         Iterator iter = list.iterator();
@@ -650,7 +653,7 @@ public class RosterTool
       }
       return 0;
     }
-    
+
     public boolean isRole_sortLastNameAscending()
     {
       Log.debug("isRole_sortLastNameAscending()");
@@ -673,7 +676,7 @@ public class RosterTool
     {
       Log.debug("isRole_sortUserIdDescending()");
       return role_sortUserIdDescending;
-    }    
+    }
 
   }
   public class DecoratedParticipant
@@ -681,8 +684,6 @@ public class RosterTool
 
     protected Participant decoratedParticipant;
     protected boolean showCustomPhotoUnavailable = false;
-    protected boolean showURLPhoto = false;
-    protected boolean showCustomIdPhoto = false;
 
     public DecoratedParticipant(Participant decParticipant)
     {
@@ -693,7 +694,7 @@ public class RosterTool
       this.decoratedParticipant = decParticipant;
     }
 
-    // User Profile: display a emplty url
+    // User Profile: display a emplty url or no blocked profile
     public boolean isShowCustomPhotoUnavailable()
     {
       Log.debug("isShowCustomPhotoUnavailable()");
@@ -701,10 +702,22 @@ public class RosterTool
       {
         return false;
       }
+      return isShowCustomPhotoUnavailableForSelectedProfile();
+    }
+
+    public boolean isShowCustomPhotoUnavailableForSelectedProfile()
+    {
+      Log.debug("isShowCustomPhotoUnavailableForSelectedProfile()");
       if (decoratedParticipant.getProfile() == null)
       {
         return true;
       }
+      if (!profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile()))
+      {
+        return true;
+      }
+
       if (decoratedParticipant.getProfile().isInstitutionalPictureIdPreferred() == null)
       {
         return true;
@@ -728,11 +741,20 @@ public class RosterTool
       {
         return false;
       }
+      return isShowURLPhotoForSelectedProfile();
+    }
+
+    public boolean isShowURLPhotoForSelectedProfile()
+    {
+      Log.debug("isShowURLPhotoForSelectedProfile()");
       if (decoratedParticipant.getProfile() == null)
       {
         return false;
       }
-      if (decoratedParticipant.getProfile().getPictureUrl() != null)
+      if (profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile())
+          && decoratedParticipant.getProfile().getPictureUrl() != null
+          && decoratedParticipant.getProfile().getPictureUrl().length() > 0)
       {
         return true;
       }
@@ -747,6 +769,13 @@ public class RosterTool
       {
         return false;
       }
+      return isShowCustomIdPhotoForSelectedProfile();
+
+    }
+
+    public boolean isShowCustomIdPhotoForSelectedProfile()
+    {
+      Log.debug("isShowCustomIdPhotoForSelectedProfile");
       if (decoratedParticipant.getProfile() == null)
       {
         return false;
@@ -755,8 +784,10 @@ public class RosterTool
       {
         return false;
       }
-      if (decoratedParticipant.getProfile().isInstitutionalPictureIdPreferred()
-          .booleanValue())
+      if (profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile())
+          && decoratedParticipant.getProfile()
+              .isInstitutionalPictureIdPreferred().booleanValue())
       {
         return true;
       }
@@ -776,11 +807,37 @@ public class RosterTool
           .getProfile());
     }
 
-    public boolean isHidePrivateInfo()
+    // if only public profile should be displayed.
+    public boolean displayPublicProfile()
     {
-      Log.debug("isHidePrivateInfo()");
-      return (!profileManager.displayCompleteProfile(decoratedParticipant
-          .getProfile()));
+      Log.debug("displayPublicProfile()");
+      if (decoratedParticipant.getProfile() == null)
+      {
+        return false;
+      }
+      if (profileManager.displayCompleteProfile(decoratedParticipant
+          .getProfile()))
+      {
+        return true;
+      }
+      if (decoratedParticipant.getProfile().getHidePublicInfo() == null)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile().getHidePublicInfo().booleanValue() == true)
+      {
+        return false;
+      }
+      if (decoratedParticipant.getProfile().getHidePrivateInfo() == null)
+      {
+        return true;
+      }
+      if (decoratedParticipant.getProfile().getHidePrivateInfo().booleanValue() == true)
+      {
+        return true;
+      }
+
+      return false;
     }
   }
 
