@@ -20,17 +20,11 @@
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-roster-api</artifactId>
             <version>${sakai.version}</version>
-            <properties>
-                <deploy.target>shared</deploy.target>
-            </properties>
         </dependency>
-           <dependency>
+        <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-profile-api</artifactId>
-            <version>${sakai.version}</version>
-            <properties>
-                <deploy.target>shared</deploy.target>
-            </properties>
+            <version>${sakai.version}</version>            
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
