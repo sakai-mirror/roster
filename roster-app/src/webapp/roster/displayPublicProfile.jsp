@@ -37,7 +37,7 @@
 		  		<jsp:include page="personalInfoUnavailable.jsp"/>
 	 		 
 		 	 <h:panelGrid>
-			 	<h:commandButton  id="submit"  value="#{msgs.cancel}" immediate="true" action="#{RosterTool.processCancel}" />
+			 	<h:commandButton  id="submit"  value="#{msgs.back}" immediate="true" action="#{RosterTool.processCancel}" />
 			 </h:panelGrid>	
   		</sakai:view_content>
 	</sakai:view_container>
