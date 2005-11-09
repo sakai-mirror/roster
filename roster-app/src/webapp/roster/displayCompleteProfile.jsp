@@ -14,7 +14,7 @@
 			<%-- TODO: should the image sizes be predetermine for this view? --%>
 					<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{RosterTool.participant.showCustomPhotoUnavailableForSelectedProfile}"/>
 					<h:graphicImage value="#{RosterTool.participant.participant.profile.pictureUrl}" height="75" width="75" rendered="#{RosterTool.participant.showURLPhotoForSelectedProfile}"/>
-					<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResult.participant.id}"  width="75" rendered="#{RosterTool.participant.showCustomIdPhotoForSelectedProfile}"/>
+					<h:graphicImage value="ParticipantImageServlet.prf?photo=#{RosterTool.participant.participant.id}"  width="75" rendered="#{RosterTool.participant.showCustomIdPhotoForSelectedProfile}"/>
 			</h:panelGrid>			
 			<h4><h:outputText  value="Public Information"/>	</h4>			 
 			 	<p class="shorttext">
