@@ -325,10 +325,18 @@ public class RosterManagerImpl implements RosterManager
     while (siteUserIter.hasNext())
     {
       String siteMember = (String) siteUserIter.next();
-      if (!siteFerpaUsersEnterpriseIds.contains(siteMember))
+      try
       {
-        //Add non ferpa member
-        nonFerpaUsers.add(siteMember);
+        if (!siteFerpaUsersEnterpriseIds.contains(siteMember)||isInstructor(UserDirectoryService.getUser(siteMember)))
+        {
+          //Add non ferpa member
+          nonFerpaUsers.add(siteMember);
+        }
+      }
+      catch (IdUnusedException e)
+      {
+        //Log and move on.
+        LOG.debug("User not found");
       }
     }
     if (nonFerpaUsers.size() < 1)
