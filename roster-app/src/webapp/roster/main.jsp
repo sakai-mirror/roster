@@ -15,8 +15,8 @@
 			 </sakai:tool_bar>
 			 <sakai:view_title  value="#{RosterTool.title}"/>
 			 <sakai:instruction_message value="#{msgs.title_msg}"/>
-	 	  	  <h:outputLink rendered="#{!RosterTool.updateAccess}" value="#{msgs.title_missing_participants_link}" target="_blank" >
-			  	 <sakai:instruction_message value="#{msgs.title_missing_participants}"/>
+	 	  	  <h:outputLink rendered="#{RosterTool.renderPrivacyAlert}" value="#{RosterTool.privacyAlertUrl}" target="_blank" >
+			  	 <sakai:instruction_message value="#{RosterTool.privacyAlert}"/>
 			  </h:outputLink>
 	  		 
 	  		 <sakai:panel_edit>

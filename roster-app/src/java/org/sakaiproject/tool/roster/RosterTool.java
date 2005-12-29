@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.service.framework.config.cover.ServerConfigurationService;
 import org.sakaiproject.service.legacy.authzGroup.Role;
 
 /**
@@ -63,6 +64,9 @@ public class RosterTool
 
   private static final String VIEW_BY_ROLE = "role";
   private static final String VIEW_ALL = "all";
+  
+  private static final String ROSTER_PRIVACY_URL = "roster.privacy.url";
+  private static final String ROSTER_PRIVACY_TEXT = "roster.privacy.text";
 
   private String idPhotoText = SHOW_ID_PHOTO;
   private String customPhotoText = SHOW_PIC;
@@ -841,4 +845,35 @@ public class RosterTool
     }
   }
 
+  /**
+   * Enable privacy message
+   * @return
+   */
+  public boolean getRenderPrivacyAlert()
+  {
+   if((!isUpdateAccess()) && ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT)!=null &&
+       ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT).trim().length()>0 )
+   {
+     return true;
+   }
+    return false;
+  }
+  
+  /**
+   * Get Privacy message link  from sakai.properties
+   * @return
+   */
+  public String getPrivacyAlertUrl()
+  {
+    return ServerConfigurationService.getString(ROSTER_PRIVACY_URL);
+  }
+  
+  /**
+   * Get Privacy message from sakai.properties
+   * @return
+   */
+  public String getPrivacyAlert()
+  {
+    return ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT);
+  }
 }
