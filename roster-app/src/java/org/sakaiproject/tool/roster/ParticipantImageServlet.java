@@ -42,7 +42,7 @@ public class ParticipantImageServlet extends HttpServlet
 {
   private static final Log LOG = LogFactory
       .getLog(ParticipantImageServlet.class);
-  private static final String UNIVERSIRY_ID_PHOTO = "photo";
+  private static final String UNIVERSITY_ID_PHOTO = "photo";
   private static final String CONTENT_TYPE = "image/jpeg";
   private ProfileManager profileManager;
 
@@ -68,7 +68,7 @@ public class ParticipantImageServlet extends HttpServlet
     response.setContentType(CONTENT_TYPE);
     String userId = null;
     OutputStream stream = response.getOutputStream();
-    userId = (String) request.getParameter(UNIVERSIRY_ID_PHOTO);
+    userId = (String) request.getParameter(UNIVERSITY_ID_PHOTO);
     if (userId != null && userId.trim().length() > 0)
     {
       displayUniversityIDPhoto(userId, stream, response);
