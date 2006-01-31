@@ -518,7 +518,7 @@ public class RosterTool
     private boolean role_sortUserIdDescending = false;
     private boolean role_sortLastNameAscending = true;
     private boolean role_sortUserIdAscending = false;
-    private boolean role_currentSortAscending = false;
+    private boolean role_currentSortAscending = true;// sort ascending by last name by default
     private String role_currentSortBy = SORT_LAST_NAME;
 
     public DecoratedRole(Role decRole)
