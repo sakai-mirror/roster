@@ -3,18 +3,17 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
  
 <%--<%@ taglib uri="http://sakaiproject.org/jsf/profile" prefix="profile" %> --%>
-<f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
 <% response.setContentType("text/html; charset=UTF-8"); %>
  <f:view>
  <h:form>
-	<sakai:view_container title="Site Roster">
+	<sakai:view_container title="#{msgs.profile_site_roster}">
 		<sakai:view_content>
-		    <sakai:view_title  value="User Profile"/>
+		    <sakai:view_title  value="#{msgs.profile_usr_profile}"/>
 			<h:panelGrid columns="1" border="0" >
 			<%-- TODO: should the image sizes be predetermine for this view? --%>
-				<h:graphicImage alt="No Picture is Available"  value="/images/pictureUnavailable.jpg" height="75" width="75"/>					
+				<h:graphicImage alt="#{msgs.profile_no_picture_available}"  value="#{msgs.img_unavail}" height="75" width="75"/>					
 			</h:panelGrid>			
-			<h4><h:outputText  value="Public Information"/>	</h4>			 
+			<h4><h:outputText  value="#{msgs.profile_public_information}"/>	</h4>			 
 				<p class="shorttext">
 			 	<sakai:panel_edit >	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_first_name}"/>
@@ -33,7 +32,7 @@
 					<h:outputText value="#{RosterTool.participant.participant.profile.room}"/> 
 				</sakai:panel_edit>
 				</p>
-			 <h4><h:outputText  value="Personal Information"/></h4>
+			 <h4><h:outputText  value="#{msgs.profile_personal_information}"/></h4>
 		  		<jsp:include page="personalInfoUnavailable.jsp"/>
 	 		 
 		 	 <h:panelGrid>

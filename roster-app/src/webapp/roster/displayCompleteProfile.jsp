@@ -3,20 +3,19 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%--TODO: Refactor Profile Code in order to use profile custom components--%>
 <%@ taglib uri="http://sakaiproject.org/jsf/roster" prefix="roster" %> 
-<f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
 <% response.setContentType("text/html; charset=UTF-8"); %>
  <f:view>
  <h:form>
-	<sakai:view_container title="Site Roster">
+	<sakai:view_container title="#{msgs.profile_site_roster}">
 		<sakai:view_content>
-		    <sakai:view_title  value="User Profile"/>
+		    <sakai:view_title  value="#{msgs.profile_user_profile}"/>
 			<h:panelGrid columns="1" border="0" >
 			<%-- TODO: should the image sizes be predetermine for this view? --%>
-					<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{RosterTool.participant.showCustomPhotoUnavailableForSelectedProfile}"/>
+					<h:graphicImage value="#{msgs.img_unavail}" height="75" width="75" rendered="#{RosterTool.participant.showCustomPhotoUnavailableForSelectedProfile}"/>
 					<h:graphicImage value="#{RosterTool.participant.participant.profile.pictureUrl}" height="75" width="75" rendered="#{RosterTool.participant.showURLPhotoForSelectedProfile}"/>
 					<h:graphicImage value="ParticipantImageServlet.prf?photo=#{RosterTool.participant.participant.id}"  width="75" rendered="#{RosterTool.participant.showCustomIdPhotoForSelectedProfile}"/>
 			</h:panelGrid>			
-			<h4><h:outputText  value="Public Information"/>	</h4>			 
+			<h4><h:outputText  value=""#{msgs.profile_public_information}"/>	</h4>			 
 			 	<p class="shorttext">
 			 	<sakai:panel_edit >	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_first_name}"/>
@@ -35,7 +34,7 @@
 					<h:outputText value="#{RosterTool.participant.participant.profile.room}"/> 
 				</sakai:panel_edit>
 				</p>
-		 	<h4><h:outputText  value="Personal Information"/></h4>
+		 	<h4><h:outputText  value=""#{msgs.profile_personal_information}"/></h4>
 			 <p class="shorttext">
 				<sakai:panel_edit>		 	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_email}"/>

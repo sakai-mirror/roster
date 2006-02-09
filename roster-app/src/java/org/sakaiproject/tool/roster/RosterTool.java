@@ -34,6 +34,7 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.util.java.ResourceLoader;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
@@ -47,20 +48,11 @@ import org.sakaiproject.service.legacy.authzGroup.Role;
 public class RosterTool
 {
   private final static Log Log = LogFactory.getLog(RosterTool.class);
+  private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
 
-  private static final String HIDE_ID_PHOTO = "Hide Official ID Photo";
-  private static final String SHOW_ID_PHOTO = "Show Official ID Photo";
-  private static final String HIDE_PIC = "Hide Pictures";
-  private static final String SHOW_PIC = "Show Pictures";
-  private static final String TITLE_SHOW_ROSTER = "Show Roster";
-  private static final String TITLE_VIEW_PICTURES = "View Pictures";
-  private static final String TITLE_VIEW_OFFICICAL = "View Offficial Photo IDs";
   private static final String PARTICIPANT_ID = "participantId";
   private static final String SORT_LAST_NAME = "lastName";
   private static final String SORT_USER_ID = "id";
-
-  private static final String FACET_PICTURE = "Picture";
-  private static final String FACET_OFFICIAL = "Photo ID";
 
   private static final String VIEW_BY_ROLE = "role";
   private static final String VIEW_ALL = "all";
@@ -68,9 +60,9 @@ public class RosterTool
   private static final String ROSTER_PRIVACY_URL = "roster.privacy.url";
   private static final String ROSTER_PRIVACY_TEXT = "roster.privacy.text";
 
-  private String idPhotoText = SHOW_ID_PHOTO;
-  private String customPhotoText = SHOW_PIC;
-  private String title = TITLE_SHOW_ROSTER;
+  private String idPhotoText = msgs.getString("show_id_photo");
+  private String customPhotoText = msgs.getString("show_pic");
+  private String title = msgs.getString("title_show_roster");
 
   protected RosterManager rosterManager;
   protected ProfileManager profileManager;
@@ -104,12 +96,12 @@ public class RosterTool
     Log.debug("processActionToggleIdPhotos()");
     if (showIdPhoto)
     {
-      setPhotoToggeling(HIDE_ID_PHOTO);
+      setPhotoToggeling(msgs.getString("hide_id_photo"));
     }
     else
     // if the photo ids are already hidden the display the photos
     {
-      setPhotoToggeling(SHOW_ID_PHOTO);
+      setPhotoToggeling(msgs.getString("show_id_photo"));
     }
     return "main";
   }
@@ -119,12 +111,12 @@ public class RosterTool
     Log.debug("processActionToggleCustomPhotos()");
     if (showCustomPhoto)
     {
-      setPhotoToggeling(HIDE_PIC);
+      setPhotoToggeling(msgs.getString("hide_pic"));
     }
     else
     // if the photo ids are already hidden the display the photos
     {
-      setPhotoToggeling(SHOW_PIC);
+      setPhotoToggeling(msgs.getString("show_pic"));
     }
     return "main";
   }
@@ -437,33 +429,33 @@ public class RosterTool
     {
       Log.debug("setPhotoToggeling(String " + option + ")");
     }
-    if (option != null && option.equals(SHOW_ID_PHOTO))// show official
+    if (option != null && option.equals(msgs.getString("show_id_photo")))// show official
     {
-      this.idPhotoText = HIDE_ID_PHOTO;
+      this.idPhotoText = msgs.getString("hide_id_photo");
       this.showIdPhoto = true;
-      this.customPhotoText = SHOW_PIC;
+      this.customPhotoText = msgs.getString("show_pic");
       this.showCustomPhoto = false;
-      this.title = TITLE_VIEW_OFFICICAL;
-      this.facet = FACET_OFFICIAL;
+      this.title = msgs.getString("title_view_official");
+      this.facet = msgs.getString("facet_official");
     }
     else
-      if (option != null && option.equals(SHOW_PIC))// show custom
+      if (option != null && option.equals(msgs.getString("show_pic")))// show custom
       {
-        this.idPhotoText = SHOW_ID_PHOTO;
-        this.customPhotoText = HIDE_PIC;
+        this.idPhotoText = msgs.getString("show_id_photo");
+        this.customPhotoText = msgs.getString("hide_pic");
         this.showIdPhoto = false;
         this.showCustomPhoto = true;
-        this.title = TITLE_VIEW_PICTURES;
-        this.facet = FACET_PICTURE;
+        this.title = msgs.getString("title_view_pictures");
+        this.facet = msgs.getString("facet_picture");
       }
       else
       // hide all
       {
-        this.idPhotoText = SHOW_ID_PHOTO;
+        this.idPhotoText = msgs.getString("show_id_photo");
         this.showIdPhoto = false;
-        this.customPhotoText = SHOW_PIC;
+        this.customPhotoText = msgs.getString("show_pic");
         this.showCustomPhoto = false;
-        this.title = TITLE_SHOW_ROSTER;
+        this.title = msgs.getString("title_show_roster");
         this.facet = "";
       }
 

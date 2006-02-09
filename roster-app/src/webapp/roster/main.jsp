@@ -2,11 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %> 
 <% response.setContentType("text/html; charset=UTF-8"); %>
-<f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
  <link href='/sakai-roster-tool/css/roster.css' rel='stylesheet' type='text/css' /> 
 <%--TODO : apply stylesheet --%>
 <f:view>
-	<sakai:view_container title="Roster List">
+	<sakai:view_container title="#{msgs.facet_roster_list}">
 		<sakai:view_content>
 		<h:form>	
 			<sakai:tool_bar>
@@ -15,8 +14,8 @@
 			 </sakai:tool_bar>
 			 <sakai:view_title  value="#{RosterTool.title}"/>
 			 <sakai:instruction_message value="#{msgs.title_msg}"/>
-	 	  	  <h:outputLink rendered="#{RosterTool.renderPrivacyAlert}" value="#{RosterTool.privacyAlertUrl}" target="_blank" >
-			  	 <sakai:instruction_message value="#{RosterTool.privacyAlert}"/>
+	 	  	  <h:outputLink rendered="#{!RosterTool.updateAccess}" value="#{msgs.title_missing_participants_link}" target="_blank" >
+			  	 <sakai:instruction_message value="#{msgs.title_missing_participants}"/>
 			  </h:outputLink>
 	  		 
 	  		 <sakai:panel_edit>
@@ -38,7 +37,7 @@
 								<f:facet name="header">
 									<h:outputText value="#{RosterTool.facet}" />
 								</f:facet>
-								<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{searchResult.showCustomPhotoUnavailable}"/>
+								<h:graphicImage value="#{msgs.img_unavail}" height="75" width="75" rendered="#{searchResult.showCustomPhotoUnavailable}"/>
 								<h:graphicImage value="#{searchResult.participant.profile.pictureUrl}" height="75" width="75" rendered="#{searchResult.showURLPhoto}"/>
 								<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResult.participant.id}"  width="75" rendered="#{searchResult.showCustomIdPhoto}"/>
 								<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResult.participant.id}" width="75" rendered="#{RosterTool.showIdPhoto}"/>
@@ -92,7 +91,7 @@
 							<f:facet name="header">
 								<h:outputText value="#{RosterTool.facet}" />
 							</f:facet>
-							<h:graphicImage value="/images/pictureUnavailable.jpg" height="75" width="75" rendered="#{searchResultAll.showCustomPhotoUnavailable}"/>
+							<h:graphicImage value="#{msgs.img_unavail}" height="75" width="75" rendered="#{searchResultAll.showCustomPhotoUnavailable}"/>
 							<h:graphicImage value="#{searchResultAll.participant.profile.pictureUrl}" height="75" width="75" rendered="#{searchResultAll.showURLPhoto}"/>
 							<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  width="75" rendered="#{searchResultAll.showCustomIdPhoto}"/>
 							<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}" width="75" rendered="#{RosterTool.showIdPhoto}"/>

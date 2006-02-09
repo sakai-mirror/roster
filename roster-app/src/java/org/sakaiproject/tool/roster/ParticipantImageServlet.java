@@ -35,21 +35,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.util.java.ResourceLoader;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.kernel.component.cover.ComponentManager;
 
 public class ParticipantImageServlet extends HttpServlet
 {
+  private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
   private static final Log LOG = LogFactory
       .getLog(ParticipantImageServlet.class);
   private static final String UNIVERSITY_ID_PHOTO = "photo";
   private static final String CONTENT_TYPE = "image/jpeg";
   private ProfileManager profileManager;
 
-  private static final String IMAGE_PATH = "/images/";
-  private static final String UNIVERSITY_ID_IMAGE_UNAVAILABLE = "/officialPhotoUnavailable.jpg";
-
-  /**
+/**
    * The doGet method of the servlet. <br>
    *
    * This method is called when a form has its tag value method equals to get.
@@ -75,7 +74,7 @@ public class ParticipantImageServlet extends HttpServlet
     }
     else
     {
-      displayLocalImage(stream, UNIVERSITY_ID_IMAGE_UNAVAILABLE);
+            displayLocalImage(stream);
     }
   
   }
@@ -103,7 +102,7 @@ public class ParticipantImageServlet extends HttpServlet
       {
         LOG.debug("Display University ID photo for user:" + userId
             + " is unavailable");
-        displayLocalImage(stream, UNIVERSITY_ID_IMAGE_UNAVAILABLE);
+        displayLocalImage(stream);
       }
     }
     catch (IOException e)
@@ -114,11 +113,13 @@ public class ParticipantImageServlet extends HttpServlet
   }
 
   
-  private void displayLocalImage(OutputStream stream, String UNAVAILABLE_IMAGE)
+  private void displayLocalImage(OutputStream stream)
   {
+    String unavailable_image = msgs.getString("img_off_unavail");
+    
     if (LOG.isDebugEnabled())
       LOG.debug("displayPhotoUnavailable(OutputStream" + stream + ", String "
-          + UNAVAILABLE_IMAGE + ")");
+          + unavailable_image + ")");
     try
     {
       BufferedInputStream in = null;
@@ -126,8 +127,7 @@ public class ParticipantImageServlet extends HttpServlet
       {
 
         in = new BufferedInputStream(new FileInputStream(getServletContext()
-            .getRealPath(IMAGE_PATH)
-            + UNAVAILABLE_IMAGE));
+            .getRealPath(unavailable_image)));
         int ch;
 
         while ((ch = in.read()) != -1)

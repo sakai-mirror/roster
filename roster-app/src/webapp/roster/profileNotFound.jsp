@@ -2,24 +2,23 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %> 
 <% response.setContentType("text/html; charset=UTF-8"); %>
-<f:loadBundle basename="org.sakaiproject.tool.roster.bundle.Messages" var="msgs"/>
 <f:view >
  <h:form>
-	<sakai:view_container title="Roster Profile">
+	<sakai:view_container title="#{msgs.not_found_roster_profile}">
 		<sakai:view_content >
 	 		<h:panelGrid>
-			 	<h:graphicImage id="image"  alt="No Picture is Available" url="/images/pictureUnavailable.jpg"/>			
+			 	<h:graphicImage id="image"  alt="#{msgs.profile_not_picture_available}" url="#{msgs.img_unavail}"/>			
 		 	</h:panelGrid>
 			 
 		 	<h4>
 				<h:panelGrid style="instructor" columns="1"  border="0">
-					<h:outputText  value="Public Information"/>	
+					<h:outputText  value="#{msgs.profile_public_information}"/>	
 				</h:panelGrid>
 			</h4>
-		 		<h:outputText value ="No public information is available for this user."/>
+		 		<h:outputText value ="#{msgs.not_found_message}"/>
  		 	<h4>
 				<h:panelGrid style="instructor" columns="1"  border="0">
-					<h:outputText  value="Personal Information"/>	
+					<h:outputText  value="#{msgs.profile_personal_information}"/>	
 				</h:panelGrid>
 			</h4>
  		 	<h:panelGrid>

@@ -14,5 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/legacy-service"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kernel"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/high-util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
