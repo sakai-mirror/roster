@@ -184,7 +184,23 @@ public class ParticipantImpl implements Participant
             .toUpperCase();
         String firstName2 = ((Participant) otherParticipant).getFirstName()
             .toUpperCase();
-
+        while(lastName1.startsWith(" "))
+        {
+        	lastName1 = lastName1.replaceFirst(" ", "");
+        }
+        while(lastName2.startsWith(" "))
+        {
+        	lastName2 = lastName2.replaceFirst(" ", "");
+        }
+        while(firstName1.startsWith(" "))
+        {
+        	firstName1 = firstName1.replaceFirst(" ", "");
+        }
+        while(firstName2.startsWith(" "))
+        {
+        	firstName2 = firstName2.replaceFirst(" ", "");
+        }
+        
         if (!(lastName1.equals(lastName2)))
           return lastName1.compareTo(lastName2);
         else
@@ -209,6 +225,22 @@ public class ParticipantImpl implements Participant
             .toUpperCase();
         String firstName2 = ((Participant) otherParticipant).getFirstName()
             .toUpperCase();
+        while(lastName1.startsWith(" "))
+        {
+        	lastName1 = lastName1.replaceFirst(" ", "");
+        }
+        while(lastName2.startsWith(" "))
+        {
+        	lastName2 = lastName2.replaceFirst(" ", "");
+        }
+        while(firstName1.startsWith(" "))
+        {
+        	firstName1 = firstName1.replaceFirst(" ", "");
+        }
+        while(firstName2.startsWith(" "))
+        {
+        	firstName2 = firstName2.replaceFirst(" ", "");
+        }
 
         if (!(firstName1.equals(firstName2)))
           return firstName1.compareTo(firstName2);
