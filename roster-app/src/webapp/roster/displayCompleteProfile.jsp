@@ -14,8 +14,8 @@
 					<h:graphicImage value="#{msgs.img_unavail}" height="75" width="75" rendered="#{RosterTool.participant.showCustomPhotoUnavailableForSelectedProfile}"/>
 					<h:graphicImage value="#{RosterTool.participant.participant.profile.pictureUrl}" height="75" width="75" rendered="#{RosterTool.participant.showURLPhotoForSelectedProfile}"/>
 					<h:graphicImage value="ParticipantImageServlet.prf?photo=#{RosterTool.participant.participant.id}"  width="75" rendered="#{RosterTool.participant.showCustomIdPhotoForSelectedProfile}"/>
-			</h:panelGrid>			
-			<h4><h:outputText  value=""#{msgs.profile_public_information}"/>	</h4>			 
+			</h:panelGrid>
+			<h4><h:outputText  value="#{msgs.profile_public_information}"/>	</h4>			 
 			 	<p class="shorttext">
 			 	<sakai:panel_edit >	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_first_name}"/>
