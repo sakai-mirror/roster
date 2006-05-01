@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
-            <artifactId>sakai-legacy-service</artifactId>
+            <artifactId>sakai-authz-api</artifactId>
             <version>${sakai.version}</version>
         </dependency>
     </dependencies>

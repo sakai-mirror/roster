@@ -34,7 +34,7 @@
 					<h:outputText value="#{RosterTool.participant.participant.profile.room}"/> 
 				</sakai:panel_edit>
 				</p>
-		 	<h4><h:outputText  value=""#{msgs.profile_personal_information}"/></h4>
+		 	<h4><h:outputText  value="#{msgs.profile_personal_information}"/></h4>
 			 <p class="shorttext">
 				<sakai:panel_edit>		 	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_email}"/>

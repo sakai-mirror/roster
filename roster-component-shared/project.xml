@@ -28,17 +28,22 @@
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
-            <artifactId>sakai-legacy-service</artifactId>
+            <artifactId>sakai-authz-api</artifactId>
             <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
-            <artifactId>sakai-tool</artifactId>
+            <artifactId>sakai-tool-api</artifactId>
             <version>${sakai.version}</version>
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
-            <artifactId>sakai-session</artifactId>
+            <artifactId>sakai-user-api</artifactId>
+            <version>${sakai.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-entity-api</artifactId>
             <version>${sakai.version}</version>
         </dependency>
         <dependency>
@@ -59,16 +64,6 @@
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-common-type-api</artifactId>
-            <version>${sakai.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-common-agent-api</artifactId>
-            <version>${sakai.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-common-superstructure-api</artifactId>
             <version>${sakai.version}</version>
         </dependency>
     </dependencies>
