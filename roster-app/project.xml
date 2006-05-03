@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <pomVersion>3</pomVersion>
-    <extend>../../master/project.xml</extend>
+    <extend>../../master/jsf-sun-tool.xml</extend>
     <name>Sakai Roster List Tool</name>
     <groupId>sakaiproject</groupId>
     <id>sakai-roster-tool</id>
@@ -49,74 +49,12 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-        <!--JSF DEPENDENCIES -->
-        <dependency>
-            <groupId>jsf</groupId>
-            <artifactId>jsf-impl</artifactId>
-            <version>1.1.01</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>jsf</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>1.1.01</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>jstl</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.0.2</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>servletapi</groupId>
-            <artifactId>servletapi</artifactId>
-            <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>jspapi</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-jsf-tool</artifactId>
-            <version>${sakai.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-jsf-app</artifactId>
-            <version>${sakai.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-jsf-widgets</artifactId>
-            <version>${sakai.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>sakaiproject</groupId>
-            <artifactId>sakai-jsf-widgets-sun</artifactId>
-            <version>${sakai.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
+
         <!--My faces dependency -->
+	<!-- Commented out - csev 05/02/2006 - we do not think that this is used
+	     if this passes 2.2 QA - remove these two dependencies.  The widgets-myfaces
+             dependency was commented out for 2.1 -->
+
        <dependency>
             <groupId>myfaces</groupId>
             <artifactId>myfaces</artifactId>
@@ -125,6 +63,7 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency> 
+	-->
         <!--  <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-jsf-widgets-myfaces</artifactId>
@@ -134,40 +73,7 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>  -->
-        <dependency>
-            <groupId>commons-digester</groupId>
-            <artifactId>commons-digester</artifactId>
-            <version>1.6</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.7.0</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-            <version>1.0.4</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
+
         <!--For resourse bundle -->
         <dependency>
             <groupId>sakaiproject</groupId>
@@ -178,7 +84,14 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+	<dependency>
+	    <groupId>commons-logging</groupId>
+	    <artifactId>commons-logging</artifactId>
+	    <version>1.0.4</version>
+	</dependency>
+
     </dependencies>
+
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <resources>
