@@ -5,13 +5,13 @@
 <%--<%@ taglib uri="http://sakaiproject.org/jsf/profile" prefix="profile" %> --%>
 <% response.setContentType("text/html; charset=UTF-8"); %>
  <f:view>
- <h:form>
 	<sakai:view_container title="#{msgs.profile_site_roster}">
 		<sakai:view_content>
+		 <h:form>
 		    <sakai:view_title  value="#{msgs.profile_usr_profile}"/>
 			<h:panelGrid columns="1" border="0" >
 			<%-- TODO: should the image sizes be predetermine for this view? --%>
-				<h:graphicImage alt="#{msgs.profile_no_picture_available}"  value="#{msgs.img_unavail}" height="75" width="75"/>					
+				<h:graphicImage alt="#{msgs.profile_no_picture_available}"  value="#{msgs.img_unavail}" styleClass="rosterImage"/>					
 			</h:panelGrid>			
 			<h4><h:outputText  value="#{msgs.profile_public_information}"/>	</h4>			 
 				<p class="shorttext">
@@ -38,9 +38,9 @@
 		 	 <h:panelGrid>
 			 	<h:commandButton  id="submit"  value="#{msgs.back}" immediate="true" action="#{RosterTool.processCancel}" />
 			 </h:panelGrid>	
+		   </h:form>
   		</sakai:view_content>
 	</sakai:view_container>
-  </h:form>
 </f:view>
 
 	
