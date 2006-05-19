@@ -44,6 +44,7 @@ import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.cover.UserDirectoryService;
+import org.sakaiproject.component.cover.ServerConfigurationService;
 
 /**
  * @author rshastri
@@ -195,6 +196,13 @@ public class RosterManagerImpl implements RosterManager
     {
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
+	if("true".equalsIgnoreCase(ServerConfigurationService.getString
+			("separateIdEid@org.sakaiproject.user.api.UserDirectoryService")))
+    {
+        return new ParticipantImpl(user.getId(), user.getFirstName(), user
+                .getLastName(), 
+                profileManager.getUserProfileById(profileManager.getEnterpriseIdByAgentUuid(user.getId())));
+    }
     return new ParticipantImpl(user.getId(), user.getFirstName(), user
         .getLastName(), profileManager.getUserProfileById(user.getId()));
   }
@@ -294,10 +302,14 @@ public class RosterManagerImpl implements RosterManager
     while (iter.hasNext())
     {
       String userId = (String) iter.next();
-      if (profileManager.getAgentUuidByEnterpriseId(userId) != null)
+	  if(!"true".equalsIgnoreCase(ServerConfigurationService.getString
+			("separateIdEid@org.sakaiproject.user.api.UserDirectoryService")) && 
+			profileManager.getAgentUuidByEnterpriseId(userId) != null)
       {
         agentUuids.add(profileManager.getAgentUuidByEnterpriseId(userId));
       }
+	  else
+		agentUuids.add(userId);
     }
     List siteFerpaUsersAgentUuids = sakaiPersonManager
         .isFerpaEnabled(agentUuids);

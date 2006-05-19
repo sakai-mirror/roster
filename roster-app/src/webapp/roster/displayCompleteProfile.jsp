@@ -16,7 +16,7 @@
 				<h4>
 					<h:outputText value="#{msgs.profile_public_information}"/>
 				</h4>
-				<sakai:panel_edit summary="#{msgs.profile_public_information_summary}">
+				<sakai:panel_edit>
 					<h:outputText value="#{msgs.profile_first_name}"/>
 					<h:outputText value="#{RosterTool.participant.participant.profile.firstName}"/>
 					<h:outputText value="#{msgs.profile_last_name}"/>
@@ -35,7 +35,7 @@
 				<h4>
 					<h:outputText value="#{msgs.profile_personal_information}"/>
 				</h4>
-				<sakai:panel_edit summary="#{msgs.profile_personal_information_summary}">
+				<sakai:panel_edit>
 					<h:outputText  value="#{msgs.profile_email}"/>
 					<h:outputText value="#{RosterTool.participant.participant.profile.email} "/>
 					<h:outputText value="#{msgs.profile_homepage}"/>
