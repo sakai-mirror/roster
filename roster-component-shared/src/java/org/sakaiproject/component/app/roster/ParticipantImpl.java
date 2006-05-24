@@ -36,6 +36,7 @@ public class ParticipantImpl implements Participant
 {
   private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
   private String id;
+  private String eid;
   private String firstName;
   private String lastName;
   private Profile profile;
@@ -61,8 +62,23 @@ public class ParticipantImpl implements Participant
     setFirstName(fname);
     setLastName(lname);
     setProfile(profile);
+    setEid(id);
   }
 
+  public ParticipantImpl(String id, String fname, String lname, Profile profile, String eid)
+  {
+    if (Log.isDebugEnabled())
+    {
+      Log.debug("ParticipantImpl(String " + id + ", String " + fname
+          + ", String " + lname + ")");
+    }
+    setId(id);
+    setFirstName(fname);
+    setLastName(lname);
+    setProfile(profile);
+    setEid(eid);
+  }
+  
   /* (non-Javadoc)
    * @see org.sakaiproject.component.app.roster.Participant#getFirstName()
    */
@@ -277,6 +293,16 @@ public class ParticipantImpl implements Participant
       Log.debug("setProfile(Profile" + profile + ")");
     }
     this.profile = profile;    
+  }
+  
+  public void setEid(String eid)
+  {
+	  this.eid = eid;
+  }
+  
+  public String getEid()
+  {
+	  return eid;
   }
 
 }

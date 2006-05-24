@@ -196,12 +196,13 @@ public class RosterManagerImpl implements RosterManager
     {
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
-	if("true".equalsIgnoreCase(ServerConfigurationService.getString
+	if(!"false".equalsIgnoreCase(ServerConfigurationService.getString
 			("separateIdEid@org.sakaiproject.user.api.UserDirectoryService")))
     {
         return new ParticipantImpl(user.getId(), user.getFirstName(), user
                 .getLastName(), 
-                profileManager.getUserProfileById(profileManager.getEnterpriseIdByAgentUuid(user.getId())));
+                profileManager.getUserProfileById(profileManager.getEnterpriseIdByAgentUuid(user.getId())), 
+                user.getEid());
     }
     return new ParticipantImpl(user.getId(), user.getFirstName(), user
         .getLastName(), profileManager.getUserProfileById(user.getId()));

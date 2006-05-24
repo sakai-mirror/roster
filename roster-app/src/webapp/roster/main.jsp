@@ -82,7 +82,7 @@
 								<h:graphicImage value="/images/sortascending.gif" rendered="#{searchResultRoles.role_sortUserIdAscending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_asc}"/>
 						   	</h:commandLink>
 						</f:facet>								
-						<h:outputText value="#{searchResult.participant.id}" /> 						
+						<h:outputText value="#{searchResult.participant.eid}" />
 					</h:column>
 				</h:dataTable>
 			</h:column>	
@@ -135,7 +135,7 @@
 								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortUserIdAscending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_asc}" />
 						   	</h:commandLink>
 						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.id}" /> 						
+						<h:outputText value="#{searchResultAll.participant.eid}" /> 						
 					</h:column>
 				 </h:dataTable> 
 
