@@ -4,5 +4,6 @@
         <!--     	<configuration name="help.id" value="roster_overview" />	   -->
         <category name="course" />
 		<category name="project" />
+       <category name="portfolio" />
     </tool>
 </registration>
