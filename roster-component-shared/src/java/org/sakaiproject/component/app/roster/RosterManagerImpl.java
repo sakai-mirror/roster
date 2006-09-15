@@ -27,12 +27,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.api.privacy.PrivacyManager;
 import org.sakaiproject.api.common.edu.person.SakaiPerson;
 import org.sakaiproject.api.common.edu.person.SakaiPersonManager;
 import org.sakaiproject.authz.api.AuthzGroup;
@@ -56,6 +58,7 @@ public class RosterManagerImpl implements RosterManager
   /** Dependency: ProfileManager */
   private ProfileManager profileManager;
   private SakaiPersonManager sakaiPersonManager;
+  private PrivacyManager privacyManager;
 
   /**
    * @param sakaiPersonManager
@@ -84,6 +87,20 @@ public class RosterManagerImpl implements RosterManager
     this.sakaiPersonManager = sakaiPersonManager;
   }
 
+  /**
+   * @param PrivacyManager
+   */
+  public void setPrivacyManager(PrivacyManager privacyManager)
+  {
+    if (LOG.isDebugEnabled())
+    {
+      LOG.debug("setPrivacyManager(PrivacyManager "
+          + privacyManager + ")");
+    }
+
+    this.privacyManager = privacyManager;
+  }
+  
   public void init()
   {
     LOG.debug("init()");
@@ -140,28 +157,24 @@ public class RosterManagerImpl implements RosterManager
     }
 
     List users = new ArrayList();
-    List usersByRole = new ArrayList();
+    Set userSet = new TreeSet();
+    
     if (role != null)
     {
       AuthzGroup realm;
       try
       {
         realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
-        Set userSet = realm.getUsersHasRole(role.getId());
-        Iterator userSetIter = userSet.iterator();
-        while (userSetIter.hasNext())
-        {
-          usersByRole.add((String) userSetIter.next());
-        }
-        if (!isInstructor())
-
-        {
-          usersByRole = getNonFERPAMembers(usersByRole);
+        userSet = realm.getUsersHasRole(role.getId());
+        
+        // we only need to check privacy restrictions if the current user does not have site.upd access
+        if (!isInstructor()) {
+           	userSet = getViewableUsers(userSet);
         }
 
-        if (usersByRole != null && usersByRole.size() > 0)
+        if (userSet != null && userSet.size() > 0)
         {
-          Iterator iter = usersByRole.iterator();
+          Iterator iter = userSet.iterator();
           while (iter.hasNext())
           {
             try
@@ -174,10 +187,8 @@ public class RosterManagerImpl implements RosterManager
             }
             catch (UserNotDefinedException e)
             {
-              LOG.info("Swallow IdUnusedException");	
               LOG.info(e.getMessage(), e);
             }
-
           }
         }
       }
@@ -241,12 +252,14 @@ public class RosterManagerImpl implements RosterManager
     LOG.debug("getAllUsers");
     List users = new ArrayList();
     List roster = new ArrayList();
+    Set userIds = new TreeSet();
+    
     AuthzGroup realm;
     try
     {
       realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
       users.addAll(UserDirectoryService.getUsers(realm.getUsers()));
-      List userIds = new ArrayList();
+      
       if (users == null)
       {
         return null;
@@ -256,22 +269,29 @@ public class RosterManagerImpl implements RosterManager
       {
         userIds.add(((User) userIterator.next()).getId());
       }
-      // Get FERPA DETAILs only for non instructors
+      // Check privacy restrictions if user is not an instructor
       if (!isInstructor())
       {
-        userIds = getNonFERPAMembers(userIds);
+        userIds = getViewableUsers(userIds);
       }
-      for (int i = 0; i < userIds.size(); i++)
+      
+      if (userIds != null && userIds.size() > 0)
       {
-        String userId = (String) userIds.get(i);
-        try
+        Iterator iter = userIds.iterator();
+        while (iter.hasNext())
         {
-          User user = UserDirectoryService.getUser(userId);
-          roster.add(createParticipantByUser(user));
-        }
-        catch (UserNotDefinedException e)
-        {
-          LOG.debug(e.getMessage(), e);
+          try
+          {
+            User user = UserDirectoryService.getUser((String) iter.next());
+            if(user != null)
+      	  	{
+      	  		roster.add(createParticipantByUser(user));
+      	  	}
+          }
+          catch (UserNotDefinedException e)
+          {	
+            LOG.info(e.getMessage(), e);
+          }
         }
       }
     }
@@ -283,12 +303,31 @@ public class RosterManagerImpl implements RosterManager
     Collections.sort(roster, ParticipantImpl.LastNameComparator);
     return roster;
   }
+  
+  /**
+   * Remove the users with privacy restrictions from the viewable user list
+   * @param siteUsers
+   * @return Set of users who do not have privacy restrictions
+   */
+  private Set getViewableUsers(Set siteUsers) {
+      Set hiddenUsers = new TreeSet();
+	  hiddenUsers = privacyManager.findViewable(getContextSiteId(), siteUsers);
+	  
+	  if(hiddenUsers != null && hiddenUsers.size() > 0) {
+		  Iterator hiddenIter = hiddenUsers.iterator();
+		  while (hiddenIter.hasNext()) {
+			 siteUsers.remove(hiddenIter.next());
+		  }
+	  }
+	  
+	  return siteUsers;
+  }
 
   /**
    * @param siteUsers
    * @return
    */
-  private List getNonFERPAMembers(List siteUsers)
+  /*private List getNonFERPAMembers(List siteUsers)
   {
     if (LOG.isDebugEnabled())
     {
@@ -357,7 +396,7 @@ public class RosterManagerImpl implements RosterManager
       return null;
     }
     return nonFerpaUsers;
-  }
+  }*/
 
   /* (non-Javadoc)
    * @see org.sakaiproject.api.app.roster.RosterManager#isInstructor()

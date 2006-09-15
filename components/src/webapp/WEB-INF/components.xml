@@ -7,6 +7,9 @@
         </property>
         <property name="sakaiPersonManager">
             <ref bean="org.sakaiproject.api.common.edu.person.SakaiPersonManager"/>
-        </property>        
+        </property> 
+        <property name="privacyManager">
+            <ref bean="org.sakaiproject.api.privacy.PrivacyManager"/>
+        </property>       
     </bean>
 </beans>
