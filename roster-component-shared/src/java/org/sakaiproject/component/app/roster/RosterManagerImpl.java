@@ -169,7 +169,7 @@ public class RosterManagerImpl implements RosterManager
         
         // we only need to check privacy restrictions if the current user does not have site.upd access
         if (!isInstructor()) {
-           	userSet = getViewableUsers(userSet);
+           	userSet = privacyManager.findViewable(getContextSiteId(), userSet);
         }
 
         if (userSet != null && userSet.size() > 0)
@@ -272,7 +272,7 @@ public class RosterManagerImpl implements RosterManager
       // Check privacy restrictions if user is not an instructor
       if (!isInstructor())
       {
-        userIds = getViewableUsers(userIds);
+        userIds = privacyManager.findViewable(getContextSiteId(), userIds);
       }
       
       if (userIds != null && userIds.size() > 0)
@@ -302,25 +302,6 @@ public class RosterManagerImpl implements RosterManager
 
     Collections.sort(roster, ParticipantImpl.LastNameComparator);
     return roster;
-  }
-  
-  /**
-   * Remove the users with privacy restrictions from the viewable user list
-   * @param siteUsers
-   * @return Set of users who do not have privacy restrictions
-   */
-  private Set getViewableUsers(Set siteUsers) {
-      Set hiddenUsers = new TreeSet();
-	  hiddenUsers = privacyManager.findViewable(getContextSiteId(), siteUsers);
-	  
-	  if(hiddenUsers != null && hiddenUsers.size() > 0) {
-		  Iterator hiddenIter = hiddenUsers.iterator();
-		  while (hiddenIter.hasNext()) {
-			 siteUsers.remove(hiddenIter.next());
-		  }
-	  }
-	  
-	  return siteUsers;
   }
 
   /**
