@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.user.cover.UserDirectoryService;
 
 /**
  * @author rshastri
@@ -274,7 +276,17 @@ public class ParticipantImpl implements Participant
         }
         String userId1 = ((Participant) participant).getId();
         String userId2 = ((Participant) otherParticipant).getId();
-        return userId1.compareTo(userId2);
+        String eid1 = "";
+        String eid2 = "";
+        
+        try {
+			eid1 = UserDirectoryService.getUserEid(userId1);
+			eid2 = UserDirectoryService.getUserEid(userId2);
+		} catch (UserNotDefinedException e) {
+			Log.error("UserNotDefinedException", e);
+		}
+
+		return eid1.compareTo(eid2);
 
       }
     };
