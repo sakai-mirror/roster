@@ -48,16 +48,6 @@ public class RosterTool
   private final static Log Log = LogFactory.getLog(RosterTool.class);
   private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
 
-  private static final String PARTICIPANT_ID = "participantId";
-  private static final String SORT_LAST_NAME = "lastName";
-  private static final String SORT_USER_ID = "id";
-
-  private static final String VIEW_BY_ROLE = "role";
-  private static final String VIEW_ALL = "all";
-  
-  private static final String ROSTER_PRIVACY_URL = "roster.privacy.url";
-  private static final String ROSTER_PRIVACY_TEXT = "roster.privacy.text";
-
   private String idPhotoText = msgs.getString("show_id_photo");
   private String customPhotoText = msgs.getString("show_pic");
   private String title = msgs.getString("title_show_roster");
@@ -72,7 +62,7 @@ public class RosterTool
   private boolean reloadAllUsers = true;
   private boolean reloadRoles = true;
   private String facet = "";
-  private String displayView = VIEW_BY_ROLE;
+  private String displayView = msgs.getString("view_by_role");
   private int allUserCount = 0;
   private List roles = null;
   private List allDecoUsers = null;
@@ -124,11 +114,11 @@ public class RosterTool
     Log.debug("toggleUserIdSort()");
     if (sortUserIdAscending)
     {
-      setSort("descending", SORT_USER_ID);
+      setSort("descending", msgs.getString("sort_user_id"));
     }
     else
     {
-      setSort("ascending", SORT_USER_ID);
+      setSort("ascending", msgs.getString("sort_user_id"));
     }
     return "main";
   }
@@ -138,11 +128,11 @@ public class RosterTool
     Log.debug("toggleLastNameSort()");
     if (sortLastNameAscending)
     {
-      setSort("descending", SORT_LAST_NAME);
+      setSort("descending", msgs.getString("sort_last_name"));
     }
     else
     {
-      setSort("ascending", SORT_LAST_NAME);
+      setSort("ascending", msgs.getString("sort_last_name"));
     }
     return "main";
   }
@@ -156,17 +146,17 @@ public class RosterTool
     sortUserIdAscending = false;
     if (sortOrder.equals("ascending"))
     {
-      if (sortBy.equals(SORT_USER_ID))
+      if (sortBy.equals(msgs.getString("sort_user_id")))
       {
         sortUserIdAscending = true;
-        rosterManager.sortParticipants(alluserList, SORT_USER_ID, true);
+        rosterManager.sortParticipants(alluserList, msgs.getString("sort_user_id"), true);
         this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
-      if (sortBy.equals(SORT_LAST_NAME))
+      if (sortBy.equals(msgs.getString("sort_last_name")))
       {
         sortLastNameAscending = true;
-        rosterManager.sortParticipants(alluserList, SORT_LAST_NAME, true);
+        rosterManager.sortParticipants(alluserList, msgs.getString("sort_last_name"), true);
         this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
@@ -174,17 +164,17 @@ public class RosterTool
     else
 
     {
-      if (sortBy.equals(SORT_USER_ID))
+      if (sortBy.equals(msgs.getString("sort_user_id")))
       {
         sortUserIdDescending = true;
-        rosterManager.sortParticipants(alluserList, SORT_USER_ID, false);
+        rosterManager.sortParticipants(alluserList, msgs.getString("sort_user_id"), false);
         this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
-      if (sortBy.equals(SORT_LAST_NAME))
+      if (sortBy.equals(msgs.getString("sort_last_name")))
       {
         sortLastNameDescending = true;
-        rosterManager.sortParticipants(alluserList, SORT_LAST_NAME, false);
+        rosterManager.sortParticipants(alluserList, msgs.getString("sort_last_name"), false);
         this.allDecoUsers = getAllUsers(alluserList);
         return;
       }
@@ -222,14 +212,14 @@ public class RosterTool
     if (Log.isDebugEnabled())
       Log.debug("processValueChangeForView(ValueChangeEvent " + vce + ")");
     String changeView = (String) vce.getNewValue();
-    if (changeView != null && changeView.equals(VIEW_ALL))
+    if (changeView != null && changeView.equals(msgs.getString("view_all")))
     {
-      setDisplayView(VIEW_ALL);
+      setDisplayView(msgs.getString("view_all"));
       getAllUsers();
     }
     else
     {
-      setDisplayView(VIEW_BY_ROLE);
+      setDisplayView(msgs.getString("view_by_role"));
       getRoles();
     }
     return "main";
@@ -335,13 +325,13 @@ public class RosterTool
   public boolean isDisplayByRole()
   {
     Log.debug("isDisplayByRole()");
-    return this.displayView.equals(VIEW_BY_ROLE);
+    return this.displayView.equals(msgs.getString("view_by_role"));
   }
 
   public boolean isDisplayAllUsers()
   {
     Log.debug("isDisplayByRole()");
-    return this.displayView.equals(VIEW_ALL);
+    return this.displayView.equals(msgs.getString("view_all"));
   }
 
   public boolean isUpdateAccess()
@@ -471,7 +461,7 @@ public class RosterTool
       while (itr.hasNext())
       {
         String key = (String) itr.next();
-        if (key != null && key.equals(PARTICIPANT_ID))
+        if (key != null && key.equals(msgs.getString("participant_id")))
         {
           String participantId = (String) paramMap.get(key);
           participant = new DecoratedParticipant(rosterManager
@@ -509,7 +499,7 @@ public class RosterTool
     private boolean role_sortLastNameAscending = true;
     private boolean role_sortUserIdAscending = false;
     private boolean role_currentSortAscending = true;// sort ascending by last name by default
-    private String role_currentSortBy = SORT_LAST_NAME;
+    private String role_currentSortBy = msgs.getString("sort_last_name");
 
     public DecoratedRole(Role decRole)
     {
@@ -525,11 +515,11 @@ public class RosterTool
       Log.debug("toggleUserIdSort()");
       if (role_sortUserIdAscending)
       {
-        setSort("descending", SORT_USER_ID);
+        setSort("descending", msgs.getString("sort_user_id"));
       }
       else
       {
-        setSort("ascending", SORT_USER_ID);
+        setSort("ascending", msgs.getString("sort_user_id"));
       }
     }
 
@@ -538,11 +528,11 @@ public class RosterTool
       Log.debug("toggleLastNameSort()");
       if (role_sortLastNameAscending)
       {
-        setSort("descending", SORT_LAST_NAME);
+        setSort("descending", msgs.getString("sort_last_name"));
       }
       else
       {
-        setSort("ascending", SORT_LAST_NAME);
+        setSort("ascending", msgs.getString("sort_last_name"));
       }
     }
 
@@ -555,36 +545,36 @@ public class RosterTool
 
       if (sortOrder.equals("ascending"))
       {
-        if (sortBy.equals(SORT_USER_ID))
+        if (sortBy.equals(msgs.getString("sort_user_id")))
         {
           role_sortUserIdAscending = true;
           role_currentSortAscending = true;
-          role_currentSortBy = SORT_USER_ID;
+          role_currentSortBy = msgs.getString("sort_user_id");
           return;
         }
-        if (sortBy.equals(SORT_LAST_NAME))
+        if (sortBy.equals(msgs.getString("sort_last_name")))
         {
           role_sortLastNameAscending = true;
           role_currentSortAscending = true;
-          role_currentSortBy = SORT_LAST_NAME;
+          role_currentSortBy = msgs.getString("sort_last_name");
           return;
         }
       }
       else
 
       {
-        if (sortBy.equals(SORT_USER_ID))
+        if (sortBy.equals(msgs.getString("sort_user_id")))
         {
           role_sortUserIdDescending = true;
           role_currentSortAscending = false;
-          role_currentSortBy = SORT_USER_ID;
+          role_currentSortBy = msgs.getString("sort_user_id");
           return;
         }
-        if (sortBy.equals(SORT_LAST_NAME))
+        if (sortBy.equals(msgs.getString("sort_last_name")))
         {
           role_sortLastNameDescending = true;
           role_currentSortAscending = false;
-          role_currentSortBy = SORT_LAST_NAME;
+          role_currentSortBy = msgs.getString("sort_last_name");
           return;
         }
 
@@ -841,8 +831,8 @@ public class RosterTool
    */
   public boolean getRenderPrivacyAlert()
   {
-   if((!isUpdateAccess()) && ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT)!=null &&
-       ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT).trim().length()>0 )
+   if((!isUpdateAccess()) && ServerConfigurationService.getString(msgs.getString("roster_privacy_text"))!=null &&
+       ServerConfigurationService.getString(msgs.getString("roster_privacy_text")).trim().length()>0 )
    {
      return true;
    }
@@ -855,7 +845,7 @@ public class RosterTool
    */
   public String getPrivacyAlertUrl()
   {
-    return ServerConfigurationService.getString(ROSTER_PRIVACY_URL);
+    return ServerConfigurationService.getString(msgs.getString("roster_privacy_url"));
   }
   
   /**
@@ -864,6 +854,6 @@ public class RosterTool
    */
   public String getPrivacyAlert()
   {
-    return ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT);
+    return ServerConfigurationService.getString(msgs.getString("roster_privacy_text"));
   }
 }
