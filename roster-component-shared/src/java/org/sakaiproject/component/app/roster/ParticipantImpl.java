@@ -22,6 +22,7 @@
 package org.sakaiproject.component.app.roster;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,9 +43,14 @@ public class ParticipantImpl implements Participant
   private String firstName;
   private String lastName;
   private Profile profile;
+  private String roleTitle;
+  private List sections;
+  private String sectionsForDisplay;
   public static Comparator LastNameComparator;
   public static Comparator FirstNameComparator;
   public static Comparator UserIdComparator;
+  public static Comparator RoleComparator;
+  public static Comparator SectionsComparator;
 
   /**
    * 
@@ -53,7 +59,7 @@ public class ParticipantImpl implements Participant
    * @param lname
    * @param profile TODO
    */
-  public ParticipantImpl(String id, String fname, String lname, Profile profile)
+  public ParticipantImpl(String id, String fname, String lname, Profile profile, String roleTitle, List sections)
   {
     if (Log.isDebugEnabled())
     {
@@ -65,9 +71,11 @@ public class ParticipantImpl implements Participant
     setLastName(lname);
     setProfile(profile);
     setEid(id);
+    setRoleTitle(roleTitle);
+    setSections(sections);
   }
 
-  public ParticipantImpl(String id, String fname, String lname, Profile profile, String eid)
+  public ParticipantImpl(String id, String fname, String lname, Profile profile, String eid, String roleTitle, List sections)
   {
     if (Log.isDebugEnabled())
     {
@@ -79,6 +87,8 @@ public class ParticipantImpl implements Participant
     setLastName(lname);
     setProfile(profile);
     setEid(eid);
+    setRoleTitle(roleTitle);
+    setSections(sections);
   }
   
   /* (non-Javadoc)
@@ -290,6 +300,92 @@ public class ParticipantImpl implements Participant
 
       }
     };
+    
+    RoleComparator = new Comparator()
+    {
+      public int compare(Object participant, Object otherParticipant)
+      {
+        if (Log.isDebugEnabled())
+        {
+          Log.debug("compare(Object " + participant + ", Object "
+              + otherParticipant + ")");
+        }
+        String role1 = ((Participant) participant).getRoleTitle().toUpperCase();
+        String role2 = ((Participant) otherParticipant).getRoleTitle().toUpperCase();
+        
+        String lastName1 = ((Participant) participant).getLastName().toUpperCase();
+	    String firstName1 = ((Participant) participant).getFirstName().toUpperCase();
+	    String lastName2 = ((Participant) otherParticipant).getLastName().toUpperCase();
+	    String firstName2 = ((Participant) otherParticipant).getFirstName().toUpperCase();
+	    
+	    while(lastName1.startsWith(" "))
+	    {
+	    	lastName1 = lastName1.replaceFirst(" ", "");
+	    }
+	    while(lastName2.startsWith(" "))
+	    {
+	    	lastName2 = lastName2.replaceFirst(" ", "");
+	    }
+	    while(firstName1.startsWith(" "))
+	    {
+	    	firstName1 = firstName1.replaceFirst(" ", "");
+	    }
+	    while(firstName2.startsWith(" "))
+	    {
+	    	firstName2 = firstName2.replaceFirst(" ", "");
+	    }
+	
+	    if (!(role1.equals(role2)))
+	    	return role1.compareTo(role2);
+	    else if (!(lastName1.equals(lastName2)))
+	    	return lastName1.compareTo(lastName2);
+	    else
+	    	return firstName1.compareTo(firstName2);
+      }
+    };
+    
+    SectionsComparator = new Comparator()
+    {
+      public int compare(Object participant, Object otherParticipant)
+      {
+        if (Log.isDebugEnabled())
+        {
+          Log.debug("compare(Object " + participant + ", Object "
+              + otherParticipant + ")");
+        }
+        String sectionString1 = ((Participant) participant).getSectionsForDisplay().toUpperCase();
+        String sectionString2 = ((Participant) otherParticipant).getSectionsForDisplay().toUpperCase();
+
+        String lastName1 = ((Participant) participant).getLastName().toUpperCase();
+	    String firstName1 = ((Participant) participant).getFirstName().toUpperCase();
+	    String lastName2 = ((Participant) otherParticipant).getLastName().toUpperCase();
+	    String firstName2 = ((Participant) otherParticipant).getFirstName().toUpperCase();
+	    
+	    while(lastName1.startsWith(" "))
+	    {
+	    	lastName1 = lastName1.replaceFirst(" ", "");
+	    }
+	    while(lastName2.startsWith(" "))
+	    {
+	    	lastName2 = lastName2.replaceFirst(" ", "");
+	    }
+	    while(firstName1.startsWith(" "))
+	    {
+	    	firstName1 = firstName1.replaceFirst(" ", "");
+	    }
+	    while(firstName2.startsWith(" "))
+	    {
+	    	firstName2 = firstName2.replaceFirst(" ", "");
+	    }
+	
+	    if (!(sectionString1.equals(sectionString2)))
+	    	return sectionString1.compareTo(sectionString2);
+	    else if (!(lastName1.equals(lastName2)))
+	    	return lastName1.compareTo(lastName2);
+	    else
+	    	return firstName1.compareTo(firstName2);
+      }
+    };
   }
 
   public Profile getProfile()
@@ -315,6 +411,41 @@ public class ParticipantImpl implements Participant
   public String getEid()
   {
 	  return eid;
+  }
+  public void setRoleTitle(String roleTitle)
+  {
+	  this.roleTitle = roleTitle;
+  }
+  
+  public String getRoleTitle()
+  {
+	  return roleTitle;
+  }
+  
+  public void setSections(List sections)
+  {
+	  this.sections = sections;
+  }
+  
+  public List getSections()
+  {
+	  return sections;
+  }
+  
+  public String getSectionsForDisplay()
+  {
+	  if (sectionsForDisplay != null)
+		  return sectionsForDisplay;
+	  
+	  sectionsForDisplay = "";
+	  for (int index=0; index < sections.size(); index++)
+	  {
+		  if (index == (sections.size() - 1))
+			  sectionsForDisplay += sections.get(index);
+		  else
+			  sectionsForDisplay += sections.get(index) + ", ";
+	  }
+	  return sectionsForDisplay;
   }
 
 }

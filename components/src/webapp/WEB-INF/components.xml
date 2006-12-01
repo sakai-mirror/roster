@@ -5,11 +5,8 @@
         <property name="profileManager">
             <ref bean="org.sakaiproject.api.app.profile.ProfileManager"/>
         </property>
-        <property name="sakaiPersonManager">
-            <ref bean="org.sakaiproject.api.common.edu.person.SakaiPersonManager"/>
-        </property> 
         <property name="privacyManager">
             <ref bean="org.sakaiproject.api.privacy.PrivacyManager"/>
-        </property>       
+        </property>          
     </bean>
 </beans>
