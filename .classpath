@@ -20,5 +20,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/event-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/privacy"/>
 	<classpathentry kind="src" path="/site-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
