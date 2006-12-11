@@ -230,7 +230,7 @@ public class RosterManagerImpl implements RosterManager
       // Check for privacy restrictions
       if (!userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN))
       {
-        userIds = privacyManager.findViewable(ToolManager.getCurrentPlacement().getContext(), userIds);
+        userIds = privacyManager.findViewable(getContextSiteId(), userIds);
       }
       
       if (userIds != null && userIds.size() > 0)
