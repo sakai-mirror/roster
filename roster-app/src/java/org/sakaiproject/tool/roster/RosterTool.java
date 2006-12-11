@@ -45,6 +45,9 @@ import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.site.api.Site;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -189,6 +192,10 @@ public class RosterTool
   
   private void sortRoster()
   {
+	  if (sortRoleDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_ROLE);
+	  else if (sortRoleAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_ROLE);
 	  if (sortLastNameDescending)
 		  setSort(SORT_DESC, Participant.SORT_BY_LAST_NAME);
 	  else if (sortLastNameAscending)
@@ -197,10 +204,6 @@ public class RosterTool
 		  setSort(SORT_DESC, Participant.SORT_BY_ID);
 	  else if (sortUserIdAscending)
 		  setSort(SORT_ASC, Participant.SORT_BY_ID);
-	  else if (sortRoleDescending)
-		  setSort(SORT_DESC, Participant.SORT_BY_ROLE);
-	  else if (sortRoleAscending)
-		  setSort(SORT_ASC, Participant.SORT_BY_ROLE);
 	  else if (sortSectionsDescending)
 		  setSort(SORT_DESC, Participant.SORT_BY_SECTIONS);
 	  else if (sortSectionsAscending)
@@ -220,6 +223,13 @@ public class RosterTool
     
     if (sortOrder.equals(SORT_ASC))
     {
+      if (sortBy.equals(Participant.SORT_BY_ROLE))
+      {
+        sortRoleAscending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, true);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }
       if (sortBy.equals(Participant.SORT_BY_ID))
       {
         sortUserIdAscending = true;
@@ -234,13 +244,6 @@ public class RosterTool
         this.decoRoster = getRoster(rosterList);
         return;
       }
-      if (sortBy.equals(Participant.SORT_BY_ROLE))
-      {
-        sortRoleAscending = true;
-        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, true);
-        this.decoRoster = getRoster(rosterList);
-        return;
-      }
       if (sortBy.equals(Participant.SORT_BY_SECTIONS))
       {
     	  sortSectionsAscending = true;
@@ -252,6 +255,13 @@ public class RosterTool
     else
 
     {
+      if (sortBy.equals(Participant.SORT_BY_ROLE))
+      {
+        sortRoleDescending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, false);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }      
       if (sortBy.equals(Participant.SORT_BY_ID))
       {
         sortUserIdDescending = true;
@@ -263,13 +273,6 @@ public class RosterTool
       {
         sortLastNameDescending = true;
         rosterManager.sortParticipants(rosterList, Participant.SORT_BY_LAST_NAME, false);
-        this.decoRoster = getRoster(rosterList);
-        return;
-      }
-      if (sortBy.equals(Participant.SORT_BY_ROLE))
-      {
-        sortRoleDescending = true;
-        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, false);
         this.decoRoster = getRoster(rosterList);
         return;
       }
@@ -586,7 +589,37 @@ public class RosterTool
 	  menuItems = selectItemList;
 	  return selectItemList;       
   }
+  
+  public String getDisplayedSection()
+  {
+	  if (selectedView.equals(RosterManager.VIEW_NO_SECT) || selectedView.equals(RosterManager.VIEW_ALL_SECT) || selectedView.equals(RosterManager.VIEW_MY_SECT)) 
+		return null;
 
+	  return selectedView;
+  }
+  
+  public String getPrintFriendlyTitle()
+  {
+	  try
+	  {
+		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+		  String siteTitle = currentSite.getTitle();
+		  return msgs.getString("print_title_for") + " " + siteTitle;
+	  }
+	  catch (Exception e)
+	  {
+		  return msgs.getString("print_friendly");
+	  }
+  }
+  
+  public String getPrintFriendlyUrl()
+  {
+	  String url = ServerConfigurationService.getToolUrl() + Entity.SEPARATOR
+		+ ToolManager.getCurrentPlacement().getId() + Entity.SEPARATOR + "printFriendlyRoster";
+	  return url;
+	  
+  }
+  
   /**
    * Set variables for photo display
    * 

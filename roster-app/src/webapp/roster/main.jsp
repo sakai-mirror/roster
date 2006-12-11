@@ -12,6 +12,9 @@
 				<sakai:tool_bar>
 					<sakai:tool_bar_item action="#{RosterTool.processActionToggleIdPhotos}" rendered="#{RosterTool.renderOfficialId}"  value="#{RosterTool.idPhotoText}"/>
 					<sakai:tool_bar_item action="#{RosterTool.processActionToggleCustomPhotos}" value="#{RosterTool.customPhotoText}"/>
+					<h:outputLink value="#{RosterTool.printFriendlyUrl}" target="_new">
+					  <h:graphicImage url="/images/printer.png" alt="#{msgs.print_friendly}" title="#{msgs.print_friendly}" />
+					</h:outputLink>
 				 </sakai:tool_bar>
 			</h:panelGroup>
 			
