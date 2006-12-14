@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>sakai-jsf-sun-ri-tool</artifactId>
+    <groupId>org.sakaiproject</groupId>
+    <version>M2</version>
+    <relativePath>../../master/pom.xml</relativePath>
+  </parent>
+  <name>Sakai Roster List Tool</name>
+  <groupId>org.sakaiproject</groupId>
+  <artifactId>sakai-roster-tool</artifactId>
+  <organization>
+    <name>Sakai Project</name>
+    <url>http://sakaiproject.org/</url>
+  </organization>
+  <inceptionYear>2003</inceptionYear>
+  <packaging>war</packaging>
+  <dependencies>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-jsf-sun-ri-tool</artifactId>
+      <version>${sakai.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-profile-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-roster-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-component</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-component-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-authz-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-tool-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-site-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-entity-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-util-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-util</artifactId>
+      <version>${sakai.version}</version>
+    </dependency>
+<!--My faces dependency -->
+<!-- Commented out - csev 05/02/2006 - we do not think that this is used
+	     if this passes 2.2 QA - remove these two dependencies.  The widgets-myfaces
+             dependency was commented out for 2.1 
+
+       <dependency>
+            <groupId>myfaces</groupId>
+            <artifactId>myfaces</artifactId>
+            <version>1.0.9</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency> 
+	-->
+<!--  <dependency>
+            <groupId>org.sakaiproject</groupId>
+            <artifactId>sakai-jsf-widgets-myfaces</artifactId>
+            <version>${sakai.version}</version>
+            <url>http://sakaiproject.org/</url>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>  -->
+    <dependency>
+      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-profile-tool</artifactId>
+      <version>${sakai.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    
+    
+    
+    
+    
+    
+    <resources>
+      <resource>
+        <directory>${basedir}/src/bundle</directory>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+      </resource>
+    </resources>
+    
+  </build>
+</project>
