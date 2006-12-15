@@ -4,7 +4,7 @@
 <% response.setContentType("text/html; charset=UTF-8"); %>
 
 <f:view>
-	<sakai:view_container title="#{msgs.print_friendly}">
+	<sakai:view_container title="#{msgs.print_title}">
 		<sakai:view_content>
 			<h:form>
 				<div class="act">

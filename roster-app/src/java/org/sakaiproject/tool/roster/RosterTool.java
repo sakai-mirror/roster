@@ -608,7 +608,7 @@ public class RosterTool
 	  }
 	  catch (Exception e)
 	  {
-		  return msgs.getString("print_friendly");
+		  return msgs.getString("print_title");
 	  }
   }
   
