@@ -8,8 +8,8 @@
 		<sakai:view_content>
 			<h:form>
 				<div class="act">
+					<h:graphicImage url="/images/printer.png" alt="#{msgs.send_to_printer}"/>
 					<h:outputLink onclick="window.print();" title="#{msgs.send_to_printer}" value="#{RosterTool.printFriendlyUrl}">
-						<h:graphicImage url="/images/printer.png" alt="#{msgs.send_to_printer}"/>
 						<h:outputText value=" #{msgs.send_to_printer}" />
 					</h:outputLink>
 					<h:outputText value=" | " />
