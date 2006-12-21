@@ -41,6 +41,7 @@ import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.cover.AuthzGroupService;
+import org.sakaiproject.authz.cover.FunctionManager;
 import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
@@ -96,7 +97,27 @@ public class RosterManagerImpl implements RosterManager
   public void init()
   {
     LOG.debug("init()");
-    ; // do nothing (for now)
+    
+    Collection registered = FunctionManager.getInstance().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
+    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
+        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_EXPORT);
+    }
+
+    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+    }
+
+    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
+        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
+    }
+
+    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID)) {
+        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
+    }
+    
+    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWSECTION)) {
+        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWSECTION);
+    }
   }
 
   public void destroy()
