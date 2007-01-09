@@ -60,8 +60,7 @@ public class RosterTool
   private final static Log Log = LogFactory.getLog(RosterTool.class);
   private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
  
-  private static final String ROSTER_PRIVACY_URL = "roster.privacy.url";
-  private static final String ROSTER_PRIVACY_TEXT = "roster.privacy.text";
+  private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
   private static final String PARTICIPANT_ID = "participantId";
 
   private String idPhotoText = msgs.getString("show_id_photo");
@@ -476,11 +475,6 @@ public class RosterTool
 	  return isRenderViewMenu();
   }
   
-  public boolean isRenderPrivacyMessage()
-  {
-	  return !rosterManager.currentUserHasViewHiddenPerm();
-  }
-  
   public boolean isRenderViewMenu()
   {  
 	  getViewMenuItems();
@@ -866,36 +860,22 @@ public class RosterTool
   }
 
   /**
-   * Enable privacy message
+   * Determine whether privacy message should be displayed. Will be shown if
+   * roster.privacy.display in sakai.properties is "true" and the user does not
+   * have roster.viewhidden permission
    * @return
    */
-  public boolean getRenderPrivacyAlert()
+  public boolean isRenderPrivacyMessage()
   {
-   if((!rosterManager.currentUserHasViewHiddenPerm()) && ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT)!=null &&
-       ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT).trim().length()>0 )
-   {
-     return true;
-   }
-    return false;
+	  String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
+	  if(msgEnabled != null && msgEnabled.equalsIgnoreCase("true") && !rosterManager.currentUserHasViewHiddenPerm())
+	  {
+		  return true;
+	  }
+	  
+	  return false;
   }
   
-  /**
-   * Get Privacy message link  from sakai.properties
-   * @return
-   */
-  public String getPrivacyAlertUrl()
-  {
-    return ServerConfigurationService.getString(ROSTER_PRIVACY_URL);
-  }
-  
-  /**
-   * Get Privacy message from sakai.properties
-   * @return
-   */
-  public String getPrivacyAlert()
-  {
-    return ServerConfigurationService.getString(ROSTER_PRIVACY_TEXT);
-  }
 
   /* Note: The CSV export code below was largely copied from 
    * Gradebook - org.sakai.tool.gradebook.ui.ExportBean */
