@@ -23,6 +23,7 @@ package org.sakaiproject.component.app.roster;
 
 import java.util.Comparator;
 import java.util.List;
+import java.text.Collator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +52,8 @@ public class ParticipantImpl implements Participant
   public static Comparator UserIdComparator;
   public static Comparator RoleComparator;
   public static Comparator SectionsComparator;
+  
+  Collator collator = Collator.getInstance();
 
   /**
    * 
@@ -185,9 +188,9 @@ public class ParticipantImpl implements Participant
         .getLastName();
     String anotherParticipantFirstName = ((Participant) anotherParticipant)
         .getFirstName();
-    int lastNameComp = this.lastName.compareTo(anotherParticipantLastName);
-    return (lastNameComp != 0 ? lastNameComp : this.firstName
-        .compareTo(anotherParticipantFirstName));
+    int lastNameComp = collator.compare(this.lastName, anotherParticipantLastName);
+    return (lastNameComp != 0 ? lastNameComp : 
+    collator.compare(this.firstName, anotherParticipantFirstName));
   }
 
   static
@@ -228,9 +231,9 @@ public class ParticipantImpl implements Participant
         }
         
         if (!(lastName1.equals(lastName2)))
-          return lastName1.compareTo(lastName2);
+          return Collator.getInstance().compare(lastName1, lastName2);
         else
-          return firstName1.compareTo(firstName2);
+          return Collator.getInstance().compare(firstName1, firstName2);
       }
     };
 
@@ -269,9 +272,9 @@ public class ParticipantImpl implements Participant
         }
 
         if (!(firstName1.equals(firstName2)))
-          return firstName1.compareTo(firstName2);
+          return Collator.getInstance().compare(firstName1, firstName2);
         else
-          return lastName1.compareTo(lastName2);
+          return Collator.getInstance().compare(lastName1, lastName2);
       }
     };
 
@@ -296,7 +299,7 @@ public class ParticipantImpl implements Participant
 			Log.error("UserNotDefinedException", e);
 		}
 
-		return eid1.compareTo(eid2);
+		return Collator.getInstance().compare(eid1, eid2);
 
       }
     };
@@ -336,11 +339,11 @@ public class ParticipantImpl implements Participant
 	    }
 	
 	    if (!(role1.equals(role2)))
-	    	return role1.compareTo(role2);
+	    	return Collator.getInstance().compare(role1,role2);
 	    else if (!(lastName1.equals(lastName2)))
-	    	return lastName1.compareTo(lastName2);
+	    	return Collator.getInstance().compare(lastName1, lastName2);
 	    else
-	    	return firstName1.compareTo(firstName2);
+	    	return Collator.getInstance().compare(firstName1, firstName2);
       }
     };
     
@@ -379,11 +382,11 @@ public class ParticipantImpl implements Participant
 	    }
 	
 	    if (!(sectionString1.equals(sectionString2)))
-	    	return sectionString1.compareTo(sectionString2);
+	    	return Collator.getInstance().compare(sectionString1, sectionString2);
 	    else if (!(lastName1.equals(lastName2)))
-	    	return lastName1.compareTo(lastName2);
+	    	return Collator.getInstance().compare(lastName1, lastName2);
 	    else
-	    	return firstName1.compareTo(firstName2);
+	    	return Collator.getInstance().compare(firstName1, firstName2);
       }
     };
   }
