@@ -27,11 +27,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
@@ -126,22 +128,14 @@ public class RosterManagerImpl implements RosterManager
     ; // do nothing (for now)
   }
 
-  private Participant createParticipantByUser(User user)
+  private Participant createParticipantByUser(User user, Profile profile)
   {
     if (LOG.isDebugEnabled())
     {
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
-	if(!"false".equalsIgnoreCase(ServerConfigurationService.getString
-			("separateIdEid@org.sakaiproject.user.api.UserDirectoryService")))
-    {
-        return new ParticipantImpl(user.getId(), user.getFirstName(), user
-                .getLastName(), 
-                profileManager.getUserProfileById(profileManager.getEnterpriseIdByAgentUuid(user.getId())), 
-                user.getEid(), getUserRoleTitle(user), getUserSections(user));
-    }
-    return new ParticipantImpl(user.getId(), user.getFirstName(), user
-        .getLastName(), profileManager.getUserProfileById(user.getId()), getUserRoleTitle(user), getUserSections(user));
+    return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
+        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user));
   }
 
   /* (non-Javadoc)
@@ -158,8 +152,9 @@ public class RosterManagerImpl implements RosterManager
       try
       {
         User user = UserDirectoryService.getUser(participantId);
+        Profile profile = profileManager.getUserProfileById(participantId);
         //TODO: individual ferpa checks
-        return createParticipantByUser(user);
+        return createParticipantByUser(user, profile);
       }
       catch (UserNotDefinedException e)
       {
@@ -256,6 +251,8 @@ public class RosterManagerImpl implements RosterManager
       
       if (userIds != null && userIds.size() > 0)
       {
+    	Map<String, Profile> profiles = profileManager.getProfiles(userIds);
+    	
         Iterator iter = userIds.iterator();
         while (iter.hasNext())
         {
@@ -264,7 +261,7 @@ public class RosterManagerImpl implements RosterManager
             User user = UserDirectoryService.getUser((String) iter.next());
             if(user != null)
       	  	{
-      	  		roster.add(createParticipantByUser(user));
+      	  		roster.add(createParticipantByUser(user, profiles.get(user.getId())));
       	  	}
           }
           catch (UserNotDefinedException e)
