@@ -21,575 +21,552 @@
 
 package org.sakaiproject.component.app.roster;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.api.app.roster.RosterFilter;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.api.privacy.PrivacyManager;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
+import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
-import org.sakaiproject.authz.cover.AuthzGroupService;
-import org.sakaiproject.authz.cover.FunctionManager;
-import org.sakaiproject.authz.cover.SecurityService;
-import org.sakaiproject.site.api.Group;
-import org.sakaiproject.site.api.Site;
-import org.sakaiproject.site.cover.SiteService;
-import org.sakaiproject.tool.cover.ToolManager;
+import org.sakaiproject.authz.api.AuthzGroupService;
+import org.sakaiproject.authz.api.FunctionManager;
+import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.section.api.SectionAwareness;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
+import org.sakaiproject.site.api.SiteService;
+import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
-import org.sakaiproject.user.cover.UserDirectoryService;
-import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.user.api.UserDirectoryService;
 
+public abstract class RosterManagerImpl implements RosterManager {
+	private static final Log LOG = LogFactory.getLog(RosterManagerImpl.class);
 
-/**
- * @author rshastri
- * @version $Id: RosterManagerImpl.java 1244 2005-08-17 16:06:54Z rshastri@iupui.edu $
- */
-public class RosterManagerImpl implements RosterManager
-{
-  private static final Log LOG = LogFactory.getLog(RosterManagerImpl.class);
-  
-  /** Dependency: ProfileManager */
-  private ProfileManager profileManager;
-  private PrivacyManager privacyManager;
-  
-  private static final String SITE_UPD_PERM = "site.upd";
-
-  /**
-   * @param sakaiProfileManager
-   */
-  public void setProfileManager(ProfileManager newProfileManager)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug("setProfileManager(ProfileManager " + newProfileManager + ")");
-    }
-
-    this.profileManager = newProfileManager;
-  }
-
-  /**
-   * @param PrivacyManager
-   */
-  public void setPrivacyManager(PrivacyManager privacyManager)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug("setPrivacyManager(PrivacyManager "
-          + privacyManager + ")");
-    }
-
-    this.privacyManager = privacyManager;
-  }
-  
-  public void init()
-  {
-    LOG.debug("init()");
-    
-    Collection registered = FunctionManager.getInstance().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
-    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
-        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_EXPORT);
-    }
-
-    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
-        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWALL);
-    }
-
-    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
-        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
-    }
-
-    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID)) {
-        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
-    }
-    
-    if(!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWSECTION)) {
-        FunctionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWSECTION);
-    }
-  }
-
-  public void destroy()
-  {
-    LOG.debug("destroy()");
-    ; // do nothing (for now)
-  }
-
-  private Participant createParticipantByUser(User user, Profile profile)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug("createParticipantByUser(User " + user + ")");
-    }
-    return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
-        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user));
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantById(java.lang.String)
-   */
-  public Participant getParticipantById(String participantId)
-  {
-    if (LOG.isDebugEnabled())
-    {
-      LOG.debug("getParticipantById(String" + participantId + ")");
-    }
-    if (participantId != null)
-    {
-      try
-      {
-        User user = UserDirectoryService.getUser(participantId);
-        Profile profile = profileManager.getUserProfileById(participantId);
-        //TODO: individual ferpa checks
-        return createParticipantByUser(user, profile);
-      }
-      catch (UserNotDefinedException e)
-      {
-        LOG.error("getParticipantById: " + e.getMessage(), e);
-      }
-    }
-    return null;
-  }
-
-  /**
-   * retrieve the list of participants filtered by the passed filter 
-   * (such as Show All Sections) that are viewable by the current user
-   * @param filter
-   * @return List   
-   */
-  public List getRoster(String filter)
-  {
-    LOG.debug("getRoster");
-    
-    /* we have several possibilities to return:
-    1. All users
-    2. All users in current user's section(s)  
-    3. All users in the selected section
-     - note: privacy is considered for each option
-  */
-    
-    if (filter == null)
-    	return null;
-    
-    User currentUser = UserDirectoryService.getCurrentUser();
-    boolean userHasViewAllPerm = userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL);
-    boolean userHasViewSectionPerm = userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWSECTION);
-    
-    List roster = new ArrayList();
-    Set userIds = new HashSet();
-    
-      // view all sections
-      if (filter.equalsIgnoreCase(VIEW_ALL_SECT))
-      {   
-    	  // first check the current user's authorization for this option - must have roster.viewall
-    	  if (!userHasViewAllPerm)
-    		  return null;
-    	  
-    	  userIds = getUsersInAllSections();
-      }
-      else if (filter.equalsIgnoreCase(VIEW_MY_SECT))
-      {
-    	  // first check that current user has roster.viewsection permission
-    	  if (!userHasViewSectionPerm)
-    		  return null;
-    	  
-    	  userIds = getUsersInCurrentUsersSections(currentUser);	  
-      }
-      else if (filter.equalsIgnoreCase(VIEW_NO_SECT))
-      {
-    	  if (userHasViewAllPerm || (!siteHasSections() && (userHasViewAllPerm || userHasViewSectionPerm)))
-    	  {
-    		  userIds = getUsersInAllSections();
-    	  }
-    	  else if (userHasViewSectionPerm)
-    	  {
-    		  userIds = getUsersInCurrentUsersSections(currentUser);
-    	  }  
-      }
-      else   // we will assume the filter is a specific section
-      {
-    	  
-    	  // first check that current user has roster.viewsection or roster.viewall permission
-    	  if (!userHasViewAllPerm && !userHasViewSectionPerm)
-    		  return null;
-    	  
-    	  Set usersInSection = getUsersInSection(filter);
-    	  if (usersInSection == null || usersInSection.isEmpty())
-    		  return null;
-    	  
-    	  // if user does not have viewall perm, must check to see if member of section
-    	  if (!userHasViewAllPerm)
-    	  {
-    		  if (!usersInSection.contains(currentUser.getId()))
-    			  return null;
-    	  }
-
-    	  userIds = usersInSection;
-      }
-      
-      if (userIds == null || userIds.isEmpty())
-    	  return null;
-        
-      // Check for privacy restrictions
-      if (!userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN))
-      {
-        userIds = privacyManager.findViewable(getContextSiteId(), userIds);
-      }
-      
-      if (userIds != null && userIds.size() > 0)
-      {
-    	Map<String, Profile> profiles = profileManager.getProfiles(userIds);
-    	
-        Iterator iter = userIds.iterator();
-        while (iter.hasNext())
-        {
-          try
-          {
-            User user = UserDirectoryService.getUser((String) iter.next());
-            if(user != null)
-      	  	{
-      	  		roster.add(createParticipantByUser(user, profiles.get(user.getId())));
-      	  	}
-          }
-          catch (UserNotDefinedException e)
-          {	
-            LOG.info("getRoster: " + e.getMessage(), e);
-          }
-        }
-      }
-
-    return roster;
-  }
-  
-  /**
-   * Get the userids of all the users in the site
-   * @return
-   */
-  private Set getUsersInAllSections()
-  {
-	  List users = new ArrayList();
-	  Set userIds = new HashSet();
-
-	  AuthzGroup realm;
-	  try
-	  {
-		  realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
-		  users.addAll(UserDirectoryService.getUsers(realm.getUsers()));
-
-		  if (users == null)
-			  return null;
-
-		  Iterator userIterator = users.iterator();
-		  while (userIterator.hasNext())
-		  {
-			  userIds.add(((User) userIterator.next()).getId());
-		  }
-	  }
-	  catch (GroupNotDefinedException e)
-	  {
-		  LOG.error("getUsersInAllSections: " + e.getMessage(), e);
-	  }
-	  
-	  return userIds;
-  }
-  
-  /**
-   * Returns the userids of the users who are in the current user's section(s)
-   * @param currentUser
-   * @return
-   */
-  private Set getUsersInCurrentUsersSections(User currentUser)
-  {
-	  Set userIds = new HashSet();
-	  List userSections = getUserSections(currentUser); 
-	  Iterator sectionIter = userSections.iterator();
-	  while (sectionIter.hasNext())
-	  {
-		  String section = (String)sectionIter.next();
-		  Set usersInSection = getUsersInSection(section);
-		  if (usersInSection != null && !usersInSection.isEmpty())
-		  {
-			  Iterator userIter = usersInSection.iterator();
-			  while (userIter.hasNext())
-			  {
-				  String userInSection = (String)userIter.next();
-				  if (!userIds.contains(userInSection))
-					  userIds.add(userInSection);
-			  }
-		  } 
-	  }	
-	  
-	  return userIds;
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasExportPerm()
-   */
-  public boolean currentUserHasExportPerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), RosterFunctions.ROSTER_FUNCTION_EXPORT);
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewOfficialIdPerm()
-   */
-  public boolean currentUserHasViewOfficialIdPerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewHiddenPerm()
-   */
-  public boolean currentUserHasViewHiddenPerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewSectionPerm()
-   */
-  public boolean currentUserHasViewSectionPerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), RosterFunctions.ROSTER_FUNCTION_VIEWSECTION);
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewAllPerm()
-   */
-  public boolean currentUserHasViewAllPerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), RosterFunctions.ROSTER_FUNCTION_VIEWALL);
-  }
-  
-  /*
-   * (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasSiteUpdatePerm()
-   */
-  public boolean currentUserHasSiteUpdatePerm()
-  {
-	  return userHasPermission(UserDirectoryService.getCurrentUser(), SITE_UPD_PERM);
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.api.app.roster.RosterManager#sortParticipants(java.util.List, java.lang.String, boolean)
-   */
-  public void sortParticipants(List participants, String sortByColumn,
-      boolean ascending)
-  {
-	if (participants == null || participants.size() <= 1)
-		return;
+	public abstract ProfileManager profileManager();
+	public abstract PrivacyManager privacyManager();
+	public abstract SectionAwareness sectionService();
+	public abstract SiteService siteService();
+	public abstract ToolManager toolManager();
+	public abstract FunctionManager functionManager();
+	public abstract UserDirectoryService userDirectoryService();
+	public abstract AuthzGroupService authzGroupService();
+	public abstract SecurityService securityService();
 	
-    Comparator comparator;
-    if (Participant.SORT_BY_LAST_NAME.equals(sortByColumn))
-    {
-      comparator = ParticipantImpl.LastNameComparator;
-    }
-    else if (Participant.SORT_BY_FIRST_NAME.equals(sortByColumn))
-    {
-      comparator = ParticipantImpl.FirstNameComparator;
-    }
-    else if (Participant.SORT_BY_SECTIONS.equals(sortByColumn))
-    {
-      comparator = ParticipantImpl.SectionsComparator;
-    }
-    else if (Participant.SORT_BY_ID.equals(sortByColumn))
-    {
-      comparator = ParticipantImpl.UserIdComparator;
-    }
-    else
-    {
-    	comparator = ParticipantImpl.RoleComparator;
-    }
-    
-    Collections.sort(participants, comparator);
-    if (!ascending)
-    {
-      Collections.reverse(participants);
-    }
-  }
-  
-  
-  
-  /**
-   * Check if given user has the given permission
-   * @param user
-   * @param permissionName
-   * @return boolean
-   */
-  private boolean userHasPermission(User user, String permissionName)
-  {
-	  if (user != null)
-		  return SecurityService.unlock(user, permissionName, getContextSiteId());
-	  else
-		  return false;
-  }
+	public void init() {
+		LOG.debug("init()");
 
-  /**
-   * @return siteId
-   */
-  private String getContextSiteId()
-  {
-    LOG.debug("getContextSiteId()");
-    return ("/site/" + ToolManager.getCurrentPlacement().getContext());
-  }
-  
-  /**
-   * 
-   * @param user
-   * @return
-   */
-  private String getUserRoleTitle(User user) {
-	  try
+		Collection registered = functionManager().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_EXPORT);
+		}
+
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+		}
+
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
+		}
+
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
+		}
+	}
+
+	public void destroy() {
+		LOG.debug("destroy()");
+	}
+
+	private Participant createParticipantByUser(User user, Profile profile) {
+		return new ParticipantImpl(user, profile, getUserRoleTitle(user),
+				getViewableSectionsForUser(user));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantById(java.lang.String)
+	 */
+	public Participant getParticipantById(String participantId) {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getParticipantById(String" + participantId + ")");
+		}
+		if (participantId != null) {
+			try {
+				User user = userDirectoryService().getUser(participantId);
+				Profile profile = profileManager().getUserProfileById(
+						participantId);
+				// TODO: individual ferpa checks
+				return createParticipantByUser(user, profile);
+			} catch (UserNotDefinedException e) {
+				LOG.error("getParticipantById: " + e.getMessage(), e);
+			}
+		}
+		return null;
+	}
+
+	public List<Participant> getRoster() {
+		return getRoster(null);
+	}
+
+	/**
+	 * Retrieve a filtered list of site participants that are viewable by the
+	 * current user.
+	 * 
+	 * We have three different view scenarios:
+	 * 
+	 * <ol>
+	 * 
+	 * <li> View all: These users can see every site member, regardless of
+	 * privacy settings. </li>
+	 * 
+	 * <li> View sections: These users can see every member of sections or
+	 * groups for which this user is a TA, regardless of privacy settings. These
+	 * users also see the other site members who have chosen to show themselves
+	 * (privacy setting = off). </li>
+	 * 
+	 * <li> View non-hidden participants: These users see only site members who
+	 * have chosen to show themselves (privacy setting = off). </li>
+	 * 
+	 * </ol>
+	 * 
+	 * @param filter
+	 * @return List
+	 */
+	public List<Participant> getRoster(RosterFilter filter) {
+		LOG.debug("getRoster called with filter " + filter);
+		if (filter == null)
+			filter = new LocalRosterFilter();
+
+		List<Participant> participants;
+
+		User currentUser = userDirectoryService().getCurrentUser();
+		boolean userHasViewAllPerm = userHasPermission(currentUser,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+
+		// Instructors and users with "viewall" see everybody
+		if (userHasViewAllPerm
+				|| sectionService().isSiteMemberInRole(
+						getSiteId(),
+						currentUser.getId(),
+						org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
+			participants = getAllParticipants();
+		} else if (sectionService().isSiteMemberInRole(
+				getSiteId(),
+				currentUser.getId(),
+				org.sakaiproject.section.api.facade.Role.TA)) {
+			participants = getSectionLeaderParticipants(currentUser);
+		} else {
+			participants = getPublicParticipants(currentUser);
+		}
+		return participants;
+	}
+
+	private List<Participant> getAllParticipants() {
+		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
+		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
+		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
+
+		return buildParticipantList(userMap, sectionsMap, profiles);
+	}
+	
+	private List<Participant> getSectionLeaderParticipants(User currentUser) {
+		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
+		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
+
+		// Build a list of the sections that this user leads
+		List<CourseSection> allSections = sectionService().getSections(getSiteId());
+		List<CourseSection> usersSections = new ArrayList<CourseSection>();
+		for(Iterator<CourseSection> iter = allSections.iterator(); iter.hasNext();)
+		{
+			CourseSection section = iter.next();
+			if(sectionService().isSectionMemberInRole(section.getUuid(), currentUser.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
+					|| sectionService().isSectionMemberInRole(section.getUuid(), currentUser.getId(), org.sakaiproject.section.api.facade.Role.TA))
+			{
+				usersSections.add(section);
+			}
+		}
+
+		Map<String, List<CourseSection>> filteredSectionsMap = new HashMap<String, List<CourseSection>>();
+		
+		// Filter out any sections from the sections map that are not led by this user
+		for(Iterator<Entry<String, List<CourseSection>>> iter = sectionsMap.entrySet().iterator(); iter.hasNext();)
+		{
+			Entry<String, List<CourseSection>> entry = iter.next();
+			List entrySections = entry.getValue();
+			// If the list of sections that the user leads contains any of the entry's sections, add it to our filtered list
+			for(Iterator<CourseSection> ledSectionsIter = usersSections.iterator(); ledSectionsIter.hasNext();)
+			{
+				if(entrySections.contains(ledSectionsIter.next()))
+				{
+					filteredSectionsMap.put(entry.getKey(), entry.getValue());
+					break;
+				}
+			}
+		}
+		
+		// Build the list of participants from the filteredSectionsMap
+		Map<String, Profile> profiles = profileManager().getProfiles(filteredSectionsMap.keySet());
+
+		return buildParticipantList(userMap, sectionsMap, profiles);
+	}
+
+	private List<Participant> getPublicParticipants(User currentUser) {
+		// The view hidden permission only applies to non view-all or ta users
+		if(userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN))
+		{
+			return getAllParticipants();
+		}
+		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
+		
+		// Only retain the viewable users
+		Set<String> viewableUsers = privacyManager().findViewable(getSiteId(), userMap.keySet());
+		userMap.keySet().retainAll(viewableUsers);
+
+		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
+		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
+
+		return buildParticipantList(userMap, sectionsMap, profiles);
+	}
+
+
+	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profiles) {
+		List<Participant> participants = new ArrayList<Participant>();
+		for (Iterator<Entry<String, Profile>> iter = profiles.entrySet().iterator(); iter.hasNext();) {
+			Entry<String, Profile> entry = iter.next();
+			String userId = entry.getKey();
+			UserRole userRole = userMap.get(userId);
+			Profile profile = entry.getValue();
+			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, sectionsMap.get(userId)));
+		}
+		return participants;
+	}
+
+	/**
+	 * Builds a map of user IDs to a list of Sections for that user within the current site context.
+	 * 
+	 * @param userIds The user IDs to include
+	 * @return
+	 */
+	private Map<String, List<CourseSection>> getSectionsMap(Set<String> userIds)
+	{
+		Map<String, List<CourseSection>> sectionsMap = new HashMap<String, List<CourseSection>>();
+		for(Iterator<CourseSection> iter = sectionService().getSections(getSiteId()).iterator(); iter.hasNext();)
+		{
+			CourseSection section = iter.next();
+			List<ParticipationRecord> sectionMembers = sectionService().getSectionMembers(section.getUuid());
+			for(Iterator<ParticipationRecord> participantIter = sectionMembers.iterator(); participantIter.hasNext();)
+			{
+				ParticipationRecord participant = participantIter.next();
+				String userId = participant.getUser().getUserUid();
+				if( ! userIds.contains(userId)) continue;
+				
+				// If this user isn't in the map, add them
+				if(sectionsMap.containsKey(userId))
+				{
+					List<CourseSection> list = new ArrayList<CourseSection>();
+					list.add(section);
+					sectionsMap.put(userId, list);
+				}
+				else
+				// The user was already in the map, so add this section to the list
+				{
+					List<CourseSection> list = sectionsMap.get(userId);
+					if( ! list.contains(section))
+					{
+						list.add(section);
+					}
+				}
+			}
+			
+		}
+		return sectionsMap;
+	}
+
+	class UserRole {
+		User user;
+		String role;
+
+		UserRole(User user, String role)
+		{
+			this.user = user;
+			this.role = role;
+		}
+	}
+	
+	/**
+	 * Gets a map of user IDs to UserRole (User + Role) objects.
+	 * 
+	 * @return
+	 */
+	private Map<String, UserRole> getUserRoleMap(String authzRef) {
+		Map<String, UserRole> userMap = new HashMap<String, UserRole>();
+		Set<String> userIds = new HashSet<String>();
+		Set<Member> members;
+		
+		// Get the member set
+		try {
+			members = authzGroupService().getAuthzGroup(authzRef).getMembers();
+		} catch (GroupNotDefinedException e) {
+			LOG.error("getUsersInAllSections: " + e.getMessage(), e);
+			return userMap;
+		}
+		
+		// Build a map of userId to role
+		Map<String, String> roleMap = new HashMap<String, String>();
+		for(Iterator<Member> iter = members.iterator(); iter.hasNext();)
+		{
+			Member member = iter.next();
+			userIds.add(member.getUserId());
+			roleMap.put(member.getUserId(), member.getRole().getId());
+		}
+
+		// Get the user objects
+		List<User> users = userDirectoryService().getUsers(userIds);
+		for (Iterator<User> iter = users.iterator(); iter.hasNext();)
+		{
+			User user = iter.next();
+			String role = roleMap.get(user.getId());
+			userMap.put(user.getId(), new UserRole(user, role));
+		}
+		return userMap;
+	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasExportPerm()
+	 */
+	public boolean currentUserHasExportPerm() {
+		return userHasPermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_EXPORT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewOfficialIdPerm()
+	 */
+	public boolean currentUserHasViewOfficialIdPerm() {
+		return userHasPermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewHiddenPerm()
+	 */
+	public boolean currentUserHasViewHiddenPerm() {
+		return userHasPermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
+	}
+
+	  /*
+	   * (non-Javadoc)
+	   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasSiteUpdatePerm()
+	   */
+	  public boolean currentUserHasSiteUpdatePerm()
 	  {
-		  AuthzGroup realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
-		  Role userRole = realm.getUserRole(user.getId());
-		  return userRole.getId();
+		  return userHasPermission(userDirectoryService().getCurrentUser(), "site.upd");
 	  }
-	  catch(GroupNotDefinedException e)
-	  {
-		  LOG.error("GroupNotDefinedException", e);
-	  }
-	  return "";
-  }
- 
-  /**
-   * Determine if sectioning exists in this site
-   * @return 
-   */
-  public boolean siteHasSections()
-  {
-	  List sections = getAllSections();
-	  if (sections != null && !sections.isEmpty())
-		  return true;
 	  
-	  return false;
-  }
-  
-  /**
-   * returns sections that user has permission to view
-   * @return
-   */
-  public List getViewableSectionsForCurrentUser()
-  {
-	  if (currentUserHasViewAllPerm())
-	  {
-		  return getAllSections();
-	  } 
-	  else if (currentUserHasViewSectionPerm())
-	  {  
-		  return getUserSections(UserDirectoryService.getCurrentUser());
-	  }
-	  
-	  return null;
-  }
-  
-  /**
-   * Returns the userids of the users in the given section
-   * @param sectionName
-   * @return
-   */
-  private Set getUsersInSection(String sectionName)
-  {
-	  Set usersInSection = new HashSet();
-	  try
-	  {
-		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext()); 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewAllPerm()
+	 */
+	public boolean currentUserHasViewAllPerm() {
+		return userHasPermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+	}
 
-		  Collection groups = currentSite.getGroups();
-		  for (Iterator groupIterator = groups.iterator(); groupIterator.hasNext();)
-		  {
-			  Group currentGroup = (Group) groupIterator.next(); 
-			  if (currentGroup.getTitle().equalsIgnoreCase(sectionName))
-			  {
-				  Set userSet = currentGroup.getUsers();
-				  for (Iterator setIter = userSet.iterator(); setIter.hasNext();)
-				  {
-					  String userId = (String)setIter.next();
-					  usersInSection.add(userId);
-				  }
 
-				  return usersInSection;
-			  }
-		  }
-	  } 
-	  catch (Exception e) 
-	  {
-		  LOG.error("getUsersInSection" + e.getMessage(), e);
-	  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sakaiproject.api.app.roster.RosterManager#sortParticipants(java.util.List,
+	 *      java.lang.String, boolean)
+	 */
+	public void sortParticipants(List<ParticipantImpl> participants,
+			String sortByColumn, boolean ascending) {
+		if (participants == null || participants.size() <= 1)
+			return;
 
-	  return usersInSection;
-  }
-  
-  /**
-   * 
-   * @param user
-   * @return
-   */
-  private List getUserSections(User user) 
-  {
-	  List sections = new ArrayList();
-	  try
-	  {
-		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+		Comparator<ParticipantImpl> comparator;
+		if (Participant.SORT_BY_NAME.equals(sortByColumn)) {
+			comparator = ParticipantImpl.DisplayNameComparator;
+		} else if (Participant.SORT_BY_ID.equals(sortByColumn)) {
+			comparator = ParticipantImpl.DisplayIdComparator;
+		} else if (Participant.SORT_BY_ROLE.equals(sortByColumn)) {
+			comparator = ParticipantImpl.RoleComparator;
+		} else {
+			// This is a section-sorted list
+			// FIXME Replace with the section category sort
+			comparator = ParticipantImpl.RoleComparator;
+		}
 
-		  Collection groups = currentSite.getGroupsWithMember(user.getId());
-		  for (Iterator groupIterator = groups.iterator(); groupIterator.hasNext();)
-	      {
-	        Group currentGroup = (Group) groupIterator.next(); 
-        	sections.add(currentGroup.getTitle());
-	      }
-		  
-		  if (sections.size() > 1)
-		  {
-			  Collections.sort(sections);
-		  }
-	  } 
-	  catch (Exception e) 
-	  {
-		  LOG.error("getUserSections: " + e.getMessage(), e);
-	  }
+		Collections.sort(participants, comparator);
+		if (!ascending) {
+			Collections.reverse(participants);
+		}
+	}
 
-	  return sections;
-  }
-  
-  private List getAllSections()
-  {
-	  List sections = new ArrayList();
-	  try
-	  {
-		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext()); 
-		  Collection groups = currentSite.getGroups();
-		  for (Iterator groupIterator = groups.iterator(); groupIterator.hasNext();)
-	      {
-	        Group currentGroup = (Group) groupIterator.next(); 
-        	sections.add(currentGroup.getTitle());
-	      }
-	  } 
-	  catch (Exception e) 
-	  {
-		  LOG.error("getAllSections: " + e.getMessage(), e);
-	  }
+	/**
+	 * Check if given user has the given permission
+	 * 
+	 * @param user
+	 * @param permissionName
+	 * @return boolean
+	 */
+	private boolean userHasPermission(User user, String permissionName) {
+		if (user != null)
+			return securityService().unlock(user, permissionName,
+					getSiteReference());
+		else
+			return false;
+	}
 
-	  return sections;
-  }
+	/**
+	 * @return siteId
+	 */
+	private String getSiteReference() {
+		LOG.debug("getContextSiteId()");
+		return ("/site/" + getSiteId());
+	}
+	
+	private String getSiteId() {
+		return toolManager().getCurrentPlacement().getContext();
+	}
+
+	/**
+	 * 
+	 * @param user
+	 * @return
+	 */
+	private String getUserRoleTitle(User user) {
+		try {
+			AuthzGroup realm = authzGroupService().getAuthzGroup(getSiteReference());
+			Role userRole = realm.getUserRole(user.getId());
+			return userRole.getId();
+		} catch (GroupNotDefinedException e) {
+			LOG.error("GroupNotDefinedException", e);
+		}
+		return "";
+	}
+
+	/**
+	 * Determine if sectioning exists in this site
+	 * 
+	 * @return
+	 */
+	public boolean siteHasSections() {
+		return ! sectionService().getSections(getSiteId()).isEmpty();
+	}
+
+	/**
+	 * returns sections that user has permission to view
+	 * 
+	 * @return
+	 */
+	public List<CourseSection> getViewableSectionsForUser(User user) {
+		List<CourseSection> viewableSections = new ArrayList<CourseSection>();
+		List<CourseSection> sections = sectionService().getSections(
+				getSiteId());
+		for (Iterator iter = sections.iterator(); iter.hasNext();) {
+			CourseSection section = (CourseSection) iter.next();
+			if (sectionService().isSectionMemberInRole(section.getUuid(),
+					user.getId(), org.sakaiproject.section.api.facade.Role.TA)
+					|| sectionService()
+							.isSectionMemberInRole(
+									section.getUuid(),
+									user.getId(),
+									org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
+				viewableSections.add(section);
+			}
+		}
+		return viewableSections;
+	}
+
+	public RosterFilter newFilter(String searchFilter, String sectionFilter,
+			String statusFilter) {
+		return new LocalRosterFilter(searchFilter, sectionFilter, statusFilter);
+	}
+
+	public RosterFilter newFilter() {
+		return new LocalRosterFilter();
+	}
+
+	public class LocalRosterFilter implements RosterFilter, Serializable {
+		private static final long serialVersionUID = 1L;
+
+		protected String statusFilter;
+
+		protected String searchFilter;
+
+		protected String sectionFilter;
+
+		public LocalRosterFilter() {
+			this.sectionFilter = VIEW_ALL_SECT;
+		}
+
+		public LocalRosterFilter(String statusFilter, String searchFilter,
+				String sectionFilter) {
+			this.statusFilter = statusFilter;
+			this.searchFilter = searchFilter;
+			this.sectionFilter = sectionFilter;
+		}
+
+		public String getSearchFilter() {
+			return searchFilter;
+		}
+
+		public void setSearchFilter(String searchFilter) {
+			this.searchFilter = searchFilter;
+		}
+
+		public String getSectionFilter() {
+			return sectionFilter;
+		}
+
+		public void setSectionFilter(String sectionFilter) {
+			this.sectionFilter = sectionFilter;
+		}
+
+		public String getStatusFilter() {
+			return statusFilter;
+		}
+
+		public void setStatusFilter(String statusFilter) {
+			this.statusFilter = statusFilter;
+		}
+
+		public String toString() {
+			return new ToStringBuilder(this).append(statusFilter).append(
+					searchFilter).append(sectionFilter).toString();
+		}
+	}
 
 }

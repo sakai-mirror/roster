@@ -1,0 +1,65 @@
+/**********************************************************************************
+ * $URL$
+ * $Id$
+ ***********************************************************************************
+ *
+ * Copyright (c) 2007 The Sakai Foundation.
+ * 
+ * Licensed under the Educational Community License, Version 1.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.opensource.org/licenses/ecl1.php
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ *
+ **********************************************************************************/
+package org.sakaiproject.tool.roster;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.api.app.roster.RosterFilter;
+import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.section.api.SectionAwareness;
+
+public class FilteredProfileListingBean extends InitializableBean implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	protected ServicesBean services;
+	public void setServices(ServicesBean services) {
+		this.services = services;
+	}
+	
+	
+	// A list of decorated users
+	protected List<Participant> participants;
+
+	// Our filter, used to limit the number of Participants displayed in the UI
+	protected RosterFilter filter;
+
+	public List<Participant> getParticipants() {
+		if(participants == null) {
+			participants = services.rosterManager.getRoster(getFilter());			
+		}
+		return participants;
+	}
+
+	public RosterFilter getFilter() {
+		if(filter == null) {
+			filter = services.rosterManager.newFilter();
+		}
+		return filter;
+	}
+
+	public void setFilter(RosterFilter filter) {
+		this.filter = filter;
+	}
+
+}

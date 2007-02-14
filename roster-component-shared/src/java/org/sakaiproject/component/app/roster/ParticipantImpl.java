@@ -29,8 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.user.api.UserNotDefinedException;
-import org.sakaiproject.user.cover.UserDirectoryService;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.user.api.User;
 
 /**
  * @author rshastri
@@ -39,137 +39,28 @@ import org.sakaiproject.user.cover.UserDirectoryService;
 public class ParticipantImpl implements Participant
 {
   private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
-  private String id;
-  private String eid;
-  private String displayId;
-  private String firstName;
-  private String lastName;
-  private Profile profile;
-  private String roleTitle;
-  private List sections;
-  private String sectionsForDisplay;
-  public static Comparator LastNameComparator;
-  public static Comparator FirstNameComparator;
-  public static Comparator UserIdComparator;
-  public static Comparator RoleComparator;
-  public static Comparator SectionsComparator;
-  
-  Collator collator = Collator.getInstance();
+  protected User user;
+  protected Profile profile;
+  protected String roleTitle;
+  protected List<CourseSection> sections;
+  public static final Comparator<ParticipantImpl> DisplayNameComparator;
+  public static final Comparator<ParticipantImpl> DisplayIdComparator;
+  public static final Comparator<ParticipantImpl> RoleComparator;
 
   /**
+   * Constructs a ParticipantImpl.
    * 
-   * @param id
-   * @param fname
-   * @param lname
-   * @param profile TODO
+   * @param user
+   * @param profile
+   * @param roleTitle
+   * @param enrolledSections
    */
-  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections)
+  public ParticipantImpl(User user, Profile profile, String roleTitle, List<CourseSection> enrolledSections)
   {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("ParticipantImpl(String " + id + ", String " + fname
-          + ", String " + lname + ")");
-    }
-    setId(id);
-    setEid(eid);
-    setDisplayId(displayId);
-    setFirstName(fname);
-    setLastName(lname);
-    setProfile(profile);
-    setRoleTitle(roleTitle);
-    setSections(sections);
-  }
-  
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#getFirstName()
-   */
-  public String getFirstName()
-  {
-    Log.debug("getFirstName()");
-    return firstName;
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#setFirstName(java.lang.String)
-   */
-  public void setFirstName(String firstName)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setFirstName(String" + firstName + ")");
-    }
-    this.firstName = firstName;
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#getId()
-   */
-  public String getId()
-  {
-    Log.debug("getId()");
-    return id;
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#setId(java.lang.String)
-   */
-  public void setId(String id)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setId(String" + id + ")");
-    }
-    this.id = id;
-  }
-
-  public String getDisplayId()
-  {
-  	return displayId;
-  }
-
-  public void setDisplayId(String displayId)
-  {
-  	this.displayId = displayId;
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#getLastName()
-   */
-  public String getLastName()
-  {
-    Log.debug("getLastName()");
-    return lastName;
-  }
-
-  /* (non-Javadoc)
-   * @see org.sakaiproject.component.app.roster.Participant#setLastName(java.lang.String)
-   */
-  public void setLastName(String lastName)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setLastName(String" + lastName + ")");
-    }
-    this.lastName = lastName;
-  }
- 
-
-  public boolean equals(Object o)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("equals(Object" + o + ")");
-    }
-    if (!(o instanceof Participant)) return false;
-    Participant participant = (Participant) o;
-    return participant.hashCode() == this.hashCode();
-  }
-
-  public String toString()
-  {
-    Log.debug("toString()");
-    return firstName + " " + lastName;
-
+    this.user = user;
+    this.profile = profile;
+    this.roleTitle = roleTitle;
+    this.sections = enrolledSections;
   }
 
   public int compareTo(Object anotherParticipant) throws ClassCastException
@@ -180,271 +71,79 @@ public class ParticipantImpl implements Participant
     }
     if (!(anotherParticipant instanceof Participant))
       throw new ClassCastException("A Participant object expected.");
-    String anotherParticipantLastName = ((Participant) anotherParticipant)
-        .getLastName();
-    String anotherParticipantFirstName = ((Participant) anotherParticipant)
-        .getFirstName();
-    int lastNameComp = collator.compare(this.lastName, anotherParticipantLastName);
-    return (lastNameComp != 0 ? lastNameComp : 
-    collator.compare(this.firstName, anotherParticipantFirstName));
+    return user.getDisplayName().compareTo(((ParticipantImpl)anotherParticipant).user.getDisplayId());
   }
 
   static
   {
-    LastNameComparator = new Comparator()
-
+    DisplayNameComparator = new Comparator<ParticipantImpl>()
     {
-      public int compare(Object participant, Object otherParticipant)
+      public int compare(ParticipantImpl one, ParticipantImpl another)
       {
-        if (Log.isDebugEnabled())
-        {
-          Log.debug("compare(Object " + participant + ", Object "
-              + otherParticipant + ")");
-        }
-        String lastName1 = ((Participant) participant).getLastName()
-            .toUpperCase();
-        String firstName1 = ((Participant) participant).getFirstName()
-            .toUpperCase();
-        String lastName2 = ((Participant) otherParticipant).getLastName()
-            .toUpperCase();
-        String firstName2 = ((Participant) otherParticipant).getFirstName()
-            .toUpperCase();
-        while(lastName1.startsWith(" "))
-        {
-        	lastName1 = lastName1.replaceFirst(" ", "");
-        }
-        while(lastName2.startsWith(" "))
-        {
-        	lastName2 = lastName2.replaceFirst(" ", "");
-        }
-        while(firstName1.startsWith(" "))
-        {
-        	firstName1 = firstName1.replaceFirst(" ", "");
-        }
-        while(firstName2.startsWith(" "))
-        {
-        	firstName2 = firstName2.replaceFirst(" ", "");
-        }
-        
-        if (!(lastName1.equals(lastName2)))
-          return Collator.getInstance().compare(lastName1, lastName2);
-        else
-          return Collator.getInstance().compare(firstName1, firstName2);
+          int comparison = Collator.getInstance().compare(one.user.getDisplayName(), another.user.getDisplayName());
+          return comparison == 0 ? DisplayIdComparator.compare(one, another) : comparison;
       }
     };
 
-    FirstNameComparator = new Comparator()
+
+    DisplayIdComparator = new Comparator<ParticipantImpl>()
     {
-      public int compare(Object participant, Object otherParticipant)
+      public int compare(ParticipantImpl one, ParticipantImpl another)
       {
-        if (Log.isDebugEnabled())
-        {
-          Log.debug("compare(Object " + participant + ", Object "
-              + otherParticipant + ")");
-        }
-        String lastName1 = ((Participant) participant).getLastName()
-            .toUpperCase();
-        String firstName1 = ((Participant) participant).getFirstName()
-            .toUpperCase();
-        String lastName2 = ((Participant) otherParticipant).getLastName()
-            .toUpperCase();
-        String firstName2 = ((Participant) otherParticipant).getFirstName()
-            .toUpperCase();
-        while(lastName1.startsWith(" "))
-        {
-        	lastName1 = lastName1.replaceFirst(" ", "");
-        }
-        while(lastName2.startsWith(" "))
-        {
-        	lastName2 = lastName2.replaceFirst(" ", "");
-        }
-        while(firstName1.startsWith(" "))
-        {
-        	firstName1 = firstName1.replaceFirst(" ", "");
-        }
-        while(firstName2.startsWith(" "))
-        {
-        	firstName2 = firstName2.replaceFirst(" ", "");
-        }
-
-        if (!(firstName1.equals(firstName2)))
-          return Collator.getInstance().compare(firstName1, firstName2);
-        else
-          return Collator.getInstance().compare(lastName1, lastName2);
-      }
-    };
-
-    UserIdComparator = new Comparator()
-    {
-      public int compare(Object participant, Object otherParticipant)
-      {
-        if (Log.isDebugEnabled())
-        {
-          Log.debug("compare(Object " + participant + ", Object "
-              + otherParticipant + ")");
-        }
-        String userId1 = ((Participant) participant).getId();
-        String userId2 = ((Participant) otherParticipant).getId();
-        String eid1 = "";
-        String eid2 = "";
-        
-        try {
-			eid1 = UserDirectoryService.getUserEid(userId1);
-			eid2 = UserDirectoryService.getUserEid(userId2);
-		} catch (UserNotDefinedException e) {
-			Log.error("UserNotDefinedException", e);
-		}
-
-		return Collator.getInstance().compare(eid1, eid2);
+		return Collator.getInstance().compare(one.user.getDisplayId(), another.user.getDisplayId());
 
       }
     };
     
-    RoleComparator = new Comparator()
+    RoleComparator = new Comparator<ParticipantImpl>()
     {
-      public int compare(Object participant, Object otherParticipant)
+      public int compare(ParticipantImpl one, ParticipantImpl another)
       {
-        if (Log.isDebugEnabled())
-        {
-          Log.debug("compare(Object " + participant + ", Object "
-              + otherParticipant + ")");
-        }
-        String role1 = ((Participant) participant).getRoleTitle().toUpperCase();
-        String role2 = ((Participant) otherParticipant).getRoleTitle().toUpperCase();
-        
-        String lastName1 = ((Participant) participant).getLastName().toUpperCase();
-	    String firstName1 = ((Participant) participant).getFirstName().toUpperCase();
-	    String lastName2 = ((Participant) otherParticipant).getLastName().toUpperCase();
-	    String firstName2 = ((Participant) otherParticipant).getFirstName().toUpperCase();
-	    
-	    while(lastName1.startsWith(" "))
-	    {
-	    	lastName1 = lastName1.replaceFirst(" ", "");
-	    }
-	    while(lastName2.startsWith(" "))
-	    {
-	    	lastName2 = lastName2.replaceFirst(" ", "");
-	    }
-	    while(firstName1.startsWith(" "))
-	    {
-	    	firstName1 = firstName1.replaceFirst(" ", "");
-	    }
-	    while(firstName2.startsWith(" "))
-	    {
-	    	firstName2 = firstName2.replaceFirst(" ", "");
-	    }
-	
-	    if (!(role1.equals(role2)))
-	    	return Collator.getInstance().compare(role1,role2);
-	    else if (!(lastName1.equals(lastName2)))
-	    	return Collator.getInstance().compare(lastName1, lastName2);
-	    else
-	    	return Collator.getInstance().compare(firstName1, firstName2);
-      }
-    };
-    
-    SectionsComparator = new Comparator()
-    {
-      public int compare(Object participant, Object otherParticipant)
-      {
-        if (Log.isDebugEnabled())
-        {
-          Log.debug("compare(Object " + participant + ", Object "
-              + otherParticipant + ")");
-        }
-        String sectionString1 = ((Participant) participant).getSectionsForDisplay().toUpperCase();
-        String sectionString2 = ((Participant) otherParticipant).getSectionsForDisplay().toUpperCase();
-
-        String lastName1 = ((Participant) participant).getLastName().toUpperCase();
-	    String firstName1 = ((Participant) participant).getFirstName().toUpperCase();
-	    String lastName2 = ((Participant) otherParticipant).getLastName().toUpperCase();
-	    String firstName2 = ((Participant) otherParticipant).getFirstName().toUpperCase();
-	    
-	    while(lastName1.startsWith(" "))
-	    {
-	    	lastName1 = lastName1.replaceFirst(" ", "");
-	    }
-	    while(lastName2.startsWith(" "))
-	    {
-	    	lastName2 = lastName2.replaceFirst(" ", "");
-	    }
-	    while(firstName1.startsWith(" "))
-	    {
-	    	firstName1 = firstName1.replaceFirst(" ", "");
-	    }
-	    while(firstName2.startsWith(" "))
-	    {
-	    	firstName2 = firstName2.replaceFirst(" ", "");
-	    }
-	
-	    if (!(sectionString1.equals(sectionString2)))
-	    	return Collator.getInstance().compare(sectionString1, sectionString2);
-	    else if (!(lastName1.equals(lastName2)))
-	    	return Collator.getInstance().compare(lastName1, lastName2);
-	    else
-	    	return Collator.getInstance().compare(firstName1, firstName2);
+	    	int comparison = Collator.getInstance().compare(one.roleTitle, another.roleTitle);
+	          return comparison == 0 ? DisplayNameComparator.compare(one, another) : comparison;
       }
     };
   }
 
-  public Profile getProfile()
-  {
-    Log.debug("getProfile()");
-    return profile;
-  }
-
-  public void setProfile(Profile profile)
-  {
-    if (Log.isDebugEnabled())
-    {
-      Log.debug("setProfile(Profile" + profile + ")");
-    }
-    this.profile = profile;    
-  }
-  
-  public void setEid(String eid)
-  {
-	  this.eid = eid;
-  }
-  
-  public String getEid()
-  {
-	  return eid;
-  }
-  public void setRoleTitle(String roleTitle)
-  {
-	  this.roleTitle = roleTitle;
-  }
-  
-  public String getRoleTitle()
-  {
-	  return roleTitle;
-  }
-  
-  public void setSections(List sections)
-  {
-	  this.sections = sections;
-  }
-  
-  public List getSections()
-  {
-	  return sections;
-  }
-  
-  public String getSectionsForDisplay()
-  {
-	  if (sectionsForDisplay != null)
-		  return sectionsForDisplay;
-	  
-	  sectionsForDisplay = "";
-	  for (int index=0; index < sections.size(); index++)
-	  {
-		  if (index == (sections.size() - 1))
-			  sectionsForDisplay += sections.get(index);
-		  else
-			  sectionsForDisplay += sections.get(index) + ", ";
-	  }
-	  return sectionsForDisplay;
-  }
+	public Profile getProfile()
+	{
+		return profile;
+	}
+	
+	public void setProfile(Profile profile)
+	{
+		this.profile = profile;
+	}
+	
+	public String getRoleTitle()
+	{
+		return roleTitle;
+	}
+	
+	public void setRoleTitle(String roleTitle)
+	{
+		this.roleTitle = roleTitle;
+	}
+	
+	public List<CourseSection> getSections()
+	{
+		return sections;
+	}
+	
+	public void setSections(List<CourseSection> sections)
+	{
+		this.sections = sections;
+	}
+	
+	public User getUser()
+	{
+		return user;
+	}
+	
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+	    
 
 }

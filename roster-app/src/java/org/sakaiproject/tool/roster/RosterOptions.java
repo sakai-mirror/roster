@@ -3,7 +3,7 @@
  * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2005, 2006 The Sakai Foundation.
+ * Copyright (c) 2007 The Sakai Foundation.
  * 
  * Licensed under the Educational Community License, Version 1.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,14 +18,12 @@
  * limitations under the License.
  *
  **********************************************************************************/
+package org.sakaiproject.tool.roster;
 
-package org.sakaiproject.api.app.roster;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-public interface RosterFunctions {
-   public static final String ROSTER_FUNCTION_PREFIX = "roster.";
-   
-   public static final String ROSTER_FUNCTION_VIEWALL = ROSTER_FUNCTION_PREFIX + "viewall";
-   public static final String ROSTER_FUNCTION_VIEWOFFICIALID = ROSTER_FUNCTION_PREFIX + "viewofficialid";
-   public static final String ROSTER_FUNCTION_VIEWHIDDEN = ROSTER_FUNCTION_PREFIX + "viewhidden";
-   public static final String ROSTER_FUNCTION_EXPORT = ROSTER_FUNCTION_PREFIX + "export";
+public class RosterOptions extends InitializableBean {
+	private static final Log log = LogFactory.getLog(RosterOptions.class);
+	
 }

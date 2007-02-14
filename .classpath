@@ -4,8 +4,6 @@
 	<classpathentry kind="src" path="roster-component-shared/src/java"/>
 	<classpathentry kind="src" path="roster-api/src/java"/>
 	<classpathentry kind="src" path="roster-app/src/webapp/WEB-INF"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jsf/jars/jsf-api-1.1.01.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jsf/jars/jsf-impl-1.1.01.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/profile"/>
@@ -21,5 +19,11 @@
 	<classpathentry kind="src" path="/site-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/privacy-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sections-app-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sections-api"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-lang/jars/commons-lang-2.1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-all-1.1.1.jar" sourcepath="/THIRD_PARTY_SRC/myfaces-1.1.1-src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cm-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
