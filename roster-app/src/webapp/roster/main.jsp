@@ -1,10 +1,13 @@
-<%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai"%>
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%
+<%@
+taglib uri="http://java.sun.com/jsf/html" prefix="h"%><%@
+taglib uri="http://java.sun.com/jsf/core" prefix="f"%><%@
+taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai"
+%><%
 response.setContentType("text/html; charset=UTF-8");
 %>
-
+<jsp:useBean id="msgs" class="org.sakaiproject.util.ResourceLoader" scope="session">
+   <jsp:setProperty name="msgs" property="baseName" value="org.sakaiproject.tool.roster.bundle.Messages"/>
+</jsp:useBean>
 
 <f:view>
 	<sakai:view_container title="#{msgs.facet_roster_list}">
@@ -67,7 +70,7 @@ response.setContentType("text/html; charset=UTF-8");
 			                    <h:outputText value="#{msgs.roster_table_header_id}" />
 			                </x:commandSortHeader>
 			            </f:facet>
-			            <h:outputText value="#{enrollment.user.displayId}"/>
+			            <h:outputText value="#{participant.user.displayId}"/>
 			        </h:column>
 			        
 			        <%/* A dynamic number of section columns will be appended here by the backing bean */%>

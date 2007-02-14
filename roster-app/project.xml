@@ -63,6 +63,16 @@
 		</dependency>
 		<dependency>
 			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-coursemanagement-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-sections-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-sections-app-util</artifactId>
 			<version>${sakai.version}</version>
             <properties>
@@ -104,6 +114,22 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-jsf-tool</artifactId>
+            <version>${sakai.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-jsf-app</artifactId>
+            <version>${sakai.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
 
 		<!-- Servlet APIs -->
 		<dependency>
@@ -138,7 +164,6 @@
 			</properties>
 		</dependency>
 
-        <!--For resourse bundle -->
         <dependency>
             <groupId>sakaiproject</groupId>
             <artifactId>sakai-profile-tool</artifactId>
@@ -152,6 +177,38 @@
 	    <groupId>commons-logging</groupId>
 	    <artifactId>commons-logging</artifactId>
 	    <version>1.0.4</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-lang</groupId>
+		<artifactId>commons-lang</artifactId>
+		<version>${sakai.commons.lang.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>commons-digester</groupId>
+		<artifactId>commons-digester</artifactId>
+		<version>1.6</version>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
+	</dependency>
+
+	<dependency>
+		<groupId>commons-codec</groupId>
+		<artifactId>commons-codec</artifactId>
+		<version>1.2</version>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
+	</dependency>
+
+	<dependency>
+		<groupId>commons-beanutils</groupId>
+		<artifactId>commons-beanutils</artifactId>
+		<version>1.7.0</version>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
 	</dependency>
 
     </dependencies>

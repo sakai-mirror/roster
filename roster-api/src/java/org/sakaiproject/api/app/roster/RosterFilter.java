@@ -1,9 +1,9 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/presence/trunk/presence-api/api/src/java/org/sakaiproject/presence/api/PresenceService.java $
- * $Id: PresenceService.java 7844 2006-04-17 13:06:02Z ggolden@umich.edu $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2005, 2006 The Sakai Foundation.
+ * Copyright (c) 2007 The Sakai Foundation.
  * 
  * Licensed under the Educational Community License, Version 1.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,28 +18,35 @@
  * limitations under the License.
  *
  **********************************************************************************/
-
 package org.sakaiproject.api.app.roster;
 
-import org.sakaiproject.api.app.profile.Profile;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
-import org.sakaiproject.user.api.User;
-
-import java.util.Map;
-
-
 /**
- * @author rshastri
+ * A filter used to limit the number of Participants returned by RosterManager.
+ * 
+ * @author <a href="mailto:jholtzman@berkeley.edu">jholtzman@berkeley.edu</a>
  *
  */
-public interface Participant 
-{
-  String SORT_BY_NAME = "displayName";
-  String SORT_BY_ID = "displayId";
-  String SORT_BY_ROLE = "role";
-  
-  public Profile getProfile();
-  public String getRoleTitle();
-  public Map<String, CourseSection> getSectionsMap();
-  public User getUser();
+public interface RosterFilter {
+	
+	/**
+	 * Gets the String used for searching names, IDs, and email addresses
+	 * @return
+	 */
+	public String getSearchFilter();
+	public void setSearchFilter(String searchFilter);
+
+	/**
+	 * Gets the String used for filtering sections.
+	 * @return
+	 */
+	public String getSectionFilter();
+	public void setSectionFilter(String sectionFilter);
+
+	/**
+	 * Gets the String used for filtering by user status
+	 * @return
+	 */
+	public String getStatusFilter();
+	public void setStatusFilter(String statusFilter);
+
 }

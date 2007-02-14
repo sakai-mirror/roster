@@ -22,7 +22,11 @@
 package org.sakaiproject.component.app.roster;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.io.Serializable;
 import java.text.Collator;
 
 import org.apache.commons.logging.Log;
@@ -36,13 +40,17 @@ import org.sakaiproject.user.api.User;
  * @author rshastri
  *
  */
-public class ParticipantImpl implements Participant
+public class ParticipantImpl implements Participant, Serializable
 {
-  private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
+	private static final long serialVersionUID = 1L;
+	private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
   protected User user;
   protected Profile profile;
   protected String roleTitle;
   protected List<CourseSection> sections;
+  
+  private Map<String, CourseSection> sectionsMap;
+  
   public static final Comparator<ParticipantImpl> DisplayNameComparator;
   public static final Comparator<ParticipantImpl> DisplayIdComparator;
   public static final Comparator<ParticipantImpl> RoleComparator;
@@ -125,9 +133,18 @@ public class ParticipantImpl implements Participant
 		this.roleTitle = roleTitle;
 	}
 	
-	public List<CourseSection> getSections()
+	public Map<String, CourseSection> getSectionsMap()
 	{
-		return sections;
+		if(sectionsMap == null) {
+			sectionsMap = new HashMap<String, CourseSection>();
+			if(sections != null) {
+				for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+					CourseSection section = iter.next();
+					sectionsMap.put(section.getCategory(), section);
+				}
+			}
+		}
+		return sectionsMap;
 	}
 	
 	public void setSections(List<CourseSection> sections)

@@ -56,6 +56,10 @@
             <property-name>sectionAwareness</property-name>
             <value>#{org_sakaiproject_section_api_SectionAwareness}</value>
         </managed-property>
+        <managed-property>
+            <property-name>cmService</property-name>
+            <value>#{org_sakaiproject_coursemanagement_api_CourseManagementService}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -86,6 +90,10 @@
             <property-name>prefs</property-name>
             <value>#{prefs}</value>
         </managed-property>
+        <managed-property>
+            <property-name>services</property-name>
+            <value>#{services}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -99,6 +107,10 @@
         <managed-property>
             <property-name>prefs</property-name>
             <value>#{prefs}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>services</property-name>
+            <value>#{services}</value>
         </managed-property>
     </managed-bean>
 

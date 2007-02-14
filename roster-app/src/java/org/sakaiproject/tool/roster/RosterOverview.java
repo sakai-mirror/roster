@@ -47,6 +47,7 @@ public class RosterOverview extends InitializableBean {
 	// Service & Bean References
 	protected FilteredProfileListingBean filter;
 	protected RosterPreferences prefs;
+	protected ServicesBean services;
 
 	// Service & Bean Setters & Getters
 	public FilteredProfileListingBean getFilter() {
@@ -61,11 +62,14 @@ public class RosterOverview extends InitializableBean {
 	public void setPrefs(RosterPreferences prefs) {
 		this.prefs = prefs;
 	}
+	public void setServices(ServicesBean services) {
+		this.services = services;
+	}
 
 	// UI method calls
 	
 	public boolean isRenderModifyMembersInstructions() {
-		return filter.rosterManager.currentUserHasSiteUpdatePerm();
+		return services.rosterManager.currentUserHasSiteUpdatePerm();
 	}
 
 	/**
@@ -78,7 +82,7 @@ public class RosterOverview extends InitializableBean {
 	public boolean isRenderPrivacyMessage() {
 		String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
 		if (msgEnabled != null && msgEnabled.equalsIgnoreCase("true")
-				&& ! filter.rosterManager.currentUserHasViewHiddenPerm()) {
+				&& ! services.rosterManager.currentUserHasViewHiddenPerm()) {
 			return true;
 		} else {
 			return false;
@@ -100,7 +104,7 @@ public class RosterOverview extends InitializableBean {
 			int colpos = 0;
 			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colpos++) {
 				String category = (String)iter.next();
-				String categoryName = courseManagementService.getSectionCategoryDescription(category);
+				String categoryName = services.cmService.getSectionCategoryDescription(category);
 
 				UIColumn col = new UIColumn();
 				col.setId(SECTION_COLUMN_PREFIX + colpos);
@@ -110,7 +114,6 @@ public class RosterOverview extends InitializableBean {
                 sortHeader.setRendererType("org.apache.myfaces.SortHeader");
                 sortHeader.setArrow(true);
                 sortHeader.setColumnName(category);
-                //sortHeader.setActionListener(app.createMethodBinding("#{rosterBean.sort}", new Class[] {ActionEvent.class}));
 
 				HtmlOutputText headerText = new HtmlOutputText();
 				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colpos);
@@ -122,7 +125,7 @@ public class RosterOverview extends InitializableBean {
 				HtmlOutputText contents = new HtmlOutputText();
 				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colpos);
 				contents.setValueBinding("value",
-					app.createValueBinding("#{enrollment.categoryToSectionMap['" + category + "'].title}"));
+					app.createValueBinding("#{participant.sectionsMap['" + category + "'].title}"));
 				col.getChildren().add(contents);
 				rosterDataTable.getChildren().add(col);
 			}
@@ -139,7 +142,7 @@ public class RosterOverview extends InitializableBean {
 	 */
 	protected Set<String> getUsedCategories() {
 		Set<String> used = new HashSet<String>();
-		List sections = filter.sectionAwareness.getSections(getSiteContext());
+		List sections = services.sectionAwareness.getSections(getSiteContext());
 		for(Iterator iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = (CourseSection)iter.next();
 			used.add(StringUtils.trimToNull(section.getCategory()));

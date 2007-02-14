@@ -1,9 +1,9 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/presence/trunk/presence-api/api/src/java/org/sakaiproject/presence/api/PresenceService.java $
- * $Id: PresenceService.java 7844 2006-04-17 13:06:02Z ggolden@umich.edu $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2005, 2006 The Sakai Foundation.
+ * Copyright (c) 2007 The Sakai Foundation.
  * 
  * Licensed under the Educational Community License, Version 1.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,28 +18,23 @@
  * limitations under the License.
  *
  **********************************************************************************/
+package org.sakaiproject.tool.roster;
 
-package org.sakaiproject.api.app.roster;
-
-import org.sakaiproject.api.app.profile.Profile;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
-import org.sakaiproject.user.api.User;
-
-import java.util.Map;
-
-
-/**
- * @author rshastri
- *
- */
-public interface Participant 
-{
-  String SORT_BY_NAME = "displayName";
-  String SORT_BY_ID = "displayId";
-  String SORT_BY_ROLE = "role";
-  
-  public Profile getProfile();
-  public String getRoleTitle();
-  public Map<String, CourseSection> getSectionsMap();
-  public User getUser();
+public class RosterPreferences {
+	protected String sortColumn;
+	protected boolean sortAscending;
+	
+	public boolean isSortAscending() {
+		return sortAscending;
+	}
+	public void setSortAscending(boolean sortAscending) {
+		this.sortAscending = sortAscending;
+	}
+	public String getSortColumn() {
+		return sortColumn;
+	}
+	public void setSortColumn(String sortColumn) {
+		this.sortColumn = sortColumn;
+	}
+	
 }

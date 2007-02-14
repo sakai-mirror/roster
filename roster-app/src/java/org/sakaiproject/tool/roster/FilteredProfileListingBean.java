@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFilter;
-import org.sakaiproject.api.app.roster.RosterManager;
-import org.sakaiproject.section.api.SectionAwareness;
 
 public class FilteredProfileListingBean extends InitializableBean implements Serializable {
 
