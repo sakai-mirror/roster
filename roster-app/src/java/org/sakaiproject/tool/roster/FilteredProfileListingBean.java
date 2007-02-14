@@ -35,7 +35,6 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		this.services = services;
 	}
 	
-	
 	// A list of decorated users
 	protected List<Participant> participants;
 
@@ -59,5 +58,4 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public void setFilter(RosterFilter filter) {
 		this.filter = filter;
 	}
-
 }
