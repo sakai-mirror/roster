@@ -66,6 +66,12 @@ public interface RosterManager
   public boolean currentUserHasViewOfficialIdPerm();
   
   /**
+   * Can the current user view section memberships?
+   * @return
+   */
+  public boolean currentUserHasViewSectionMembershipsPerm();
+  
+  /**
    * Check to see if the site has any sections/groups
    * @return
    */
@@ -120,13 +126,6 @@ public interface RosterManager
    * @return
    */
   public Participant getParticipantById(String participantId);
-
-  /**
-   * returns sections that user has permission to view
-   * 
-   * @return
-   */
-  public List<CourseSection> getViewableSectionsForUser(User user);
   
   /**
    * Gets the set of Sections (as defined in the CM API) that are attached to this site
@@ -135,5 +134,7 @@ public interface RosterManager
    * @return
    */
   public Set<Section> getOfficialSectionsInSite();
+  
+  
   
 }

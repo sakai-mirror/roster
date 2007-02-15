@@ -34,7 +34,8 @@ import org.sakaiproject.tool.cover.ToolManager;
 public class InitializableBean implements PhaseAware {
 
 	private static final Log logger = LogFactory.getLog(InitializableBean.class);
-
+	protected static final String MESSAGE_BUNDLE = "org.sakaiproject.tool.roster.bundle.Messages";
+	
 	private transient boolean notValidated;
 
 	/**

@@ -102,8 +102,10 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 
 	private Participant createParticipantByUser(User user, Profile profile) {
+		Set<String> userIds = new HashSet<String>();
+		userIds.add(user.getId());
 		return new ParticipantImpl(user, profile, getUserRoleTitle(user),
-				getViewableSectionsForUser(user));
+				getSectionsMap(userIds).get(user.getId()));
 	}
 
 	/*
@@ -120,7 +122,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 				User user = userDirectoryService().getUser(participantId);
 				Profile profile = profileManager().getUserProfileById(
 						participantId);
-				// TODO: individual ferpa checks
 				return createParticipantByUser(user, profile);
 			} catch (UserNotDefinedException e) {
 				LOG.error("getParticipantById: " + e.getMessage(), e);
@@ -182,6 +183,9 @@ public abstract class RosterManagerImpl implements RosterManager {
 		} else {
 			participants = getPublicParticipants(currentUser);
 		}
+
+		// TODO Filter the partipant list
+		
 		return participants;
 	}
 
@@ -198,17 +202,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 
 		// Build a list of the sections that this user leads
-		List<CourseSection> allSections = sectionService().getSections(getSiteId());
-		List<CourseSection> usersSections = new ArrayList<CourseSection>();
-		for(Iterator<CourseSection> iter = allSections.iterator(); iter.hasNext();)
-		{
-			CourseSection section = iter.next();
-			if(sectionService().isSectionMemberInRole(section.getUuid(), currentUser.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
-					|| sectionService().isSectionMemberInRole(section.getUuid(), currentUser.getId(), org.sakaiproject.section.api.facade.Role.TA))
-			{
-				usersSections.add(section);
-			}
-		}
 
 		Map<String, List<CourseSection>> filteredSectionsMap = new HashMap<String, List<CourseSection>>();
 		
@@ -218,7 +211,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 			Entry<String, List<CourseSection>> entry = iter.next();
 			List entrySections = entry.getValue();
 			// If the list of sections that the user leads contains any of the entry's sections, add it to our filtered list
-			for(Iterator<CourseSection> ledSectionsIter = usersSections.iterator(); ledSectionsIter.hasNext();)
+			for(Iterator<CourseSection> ledSectionsIter = getViewableSectionsForCurrentUser().iterator(); ledSectionsIter.hasNext();)
 			{
 				if(entrySections.contains(ledSectionsIter.next()))
 				{
@@ -284,21 +277,21 @@ public abstract class RosterManagerImpl implements RosterManager {
 				String userId = participant.getUser().getUserUid();
 				if( ! userIds.contains(userId)) continue;
 				
-				// If this user isn't in the map, add them
-				if(sectionsMap.containsKey(userId))
-				{
-					List<CourseSection> list = new ArrayList<CourseSection>();
-					list.add(section);
-					sectionsMap.put(userId, list);
-				}
-				else
 				// The user was already in the map, so add this section to the list
+				if(sectionsMap.containsKey(userId))
 				{
 					List<CourseSection> list = sectionsMap.get(userId);
 					if( ! list.contains(section))
 					{
 						list.add(section);
 					}
+				}
+				else
+				{
+					// If this user isn't in the map, add them
+					List<CourseSection> list = new ArrayList<CourseSection>();
+					list.add(section);
+					sectionsMap.put(userId, list);
 				}
 			}
 			
@@ -488,30 +481,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return ! sectionService().getSections(getSiteId()).isEmpty();
 	}
 
-	/**
-	 * returns sections that user has permission to view
-	 * 
-	 * @return
-	 */
-	public List<CourseSection> getViewableSectionsForUser(User user) {
-		List<CourseSection> viewableSections = new ArrayList<CourseSection>();
-		List<CourseSection> sections = sectionService().getSections(
-				getSiteId());
-		for (Iterator iter = sections.iterator(); iter.hasNext();) {
-			CourseSection section = (CourseSection) iter.next();
-			if (sectionService().isSectionMemberInRole(section.getUuid(),
-					user.getId(), org.sakaiproject.section.api.facade.Role.TA)
-					|| sectionService()
-							.isSectionMemberInRole(
-									section.getUuid(),
-									user.getId(),
-									org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
-				viewableSections.add(section);
-			}
-		}
-		return viewableSections;
-	}
-
 	public RosterFilter newFilter(String searchFilter, String sectionFilter,
 			String statusFilter) {
 		return new LocalRosterFilter(searchFilter, sectionFilter, statusFilter);
@@ -529,6 +498,30 @@ public abstract class RosterManagerImpl implements RosterManager {
 		}
 		return sections;
 	  }
+	  
+
+	public boolean currentUserHasViewSectionMembershipsPerm() {
+		User user = userDirectoryService().getCurrentUser();
+		return (sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
+				|| sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.TA));
+	}
+
+	public List getViewableSectionsForCurrentUser() {
+		User user = userDirectoryService().getCurrentUser();
+		List<CourseSection> allSections = sectionService().getSections(getSiteId());
+		List<CourseSection> usersSections = new ArrayList<CourseSection>();
+		for(Iterator<CourseSection> iter = allSections.iterator(); iter.hasNext();)
+		{
+			CourseSection section = iter.next();
+			if(sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
+					|| sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.TA))
+			{
+				usersSections.add(section);
+			}
+		}
+		return usersSections;
+	}
+
 
 	public class LocalRosterFilter implements RosterFilter, Serializable {
 		private static final long serialVersionUID = 1L;

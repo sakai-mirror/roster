@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.custom.sortheader.HtmlCommandSortHeader;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 public class RosterOverview extends InitializableBean {
@@ -46,8 +47,6 @@ public class RosterOverview extends InitializableBean {
 	
 	// Service & Bean References
 	protected FilteredProfileListingBean filter;
-	protected RosterPreferences prefs;
-	protected ServicesBean services;
 
 	// Service & Bean Setters & Getters
 	public FilteredProfileListingBean getFilter() {
@@ -56,20 +55,11 @@ public class RosterOverview extends InitializableBean {
 	public void setFilter(FilteredProfileListingBean filter) {
 		this.filter = filter;
 	}
-	public RosterPreferences getPrefs() {
-		return prefs;
-	}
-	public void setPrefs(RosterPreferences prefs) {
-		this.prefs = prefs;
-	}
-	public void setServices(ServicesBean services) {
-		this.services = services;
-	}
 
 	// UI method calls
 	
 	public boolean isRenderModifyMembersInstructions() {
-		return services.rosterManager.currentUserHasSiteUpdatePerm();
+		return filter.services.rosterManager.currentUserHasSiteUpdatePerm();
 	}
 
 	/**
@@ -82,7 +72,7 @@ public class RosterOverview extends InitializableBean {
 	public boolean isRenderPrivacyMessage() {
 		String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
 		if (msgEnabled != null && msgEnabled.equalsIgnoreCase("true")
-				&& ! services.rosterManager.currentUserHasViewHiddenPerm()) {
+				&& ! filter.services.rosterManager.currentUserHasViewHiddenPerm()) {
 			return true;
 		} else {
 			return false;
@@ -96,34 +86,91 @@ public class RosterOverview extends InitializableBean {
 	public void setRosterDataTable(HtmlDataTable rosterDataTable) {
 		Set usedCategories = getUsedCategories();
 		
+		// Do we need to build the table?
 		if (rosterDataTable.findComponent(SECTION_COLUMN_PREFIX + "0") == null) {
 			Application app = FacesContext.getCurrentInstance().getApplication();
 
+			// Can this user see section memberships?
+			boolean displaySectionMemberships = filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
+			if(! displaySectionMemberships) return;
+
+			boolean displayStatusAndCredits = filter.isDisplayEnrollmentDetails();
+			// Add status and credits columns, if necessary
+			if(displayStatusAndCredits) {
+				// Status Column
+				UIColumn statusCol = new UIColumn();
+				statusCol.setId("status");
+
+                HtmlCommandSortHeader statusSortHeader = new HtmlCommandSortHeader();
+                statusSortHeader.setId("status");
+                statusSortHeader.setRendererType("org.apache.myfaces.SortHeader");
+                statusSortHeader.setArrow(true);
+                statusSortHeader.setColumnName("status");
+
+				HtmlOutputText statusHeaderText = new HtmlOutputText();
+				statusHeaderText.setId("statusHdrTxt");
+				statusHeaderText.setValue(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), MESSAGE_BUNDLE, "facet_status"));
+
+                statusSortHeader.getChildren().add(statusHeaderText);
+                statusCol.setHeader(statusSortHeader);
+
+				HtmlOutputText statusContents = new HtmlOutputText();
+				statusContents.setId("status_cell");
+				statusContents.setValueBinding("value",
+					app.createValueBinding("#{participant.status}"));
+				statusCol.getChildren().add(statusContents);
+				rosterDataTable.getChildren().add(statusCol);
+
+				// Credits Column
+				UIColumn creditsCol = new UIColumn();
+				creditsCol.setId("credits");
+
+                HtmlCommandSortHeader creditsSortHeader = new HtmlCommandSortHeader();
+                creditsSortHeader.setId("credits");
+                creditsSortHeader.setRendererType("org.apache.myfaces.SortHeader");
+                creditsSortHeader.setArrow(true);
+                creditsSortHeader.setColumnName("credits");
+
+				HtmlOutputText creditsHeaderText = new HtmlOutputText();
+				creditsHeaderText.setId("creditsHdrTxt");
+				creditsHeaderText.setValue(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), MESSAGE_BUNDLE, "facet_credits"));
+
+                creditsSortHeader.getChildren().add(creditsHeaderText);
+                creditsCol.setHeader(creditsSortHeader);
+
+				HtmlOutputText creditsContents = new HtmlOutputText();
+				creditsContents.setId("credits_cell");
+				creditsContents.setValueBinding("value",
+					app.createValueBinding("#{participant.credits}"));
+				creditsCol.getChildren().add(creditsContents);
+				rosterDataTable.getChildren().add(creditsCol);
+			}
+			
 			// Add columns for each category. Be sure to create unique IDs
 			// for all child components.
-			int colpos = 0;
-			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colpos++) {
+			int colPos = 0;
+			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colPos++) {
 				String category = (String)iter.next();
-				String categoryName = services.cmService.getSectionCategoryDescription(category);
+				String categoryName = filter.services.cmService.getSectionCategoryDescription(category);
 
 				UIColumn col = new UIColumn();
-				col.setId(SECTION_COLUMN_PREFIX + colpos);
+				col.setId(SECTION_COLUMN_PREFIX + colPos);
 
                 HtmlCommandSortHeader sortHeader = new HtmlCommandSortHeader();
-                sortHeader.setId(SECTION_COLUMN_PREFIX + "sorthdr_" + colpos);
+                sortHeader.setId(SECTION_COLUMN_PREFIX + "sorthdr_" + colPos);
                 sortHeader.setRendererType("org.apache.myfaces.SortHeader");
                 sortHeader.setArrow(true);
                 sortHeader.setColumnName(category);
 
 				HtmlOutputText headerText = new HtmlOutputText();
-				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colpos);
+				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colPos);
 				headerText.setValue(categoryName);
 
                 sortHeader.getChildren().add(headerText);
                 col.setHeader(sortHeader);
 
 				HtmlOutputText contents = new HtmlOutputText();
-				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colpos);
+				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colPos);
 				contents.setValueBinding("value",
 					app.createValueBinding("#{participant.sectionsMap['" + category + "'].title}"));
 				col.getChildren().add(contents);
@@ -142,7 +189,7 @@ public class RosterOverview extends InitializableBean {
 	 */
 	protected Set<String> getUsedCategories() {
 		Set<String> used = new HashSet<String>();
-		List sections = services.sectionAwareness.getSections(getSiteContext());
+		List sections = filter.services.sectionAwareness.getSections(getSiteContext());
 		for(Iterator iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = (CourseSection)iter.next();
 			used.add(StringUtils.trimToNull(section.getCategory()));

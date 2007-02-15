@@ -42,6 +42,11 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public void setServices(ServicesBean services) {
 		this.services = services;
 	}
+
+	protected RosterPreferences prefs;
+	public void setPrefs(RosterPreferences prefs) {
+		this.prefs = prefs;
+	}
 	
 	// A list of decorated users
 	protected List<Participant> participants;
@@ -56,6 +61,10 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		return participants;
 	}
 
+	/**
+	 * Gets a Map of roles to the number of users in the site with those roles.
+	 * @return
+	 */
 	public Map<String, Integer> getRoleCounts() {
 		Map<String, Integer> map = new TreeMap<String, Integer>();
 		for(Iterator<Participant> iter = getParticipants().iterator(); iter.hasNext();) {
@@ -80,11 +89,9 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	 */
 	public boolean isDisplayEnrollmentDetails() {
 		Set<Section> officialSections = services.rosterManager.getOfficialSectionsInSite();
-		Set<String> courseOfferingEids = new HashSet<String>();
 		int count = 0;
 		for(Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
 			Section section = iter.next();
-			courseOfferingEids.add(section.getCourseOfferingEid());
 			EnrollmentSet es = section.getEnrollmentSet();
 			if(es != null) {
 				count++;
@@ -92,13 +99,8 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		}
 		if(count == 0) return false;
 		if(count == 1) return true;
-		
-		// Are all of the sections part of a cross listed course?
-		Set<CourseOffering> courseOfferings = new HashSet<CourseOffering>();
-		for(Iterator<String> iter = courseOfferingEids.iterator(); iter.hasNext();) {
-			// FIXME
-//			courseOfferings.add(iter.next());
-		}
+
+		// TODO Deal with cross listings.  Multiple cross listed courses should still show enrollment details
 		return false;
 	}
 	

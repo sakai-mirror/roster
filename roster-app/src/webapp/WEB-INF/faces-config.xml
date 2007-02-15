@@ -80,6 +80,10 @@
             <property-name>services</property-name>
             <value>#{services}</value>
         </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{prefs}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -90,14 +94,6 @@
             <property-name>filter</property-name>
             <value>#{filter}</value>
         </managed-property>
-        <managed-property>
-            <property-name>prefs</property-name>
-            <value>#{prefs}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>services</property-name>
-            <value>#{services}</value>
-        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -107,14 +103,6 @@
         <managed-property>
             <property-name>filter</property-name>
             <value>#{filter}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>prefs</property-name>
-            <value>#{prefs}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>services</property-name>
-            <value>#{services}</value>
         </managed-property>
     </managed-bean>
 
