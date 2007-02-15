@@ -56,6 +56,9 @@ public interface Participant
    * @param id
    */
   public  void setId(String id);
+
+  public String getDisplayId();
+  public void setDisplayId(String displayId);
   
   /**
    * @return
