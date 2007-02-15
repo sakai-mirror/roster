@@ -39,6 +39,7 @@ public class ParticipantImpl implements Participant
   private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
   private String id;
   private String eid;
+  private String displayId;
   private String firstName;
   private String lastName;
   private Profile profile;
@@ -53,7 +54,8 @@ public class ParticipantImpl implements Participant
    * @param lname
    * @param profile TODO
    */
-  public ParticipantImpl(String id, String fname, String lname, Profile profile)
+  
+  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections)
   {
     if (Log.isDebugEnabled())
     {
@@ -61,10 +63,11 @@ public class ParticipantImpl implements Participant
           + ", String " + lname + ")");
     }
     setId(id);
+    setEid(eid);
+    setDisplayId(displayId);
     setFirstName(fname);
     setLastName(lname);
     setProfile(profile);
-    setEid(id);
   }
 
   public ParticipantImpl(String id, String fname, String lname, Profile profile, String eid)
@@ -121,6 +124,16 @@ public class ParticipantImpl implements Participant
       Log.debug("setId(String" + id + ")");
     }
     this.id = id;
+  }
+
+  public String getDisplayId()
+  {
+  	return displayId;
+  }
+
+  public void setDisplayId(String displayId)
+  {
+  	this.displayId = displayId;
   }
 
   /* (non-Javadoc)

@@ -135,7 +135,7 @@
 								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortUserIdAscending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_asc}" />
 						   	</h:commandLink>
 						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.eid}" /> 						
+						<h:outputText value="#{searchResultAll.participant.displayId}" /> 						
 					</h:column>
 				 </h:dataTable> 
 
