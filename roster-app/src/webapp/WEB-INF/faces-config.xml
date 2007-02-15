@@ -60,6 +60,10 @@
             <property-name>cmService</property-name>
             <value>#{org_sakaiproject_coursemanagement_api_CourseManagementService}</value>
         </managed-property>
+        <managed-property>
+            <property-name>authzService</property-name>
+            <value>#{org_sakaiproject_authz_api_AuthzGroupService}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>

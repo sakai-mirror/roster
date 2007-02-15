@@ -51,6 +51,8 @@ import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
 import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
@@ -72,6 +74,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public abstract UserDirectoryService userDirectoryService();
 	public abstract AuthzGroupService authzGroupService();
 	public abstract SecurityService securityService();
+	public abstract CourseManagementService cmService();
 	
 	public void init() {
 		LOG.debug("init()");
@@ -156,8 +159,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 */
 	public List<Participant> getRoster(RosterFilter filter) {
 		LOG.debug("getRoster called with filter " + filter);
-		if (filter == null)
-			filter = new LocalRosterFilter();
+		if (filter == null) filter = new LocalRosterFilter();
 
 		List<Participant> participants;
 
@@ -518,6 +520,15 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public RosterFilter newFilter() {
 		return new LocalRosterFilter();
 	}
+
+	  public Set<Section> getOfficialSectionsInSite() {
+		  Set<Section> sections = new HashSet<Section>();
+		  Set<String> providerIds = authzGroupService().getProviderIds(getSiteId());
+		for(Iterator<String> iter = providerIds.iterator(); iter.hasNext();) {
+			sections.add(cmService().getSection(iter.next()));
+		}
+		return sections;
+	  }
 
 	public class LocalRosterFilter implements RosterFilter, Serializable {
 		private static final long serialVersionUID = 1L;

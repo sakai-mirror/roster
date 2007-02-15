@@ -21,6 +21,7 @@
 package org.sakaiproject.tool.roster;
 
 import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
 
@@ -30,7 +31,8 @@ public class ServicesBean {
 	protected RosterManager rosterManager;
 	protected SectionAwareness sectionAwareness;
 	protected CourseManagementService cmService;
-
+	protected AuthzGroupService authzService;
+	
 	// Service injection
 	public void setRosterManager(RosterManager rosterManager) {
 		this.rosterManager = rosterManager;
@@ -40,6 +42,9 @@ public class ServicesBean {
 	}
 	public void setCmService(CourseManagementService cmService) {
 		this.cmService = cmService;
+	}
+	public void setAuthzService(AuthzGroupService authzService) {
+		this.authzService = authzService;
 	}
 
 }

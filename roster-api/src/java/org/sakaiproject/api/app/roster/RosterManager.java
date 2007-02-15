@@ -22,7 +22,9 @@
 package org.sakaiproject.api.app.roster;
 
 import java.util.List;
+import java.util.Set;
 
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
@@ -125,4 +127,13 @@ public interface RosterManager
    * @return
    */
   public List<CourseSection> getViewableSectionsForUser(User user);
+  
+  /**
+   * Gets the set of Sections (as defined in the CM API) that are attached to this site
+   * via the site's provider id.
+   * 
+   * @return
+   */
+  public Set<Section> getOfficialSectionsInSite();
+  
 }
