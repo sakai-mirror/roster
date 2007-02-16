@@ -52,16 +52,6 @@
             <version>${sakai.version}</version>
         </dependency>
         <dependency>
-						<groupId>sakaiproject</groupId>
-						<artifactId>sakai-site-api</artifactId>
-						<version>${sakai.version}</version>
-				</dependency>	
-				<dependency>
-						<groupId>sakaiproject</groupId>
-						<artifactId>sakai-util-api</artifactId>
-						<version>${sakai.version}</version>
-				</dependency>	
-        <dependency>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
           <version>1.0.4</version>

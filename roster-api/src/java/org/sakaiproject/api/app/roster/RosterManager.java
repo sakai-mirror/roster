@@ -23,72 +23,40 @@ package org.sakaiproject.api.app.roster;
 
 import java.util.List;
 
+import org.sakaiproject.authz.api.Role;
+
 /**
  * @author rshastri 
  */
 public interface RosterManager
 {
-  // Roster filters
-  public static final String VIEW_ALL_SECT = "all";
-  public static final String VIEW_MY_SECT = "my";
-  public static final String VIEW_NO_SECT = "no";
-	  
   public void init();
 
   public void destroy();
 
   /**
-   * Check for export permission (roster.export)
+   * List all the Roles in site.
    * @return
    */
-  public boolean currentUserHasExportPerm();
-  
-  /**
-   * Check for view all permission (roster.viewall)
-   * @return
-   */
-  public boolean currentUserHasViewAllPerm();
-  
-  /**
-   * Check for view section permission (roster.viewsection)
-   * @return
-   */
-  public boolean currentUserHasViewSectionPerm();
-  
-  /**
-   * Check for view hidden permission (roster.viewhidden)
-   * @return
-   */
-  public boolean currentUserHasViewHiddenPerm();
-  
-  /**
-   * Check for view official id permission (roster.viewofficialid) 
-   * @return
-   */
-  public boolean currentUserHasViewOfficialIdPerm();
-  
-  /**
-   * Check for site update permission (site.upd) 
-   * @return
-   */
-  public boolean currentUserHasSiteUpdatePerm();
-  
-  /**
-   * Check to see if the site has any sections/groups
-   * @return
-   */
-  public boolean siteHasSections();
-  
-  /**
-   *  Get the sections viewable by current user
-   * @return
-   */
-  public List getViewableSectionsForCurrentUser();
+  public List getRoles();
 
   /**
-   * @return List of all the participants in the site viewable to current user
+   * List all the site users by a given role 
+   * @param roleId
+   * @return
    */
-  public List getRoster(String filter);
+  public List getParticipantByRole(Role role);
+
+  /**
+   * Check for site.upd access for current user 
+   * @return
+   */
+  public boolean isInstructor();
+
+  /**
+   * @return List of all the participants in the site
+   */
+  public List getAllUsers();
 
   
   /**

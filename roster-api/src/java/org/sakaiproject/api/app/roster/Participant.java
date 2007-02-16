@@ -22,7 +22,6 @@
 package org.sakaiproject.api.app.roster;
 
 import org.sakaiproject.api.app.profile.Profile;
-import java.util.List;
 
 
 /**
@@ -33,10 +32,7 @@ public interface Participant
 {
   String SORT_BY_LAST_NAME = "lastName";
   String SORT_BY_FIRST_NAME = "firstName";
-  String SORT_BY_ID = "id";
-  String SORT_BY_ROLE = "role";
-  String SORT_BY_SECTIONS = "sections";
-  
+  String SORT_BY_ID = "userId";
   /**
    * @return FirstName 
    */
@@ -57,19 +53,6 @@ public interface Participant
    */
   public  void setId(String id);
 
-  public String getDisplayId();
-  public void setDisplayId(String displayId);
-  
-  /**
-   * @return
-   */
-  public  String getEid();
-
-  /**
-   * @param eid
-   */
-  public  void setEid(String eid);
-
   /**
    * @return
    */
@@ -89,34 +72,4 @@ public interface Participant
    * @param profile
    */
   public void setProfile(Profile profile);
-  /**
-   * @return
-   */
-  public String getRoleTitle();
-  
-  /**
-   * 
-   * @param roleTitle
-   */
-  public void setRoleTitle(String roleTitle);
-  
-  /**
-   * 
-   * @return List of groups/sections Participant is a member of
-   */
-  public List getSections();
-  
-  /**
-   * 
-   * @param sections 
-   * List of groups/sections Participant is a member of
-   */
-  public void setSections(List sections);
-  
-  /**
-   * Display version of section membership
-   * @return
-   */
-  public String getSectionsForDisplay();
-  
 }
