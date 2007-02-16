@@ -23,40 +23,72 @@ package org.sakaiproject.api.app.roster;
 
 import java.util.List;
 
-import org.sakaiproject.authz.api.Role;
-
 /**
  * @author rshastri 
  */
 public interface RosterManager
 {
+  // Roster filters
+  public static final String VIEW_ALL_SECT = "all";
+  public static final String VIEW_MY_SECT = "my";
+  public static final String VIEW_NO_SECT = "no";
+	  
   public void init();
 
   public void destroy();
 
   /**
-   * List all the Roles in site.
+   * Check for export permission (roster.export)
    * @return
    */
-  public List getRoles();
-
+  public boolean currentUserHasExportPerm();
+  
   /**
-   * List all the site users by a given role 
-   * @param roleId
+   * Check for view all permission (roster.viewall)
    * @return
    */
-  public List getParticipantByRole(Role role);
-
+  public boolean currentUserHasViewAllPerm();
+  
   /**
-   * Check for site.upd access for current user 
+   * Check for view section permission (roster.viewsection)
    * @return
    */
-  public boolean isInstructor();
+  public boolean currentUserHasViewSectionPerm();
+  
+  /**
+   * Check for view hidden permission (roster.viewhidden)
+   * @return
+   */
+  public boolean currentUserHasViewHiddenPerm();
+  
+  /**
+   * Check for view official id permission (roster.viewofficialid) 
+   * @return
+   */
+  public boolean currentUserHasViewOfficialIdPerm();
+  
+  /**
+   * Check for site update permission (site.upd) 
+   * @return
+   */
+  public boolean currentUserHasSiteUpdatePerm();
+  
+  /**
+   * Check to see if the site has any sections/groups
+   * @return
+   */
+  public boolean siteHasSections();
+  
+  /**
+   *  Get the sections viewable by current user
+   * @return
+   */
+  public List getViewableSectionsForCurrentUser();
 
   /**
-   * @return List of all the participants in the site
+   * @return List of all the participants in the site viewable to current user
    */
-  public List getAllUsers();
+  public List getRoster(String filter);
 
   
   /**

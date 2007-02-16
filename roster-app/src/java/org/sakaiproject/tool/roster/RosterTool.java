@@ -21,22 +21,34 @@
 
 package org.sakaiproject.tool.roster;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterManager;
-import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
@@ -47,6 +59,9 @@ public class RosterTool
 {
   private final static Log Log = LogFactory.getLog(RosterTool.class);
   private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
+ 
+  private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
+  private static final String PARTICIPANT_ID = "participantId";
 
   private String idPhotoText = msgs.getString("show_id_photo");
   private String customPhotoText = msgs.getString("show_pic");
@@ -59,20 +74,29 @@ public class RosterTool
 
   private boolean showIdPhoto = false;
   private boolean showCustomPhoto = false;
-  private boolean reloadAllUsers = true;
-  private boolean reloadRoles = true;
+  private boolean reloadRoster = true;
   private String facet = "";
-  private String displayView = msgs.getString("view_by_role");
   private int allUserCount = 0;
-  private List roles = null;
-  private List allDecoUsers = null;
-  private List alluserList = null;
+  private List decoRoster = null;
+  private List rosterList = null;
+  private List menuItems = null;
+  private boolean rosterProcessed = false;
 
   // sort column
   private boolean sortLastNameDescending = false;
   private boolean sortUserIdDescending = false;
-  private boolean sortLastNameAscending = true;
+  private boolean sortRoleDescending = false;
+  private boolean sortSectionsDescending = false;
+  private boolean sortLastNameAscending = false;
   private boolean sortUserIdAscending = false;
+  private boolean sortRoleAscending = true;  // default to sort by role
+  private boolean sortSectionsAscending = false;
+  
+  public static final String CSV_DELIM = ",";
+  public static final String SORT_ASC = "ascending";
+  public static final String SORT_DESC = "descending";
+  
+  private String selectedView = RosterManager.VIEW_NO_SECT;
 
   public RosterTool()
   {
@@ -114,11 +138,11 @@ public class RosterTool
     Log.debug("toggleUserIdSort()");
     if (sortUserIdAscending)
     {
-      setSort("descending", msgs.getString("sort_user_id"));
+      setSort(SORT_DESC, Participant.SORT_BY_ID);
     }
     else
     {
-      setSort("ascending", msgs.getString("sort_user_id"));
+      setSort(SORT_ASC, Participant.SORT_BY_ID);
     }
     return "main";
   }
@@ -128,59 +152,137 @@ public class RosterTool
     Log.debug("toggleLastNameSort()");
     if (sortLastNameAscending)
     {
-      setSort("descending", msgs.getString("sort_last_name"));
+      setSort(SORT_DESC, Participant.SORT_BY_LAST_NAME);
     }
     else
     {
-      setSort("ascending", msgs.getString("sort_last_name"));
+      setSort(SORT_ASC, Participant.SORT_BY_LAST_NAME);
     }
     return "main";
   }
-
+  
+  public String toggleRoleSort()
+  {
+    Log.debug("toggleRoleSort()");
+    if (sortRoleAscending)
+    {
+      setSort(SORT_DESC, Participant.SORT_BY_ROLE);
+    }
+    else
+    {
+      setSort(SORT_ASC, Participant.SORT_BY_ROLE);
+    }
+    return "main";
+  }
+  
+  public String toggleSectionsSort()
+  {
+    Log.debug("toggleSectionsSort()");
+    if (sortSectionsAscending)
+    {
+      setSort(SORT_DESC, Participant.SORT_BY_SECTIONS);
+    }
+    else
+    {
+      setSort(SORT_ASC, Participant.SORT_BY_SECTIONS);
+    }
+    return "main";
+  }
+  
+  private void sortRoster()
+  {
+	  if (sortRoleDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_ROLE);
+	  else if (sortRoleAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_ROLE);
+	  if (sortLastNameDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_LAST_NAME);
+	  else if (sortLastNameAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_LAST_NAME);
+	  else if (sortUserIdDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_ID);
+	  else if (sortUserIdAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_ID);
+	  else if (sortSectionsDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_SECTIONS);
+	  else if (sortSectionsAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_SECTIONS);
+  }
+  
   private void setSort(String sortOrder, String sortBy)
   {
-    // reloadAllUsers=true;
     sortLastNameDescending = false;
     sortUserIdDescending = false;
+    sortRoleDescending = false;
+    sortSectionsDescending = false;
     sortLastNameAscending = false;
     sortUserIdAscending = false;
-    if (sortOrder.equals("ascending"))
+    sortRoleAscending = false;
+    sortSectionsAscending = false;
+    
+    if (sortOrder.equals(SORT_ASC))
     {
-      if (sortBy.equals(msgs.getString("sort_user_id")))
+      if (sortBy.equals(Participant.SORT_BY_ROLE))
       {
-        sortUserIdAscending = true;
-        rosterManager.sortParticipants(alluserList, msgs.getString("sort_user_id"), true);
-        this.allDecoUsers = getAllUsers(alluserList);
+        sortRoleAscending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, true);
+        this.decoRoster = getRoster(rosterList);
         return;
       }
-      if (sortBy.equals(msgs.getString("sort_last_name")))
+      if (sortBy.equals(Participant.SORT_BY_ID))
+      {
+        sortUserIdAscending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ID, true);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }
+      if (sortBy.equals(Participant.SORT_BY_LAST_NAME))
       {
         sortLastNameAscending = true;
-        rosterManager.sortParticipants(alluserList, msgs.getString("sort_last_name"), true);
-        this.allDecoUsers = getAllUsers(alluserList);
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_LAST_NAME, true);
+        this.decoRoster = getRoster(rosterList);
         return;
+      }
+      if (sortBy.equals(Participant.SORT_BY_SECTIONS))
+      {
+    	  sortSectionsAscending = true;
+    	  rosterManager.sortParticipants(rosterList, Participant.SORT_BY_SECTIONS, true);
+          this.decoRoster = getRoster(rosterList);
+          return;
       }
     }
     else
 
     {
-      if (sortBy.equals(msgs.getString("sort_user_id")))
+      if (sortBy.equals(Participant.SORT_BY_ROLE))
+      {
+        sortRoleDescending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ROLE, false);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }      
+      if (sortBy.equals(Participant.SORT_BY_ID))
       {
         sortUserIdDescending = true;
-        rosterManager.sortParticipants(alluserList, msgs.getString("sort_user_id"), false);
-        this.allDecoUsers = getAllUsers(alluserList);
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_ID, false);
+        this.decoRoster = getRoster(rosterList);
         return;
       }
-      if (sortBy.equals(msgs.getString("sort_last_name")))
+      if (sortBy.equals(Participant.SORT_BY_LAST_NAME))
       {
         sortLastNameDescending = true;
-        rosterManager.sortParticipants(alluserList, msgs.getString("sort_last_name"), false);
-        this.allDecoUsers = getAllUsers(alluserList);
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_LAST_NAME, false);
+        this.decoRoster = getRoster(rosterList);
         return;
       }
-
+      if (sortBy.equals(Participant.SORT_BY_SECTIONS))
+      {
+        sortSectionsDescending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_SECTIONS, false);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }
     }
-
   }
 
   public boolean isSortLastNameAscending()
@@ -206,21 +308,48 @@ public class RosterTool
     Log.debug("isSortUserIdDescending()");
     return sortUserIdDescending;
   }
+  
+  public boolean isSortRoleAscending()
+  {
+    Log.debug("isSortRoleAscending()");
+    return sortRoleAscending;
+  }
+
+  public boolean isSortRoleDescending()
+  {
+    Log.debug("isSortRoleDescending()");
+    return sortRoleDescending;
+  }
+  
+  public boolean isSortSectionsAscending()
+  {
+    Log.debug("isSortSectionsAscending()");
+    return sortSectionsAscending;
+  }
+
+  public boolean isSortSectionsDescending()
+  {
+    Log.debug("isSortSectionsDescending()");
+    return sortSectionsDescending;
+  }
 
   public String processValueChangeForView(ValueChangeEvent vce)
   {
     if (Log.isDebugEnabled())
       Log.debug("processValueChangeForView(ValueChangeEvent " + vce + ")");
     String changeView = (String) vce.getNewValue();
-    if (changeView != null && changeView.equals(msgs.getString("view_all")))
+    if (changeView != null)
     {
-      setDisplayView(msgs.getString("view_all"));
-      getAllUsers();
-    }
-    else
-    {
-      setDisplayView(msgs.getString("view_by_role"));
-      getRoles();
+      if (!changeView.equalsIgnoreCase(selectedView))
+      {
+    	  // don't reload if changing from "View All Sections" or "View All My Sections" to "View No Sections"
+    	  if (!((changeView.equalsIgnoreCase(RosterManager.VIEW_ALL_SECT) || changeView.equalsIgnoreCase(RosterManager.VIEW_MY_SECT)) && selectedView.equalsIgnoreCase(RosterManager.VIEW_NO_SECT)) &&
+    		  !(changeView.equalsIgnoreCase(RosterManager.VIEW_NO_SECT) && (selectedView.equalsIgnoreCase(RosterManager.VIEW_ALL_SECT) || selectedView.equalsIgnoreCase(RosterManager.VIEW_ALL_SECT))))
+    		  reloadRoster = true;
+      }
+
+      setSelectedView(changeView);
+      getRoster();
     }
     return "main";
   }
@@ -310,34 +439,16 @@ public class RosterTool
     return facet;
   }
 
-  public String getDisplayView()
+  public String getSelectedView()
   {
-    Log.debug("getDisplayView()");
-    return displayView;
+    Log.debug("getSelectedView()");
+    return selectedView;
   }
 
-  public void setDisplayView(String display)
+  public void setSelectedView(String selected)
   {
-    Log.debug("setDisplayView(String " + display + ")");
-    this.displayView = display;
-  }
-
-  public boolean isDisplayByRole()
-  {
-    Log.debug("isDisplayByRole()");
-    return this.displayView.equals(msgs.getString("view_by_role"));
-  }
-
-  public boolean isDisplayAllUsers()
-  {
-    Log.debug("isDisplayByRole()");
-    return this.displayView.equals(msgs.getString("view_all"));
-  }
-
-  public boolean isUpdateAccess()
-  {
-    Log.debug("isUpdateAccess()");
-    return rosterManager.isInstructor();
+    Log.debug("setSelectedView(String " + selected + ")");
+    this.selectedView = selected;
   }
 
   public boolean isRenderPhotoColumn()
@@ -345,47 +456,70 @@ public class RosterTool
     Log.debug("isRenderPhotoColumn()");
     return (isShowIdPhoto() || isShowCustomPhoto());
   }
-
-  public List getRoles()
+  
+  public boolean isRenderExportButton()
   {
-    Log.debug("getRoles()");
-    if (reloadRoles || roles == null)
-    {
-      roles = new ArrayList();
-      List tempRoleList = rosterManager.getRoles();
-      {
-        if (tempRoleList != null && tempRoleList.size() > 0)
-        {
-          Iterator iter = tempRoleList.iterator();
-
-          while (iter.hasNext())
-          {
-            roles.add(new DecoratedRole((Role) iter.next()));
-          }
-        }
-      }
-      reloadRoles = false;
-    }
-    return roles;
-
+	  return rosterManager.currentUserHasExportPerm() && isRenderRoster();
+  }
+  
+  public boolean isRenderOfficialId()
+  {
+	  return rosterManager.currentUserHasViewOfficialIdPerm();
+  }
+  
+  public boolean isRenderSectionsColumn()
+  {
+	  if (selectedView.equals(RosterManager.VIEW_NO_SECT))
+		  return false;
+	  
+	  return isRenderViewMenu();
+  }
+  
+  public boolean isRenderViewMenu()
+  {  
+	  getViewMenuItems();
+	  if (menuItems != null && !menuItems.isEmpty())
+		  return true;
+	  
+	  return false;
+  }
+  
+  public boolean isRenderRoster()
+  {
+	  if (!rosterProcessed)
+		  getRoster();
+	  
+	  return decoRoster != null && decoRoster.size() > 0;
+  }
+  
+  public boolean isRenderRosterUpdateInfo()
+  {
+	  return rosterManager.currentUserHasSiteUpdatePerm();
+  }
+  
+  public boolean isUserMayViewRoster()
+  {
+	  return rosterManager.currentUserHasViewAllPerm() || rosterManager.currentUserHasViewSectionPerm();
   }
 
-  public List getAllUsers()
+  public List getRoster()
   {
-    Log.debug("getAllUsers()");
-    if (reloadAllUsers || allDecoUsers == null)
+    Log.debug("getRoster()");
+    if (reloadRoster || decoRoster == null)
     {
-      alluserList = rosterManager.getAllUsers();
-      reloadAllUsers = false;
-      allDecoUsers = getAllUsers(alluserList);
+      rosterList = rosterManager.getRoster(selectedView);
+      sortRoster();  // allows us to maintain the previously selected sort view
+      reloadRoster = false;
+      rosterProcessed = true;
+      decoRoster = getRoster(rosterList);
     }
-    return allDecoUsers;
+    return decoRoster;
   }
 
-  private List getAllUsers(List list)
+  private List getRoster(List list)
   {
     Log.debug("getAllUsers()");
-    allDecoUsers = new ArrayList();
+    decoRoster = new ArrayList();
     if (list == null || list.size() < 1)
     {
       return null;
@@ -395,9 +529,9 @@ public class RosterTool
 
     while (iter.hasNext())
     {
-      allDecoUsers.add(new DecoratedParticipant((Participant) iter.next()));
+      decoRoster.add(new DecoratedParticipant((Participant) iter.next()));
     }
-    return allDecoUsers;
+    return decoRoster;
   }
 
   public int getAllUserCount()
@@ -405,7 +539,81 @@ public class RosterTool
     Log.debug("getAllUserCount()");
     return allUserCount;
   }
+  
+  public void setViewMenuItems(List menuItems)
+  {
+	  this.menuItems = menuItems;
+  }
+  
+  /**
+   * Returns the list of items to populate the "View" menu
+   * @return
+   */
+  public List getViewMenuItems()
+  {
+	  if (menuItems != null)
+		  return menuItems;
 
+	  List selectItemList = new ArrayList();
+
+	  List viewableSections = rosterManager.getViewableSectionsForCurrentUser();
+
+	  if (viewableSections != null && !viewableSections.isEmpty())
+	  {
+		  Collections.sort(viewableSections);  // display the sections in ABC order in menu
+		  
+		  selectItemList.add(new SelectItem(RosterManager.VIEW_NO_SECT, msgs.getString("roster_viewNoSections")));
+
+		  if (rosterManager.currentUserHasViewAllPerm())
+		  {
+			  selectItemList.add(new SelectItem(RosterManager.VIEW_ALL_SECT, msgs.getString("roster_viewAllSections")));
+		  }
+		  else if (rosterManager.currentUserHasViewSectionPerm())
+		  {
+			  selectItemList.add(new SelectItem(RosterManager.VIEW_MY_SECT, msgs.getString("roster_viewAllMySections")));
+		  }
+		  
+		  for (Iterator i = viewableSections.iterator(); i.hasNext();)
+		  {
+			  String section = (String) i.next();
+			  selectItemList.add(new SelectItem(section, section));
+		  }
+	  }
+
+	  menuItems = selectItemList;
+	  return selectItemList;       
+  }
+  
+  public String getDisplayedSection()
+  {
+	  if (selectedView.equals(RosterManager.VIEW_NO_SECT) || selectedView.equals(RosterManager.VIEW_ALL_SECT) || selectedView.equals(RosterManager.VIEW_MY_SECT)) 
+		return null;
+
+	  return selectedView;
+  }
+  
+  public String getPrintFriendlyTitle()
+  {
+	  try
+	  {
+		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+		  String siteTitle = currentSite.getTitle();
+		  return msgs.getString("print_title_for") + " " + siteTitle;
+	  }
+	  catch (Exception e)
+	  {
+		  return msgs.getString("print_title");
+	  }
+  }
+  
+  public String getPrintFriendlyUrl()
+  {
+	  String url = ServerConfigurationService.getToolUrl() + Entity.SEPARATOR
+		+ ToolManager.getCurrentPlacement().getId() + Entity.SEPARATOR + "printFriendlyRoster";
+	  return url;
+	  
+  }
+  
   /**
    * Set variables for photo display
    * 
@@ -457,18 +665,8 @@ public class RosterTool
       ExternalContext context = FacesContext.getCurrentInstance()
           .getExternalContext();
       Map paramMap = context.getRequestParameterMap();
-      Iterator itr = paramMap.keySet().iterator();
-      while (itr.hasNext())
-      {
-        String key = (String) itr.next();
-        if (key != null && key.equals(msgs.getString("participant_id")))
-        {
-          String participantId = (String) paramMap.get(key);
-          participant = new DecoratedParticipant(rosterManager
-              .getParticipantById(participantId));
-          break;
-        }
-      }
+      String participantId = (String) paramMap.get(PARTICIPANT_ID);
+      participant = new DecoratedParticipant(rosterManager.getParticipantById(participantId));
       if (participant.getParticipant().getProfile() != null)
       {
         if (participant.isDisplayCompleteProfile())
@@ -489,180 +687,6 @@ public class RosterTool
     }
   }
 
-  public class DecoratedRole
-  {
-    protected Role role;
-    protected List role_decoUsers = null;
-    protected List roleUserList = null;
-    private boolean role_sortLastNameDescending = false;
-    private boolean role_sortUserIdDescending = false;
-    private boolean role_sortLastNameAscending = true;
-    private boolean role_sortUserIdAscending = false;
-    private boolean role_currentSortAscending = true;// sort ascending by last name by default
-    private String role_currentSortBy = msgs.getString("sort_last_name");
-
-    public DecoratedRole(Role decRole)
-    {
-      if (Log.isDebugEnabled())
-      {
-        Log.debug("DecoratedRole(Role" + decRole + ")");
-      }
-      role = decRole;
-    }
-
-    public void toggleUserIdSort()
-    {
-      Log.debug("toggleUserIdSort()");
-      if (role_sortUserIdAscending)
-      {
-        setSort("descending", msgs.getString("sort_user_id"));
-      }
-      else
-      {
-        setSort("ascending", msgs.getString("sort_user_id"));
-      }
-    }
-
-    public void toggleLastNameSort()
-    {
-      Log.debug("toggleLastNameSort()");
-      if (role_sortLastNameAscending)
-      {
-        setSort("descending", msgs.getString("sort_last_name"));
-      }
-      else
-      {
-        setSort("ascending", msgs.getString("sort_last_name"));
-      }
-    }
-
-    private void setSort(String sortOrder, String sortBy)
-    {
-      role_sortLastNameDescending = false;
-      role_sortUserIdDescending = false;
-      role_sortLastNameAscending = false;
-      role_sortUserIdAscending = false;
-
-      if (sortOrder.equals("ascending"))
-      {
-        if (sortBy.equals(msgs.getString("sort_user_id")))
-        {
-          role_sortUserIdAscending = true;
-          role_currentSortAscending = true;
-          role_currentSortBy = msgs.getString("sort_user_id");
-          return;
-        }
-        if (sortBy.equals(msgs.getString("sort_last_name")))
-        {
-          role_sortLastNameAscending = true;
-          role_currentSortAscending = true;
-          role_currentSortBy = msgs.getString("sort_last_name");
-          return;
-        }
-      }
-      else
-
-      {
-        if (sortBy.equals(msgs.getString("sort_user_id")))
-        {
-          role_sortUserIdDescending = true;
-          role_currentSortAscending = false;
-          role_currentSortBy = msgs.getString("sort_user_id");
-          return;
-        }
-        if (sortBy.equals(msgs.getString("sort_last_name")))
-        {
-          role_sortLastNameDescending = true;
-          role_currentSortAscending = false;
-          role_currentSortBy = msgs.getString("sort_last_name");
-          return;
-        }
-
-      }
-
-    }
-
-    public List getUsers()
-    {
-      Log.debug("getUsers()");
-      // if (reloadRoleUsers || role_decoUsers == null)
-      // {
-      roleUserList = rosterManager.getParticipantByRole(role);
-      rosterManager.sortParticipants(roleUserList, role_currentSortBy,
-          role_currentSortAscending);
-      role_decoUsers = getUsers(roleUserList);
-      // reloadRoleUsers = false;
-      // }
-      return role_decoUsers;
-    }
-
-    // will convert a participant list into decorated participant list
-    private List getUsers(List list)
-    {
-      if (Log.isDebugEnabled())
-      {
-        Log.debug("getUsers(List " + list + ")");
-      }
-      role_decoUsers = new ArrayList();
-
-      if (list != null && list.size() > 0)
-      {
-        Iterator iter = list.iterator();
-
-        while (iter.hasNext())
-        {
-          role_decoUsers
-              .add(new DecoratedParticipant((Participant) iter.next()));
-        }
-      }
-
-      return role_decoUsers;
-    }
-
-    public Role getRole()
-    {
-      Log.debug("getRole()");
-      return role;
-    }
-
-    public int getUserCount()
-    {
-      Log.debug("getUserCount()");
-      List tempUserList = rosterManager.getParticipantByRole(role);
-      {
-        if (tempUserList != null && tempUserList.size() > 0)
-        {
-          return tempUserList.size();
-        }
-      }
-      return 0;
-    }
-
-    public boolean isRole_sortLastNameAscending()
-    {
-      Log.debug("isRole_sortLastNameAscending()");
-      return role_sortLastNameAscending;
-    }
-
-    public boolean isRole_sortLastNameDescending()
-    {
-      Log.debug("isRole_sortLastNameDescending()");
-      return role_sortLastNameDescending;
-    }
-
-    public boolean isRole_sortUserIdAscending()
-    {
-      Log.debug("isRole_sortUserIdAscending()");
-      return role_sortUserIdAscending;
-    }
-
-    public boolean isRole_sortUserIdDescending()
-    {
-      Log.debug("isRole_sortUserIdDescending()");
-      return role_sortUserIdDescending;
-    }
-
-  }
   public class DecoratedParticipant
   {
 
@@ -826,34 +850,170 @@ public class RosterTool
   }
 
   /**
-   * Enable privacy message
+   * Determine whether privacy message should be displayed. Will be shown if
+   * roster.privacy.display in sakai.properties is "true" and the user does not
+   * have roster.viewhidden permission
    * @return
    */
-  public boolean getRenderPrivacyAlert()
+  public boolean isRenderPrivacyMessage()
   {
-   if((!isUpdateAccess()) && ServerConfigurationService.getString(msgs.getString("roster_privacy_text"))!=null &&
-       ServerConfigurationService.getString(msgs.getString("roster_privacy_text")).trim().length()>0 )
-   {
-     return true;
-   }
-    return false;
+	  String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
+	  if(msgEnabled != null && msgEnabled.equalsIgnoreCase("true") && !rosterManager.currentUserHasViewHiddenPerm())
+	  {
+		  return true;
+	  }
+	  
+	  return false;
   }
   
-  /**
-   * Get Privacy message link  from sakai.properties
-   * @return
-   */
-  public String getPrivacyAlertUrl()
-  {
-    return ServerConfigurationService.getString(msgs.getString("roster_privacy_url"));
-  }
+
+  /* Note: The CSV export code below was largely copied from 
+   * Gradebook - org.sakai.tool.gradebook.ui.ExportBean */
   
   /**
-   * Get Privacy message from sakai.properties
+   * Export the current roster view to a csv file
+   * @param event
+   */
+  public void exportRosterCsv(ActionEvent event) {
+	  writeAsCsv(getRosterAsCSV(isRenderSectionsColumn()), getFileName());
+  }
+
+  /**
+   * returns a comma-delimited string representation of the current roster view
+   * @param showSectionsCol
    * @return
    */
-  public String getPrivacyAlert()
-  {
-    return ServerConfigurationService.getString(msgs.getString("roster_privacy_text"));
+  private String getRosterAsCSV(boolean showSectionsCol)
+  { 
+	  if (rosterList == null || rosterList.isEmpty())
+		  return "";
+
+	  StringBuffer sb = new StringBuffer();
+
+	  // Add the headers
+	  sb.append(msgs.getString("export_name"));
+	  sb.append(CSV_DELIM);
+	  sb.append(msgs.getString("export_userId"));
+	  sb.append(CSV_DELIM);
+	  sb.append(msgs.getString("export_role"));
+	  sb.append(CSV_DELIM);
+	  if (showSectionsCol)
+	  {
+		  sb.append(msgs.getString("export_sections"));
+		  sb.append(CSV_DELIM);
+	  }
+	  sb.append("\n");
+
+	  // Add the data
+	  for(Iterator rosterIter = rosterList.iterator(); rosterIter.hasNext();) {
+		  Participant participant = (Participant)rosterIter.next();
+		  appendQuoted(sb, participant.getLastName() + ", " + participant.getFirstName());
+		  sb.append(CSV_DELIM);
+		  sb.append(participant.getEid());
+		  sb.append(CSV_DELIM);
+		  sb.append(participant.getRoleTitle());
+		  sb.append(CSV_DELIM);
+		  if (showSectionsCol)
+		  {
+			  appendQuoted(sb, participant.getSectionsForDisplay());
+			  sb.append(CSV_DELIM);
+		  }
+
+		  sb.append("\n");
+	  }
+	  return sb.toString();
   }
+
+  private StringBuffer appendQuoted(StringBuffer sb, String toQuote) {
+	  if ((toQuote.indexOf(',') >= 0) || (toQuote.indexOf('"') >= 0)) {
+		  String out = toQuote.replaceAll("\"", "\"\"");
+		  sb.append("\"").append(out).append("\"");
+	  } else {
+		  sb.append(toQuote);
+	  }
+	  return sb;
+  }
+
+  /**
+   * @param csvString
+   * @param fileName
+   */
+  private void writeAsCsv(String csvString, String fileName) {
+	  FacesContext faces = FacesContext.getCurrentInstance();
+	  HttpServletResponse response = (HttpServletResponse)faces.getExternalContext().getResponse();
+	  protectAgainstInstantDeletion(response);
+	  response.setContentType("text/comma-separated-values");
+	  response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".csv");
+	  response.setContentLength(csvString.length());
+	  OutputStream out = null;
+	  try {
+		  out = response.getOutputStream();
+		  out.write(csvString.getBytes());
+		  out.flush();
+	  } catch (IOException e) {
+		  Log.error(e);
+		  e.printStackTrace();
+	  } finally {
+		  try {
+			  if (out != null) out.close();
+		  } catch (IOException e) {
+			  Log.error(e);
+			  e.printStackTrace();
+		  }
+	  }
+	  faces.responseComplete();
+  }
+
+  /**
+   * Gets the filename for the export
+   *
+   * @return The appropriate filename for the export
+   */
+  private String getFileName() {
+	  String prefix = msgs.getString("export_filename_prefix");
+	  Date now = new Date();
+	  DateFormat df = new SimpleDateFormat(msgs.getString("export_filename_date_format"));
+	  StringBuffer fileName = new StringBuffer(prefix);
+	  String siteId = ToolManager.getCurrentPlacement().getContext();
+	  if(siteId.trim() != null) {
+		  siteId = siteId.replaceAll("\\s", "_"); // replace whitespace with '_'
+		  fileName.append("_");
+		  fileName.append(siteId);
+	  }
+	  fileName.append("_");
+	  fileName.append(df.format(now));
+	  return fileName.toString();
+  }
+    
+    /**
+     * Try to head off a problem with downloading files from a secure HTTPS
+     * connection to Internet Explorer.
+     *
+     * When IE sees it's talking to a secure server, it decides to treat all hints
+     * or instructions about caching as strictly as possible. Immediately upon
+     * finishing the download, it throws the data away.
+     *
+     * Unfortunately, the way IE sends a downloaded file on to a helper
+     * application is to use the cached copy. Having just deleted the file,
+     * it naturally isn't able to find it in the cache. Whereupon it delivers
+     * a very misleading error message like:
+     * "Internet Explorer cannot download roster from sakai.yoursite.edu.
+     * Internet Explorer was not able to open this Internet site. The requested
+     * site is either unavailable or cannot be found. Please try again later."
+     *
+     * There are several ways to turn caching off, and so to be safe we use
+     * several ways to turn it back on again.
+     *
+     * This current workaround should let IE users save the files to disk.
+     * Unfortunately, errors may still occur if a user attempts to open the
+     * file directly in a helper application from a secure web server.
+     *
+     * TODO Keep checking on the status of this.
+     */
+    public static void protectAgainstInstantDeletion(HttpServletResponse response) {
+    	response.reset();	// Eliminate the added-on stuff
+    	response.setHeader("Pragma", "public");	// Override old-style cache control
+    	response.setHeader("Cache-Control", "public, must-revalidate, post-check=0, pre-check=0, max-age=0");	// New-style
+    }
+
 }
