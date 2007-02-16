@@ -54,6 +54,7 @@
 			
 			<f:verbatim><div class="instruction"></f:verbatim>
 				 <h:outputText value="#{msgs.no_participants_msg}" rendered="#{!RosterTool.renderRoster}"/>
+				 <h:outputText value="#{msgs.participants_msg} #{RosterTool.allUserCount}" rendered="#{RosterTool.renderRoster}"/>
 		 	<f:verbatim></div></f:verbatim>
 		 		
 			<%--********************* Roster Display *********************--%>
@@ -89,7 +90,7 @@
 								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortUserIdAscending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_asc}" />
 						   	</h:commandLink>
 						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.displayId}" /> 						
+						<h:outputText value="#{searchResultAll.participant.displayId}" />						
 					</h:column>
 					
 					<h:column>
