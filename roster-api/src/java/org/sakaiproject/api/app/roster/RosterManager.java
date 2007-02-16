@@ -24,6 +24,7 @@ package org.sakaiproject.api.app.roster;
 import java.util.List;
 import java.util.Set;
 
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
@@ -134,6 +135,14 @@ public interface RosterManager
    * @return
    */
   public Set<Section> getOfficialSectionsInSite();
+  
+  /**
+   * Gets the set of EnrollmentSets (as defined in the CM API) that are attached to
+   * Sections that are attached to this site via the site's provider id.
+   * 
+   * @return
+   */
+  public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite();
   
   
   

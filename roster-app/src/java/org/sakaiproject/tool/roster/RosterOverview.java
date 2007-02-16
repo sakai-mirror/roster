@@ -99,7 +99,7 @@ public class RosterOverview extends InitializableBean {
 			if(displayStatusAndCredits) {
 				// Status Column
 				UIColumn statusCol = new UIColumn();
-				statusCol.setId("status");
+				statusCol.setId("statusCol");
 
                 HtmlCommandSortHeader statusSortHeader = new HtmlCommandSortHeader();
                 statusSortHeader.setId("status");
@@ -117,13 +117,13 @@ public class RosterOverview extends InitializableBean {
 				HtmlOutputText statusContents = new HtmlOutputText();
 				statusContents.setId("status_cell");
 				statusContents.setValueBinding("value",
-					app.createValueBinding("#{participant.status}"));
+					app.createValueBinding("#{participant.enrollment.enrollmentStatus}"));
 				statusCol.getChildren().add(statusContents);
 				rosterDataTable.getChildren().add(statusCol);
 
 				// Credits Column
 				UIColumn creditsCol = new UIColumn();
-				creditsCol.setId("credits");
+				creditsCol.setId("creditsCol");
 
                 HtmlCommandSortHeader creditsSortHeader = new HtmlCommandSortHeader();
                 creditsSortHeader.setId("credits");
@@ -141,7 +141,7 @@ public class RosterOverview extends InitializableBean {
 				HtmlOutputText creditsContents = new HtmlOutputText();
 				creditsContents.setId("credits_cell");
 				creditsContents.setValueBinding("value",
-					app.createValueBinding("#{participant.credits}"));
+					app.createValueBinding("#{participant.enrollment.credits}"));
 				creditsCol.getChildren().add(creditsContents);
 				rosterDataTable.getChildren().add(creditsCol);
 			}

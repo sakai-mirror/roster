@@ -88,15 +88,8 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	 * @return
 	 */
 	public boolean isDisplayEnrollmentDetails() {
-		Set<Section> officialSections = services.rosterManager.getOfficialSectionsInSite();
-		int count = 0;
-		for(Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
-			Section section = iter.next();
-			EnrollmentSet es = section.getEnrollmentSet();
-			if(es != null) {
-				count++;
-			}
-		}
+		Set<EnrollmentSet> officialEnrollmentSets = services.rosterManager.getOfficialEnrollmentSetsInSite();
+		int count = officialEnrollmentSets.size();
 		if(count == 0) return false;
 		if(count == 1) return true;
 

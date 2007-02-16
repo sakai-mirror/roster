@@ -52,7 +52,10 @@ import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.coursemanagement.api.Enrollment;
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
+import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
@@ -102,12 +105,38 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 
 	private Participant createParticipantByUser(User user, Profile profile) {
+		Set<EnrollmentSet> enrollmentSets = getOfficialEnrollmentSetsInSite();
+		Enrollment enrollment = null;
+		// TODO Deal with cross listings
+		if(enrollmentSets.size() == 1) {
+			EnrollmentSet es = enrollmentSets.iterator().next();
+			// Note: use the EID when talking to the CM service!
+			enrollment = cmService().findEnrollment(user.getEid(), es.getEid());
+		}
+
 		Set<String> userIds = new HashSet<String>();
 		userIds.add(user.getId());
+
 		return new ParticipantImpl(user, profile, getUserRoleTitle(user),
-				getSectionsMap(userIds).get(user.getId()));
+				getSectionsMap(userIds).get(user.getId()), enrollment);
 	}
 
+	private Map<String, Enrollment> getOfficialEnrollments() {
+		Set<EnrollmentSet> enrollmentSets = getOfficialEnrollmentSetsInSite();
+		Map<String, Enrollment> enrollmentMap = new HashMap<String, Enrollment>();
+		// TODO Deal with cross listings
+		if(enrollmentSets.size() != 1) {
+			return enrollmentMap;
+		}
+		EnrollmentSet es = enrollmentSets.iterator().next();
+		Set<Enrollment> enrollments = cmService().getEnrollments(es.getEid());
+		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
+			Enrollment enr = iter.next();
+			enrollmentMap.put(enr.getUserId(), enr);
+		}
+		return enrollmentMap;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -193,8 +222,8 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
-
-		return buildParticipantList(userMap, sectionsMap, profiles);
+		Map<String, Enrollment> enrollments = getOfficialEnrollments();
+		return buildParticipantList(userMap, sectionsMap, profiles, enrollments);
 	}
 	
 	private List<Participant> getSectionLeaderParticipants(User currentUser) {
@@ -222,9 +251,9 @@ public abstract class RosterManagerImpl implements RosterManager {
 		}
 		
 		// Build the list of participants from the filteredSectionsMap
-		Map<String, Profile> profiles = profileManager().getProfiles(filteredSectionsMap.keySet());
-
-		return buildParticipantList(userMap, sectionsMap, profiles);
+		Map<String, Profile> profilesMap = profileManager().getProfiles(filteredSectionsMap.keySet());
+		Map<String, Enrollment> enrollmentsMap = getOfficialEnrollments();
+		return buildParticipantList(userMap, sectionsMap, profilesMap, enrollmentsMap);
 	}
 
 	private List<Participant> getPublicParticipants(User currentUser) {
@@ -242,18 +271,18 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
 
-		return buildParticipantList(userMap, sectionsMap, profiles);
+		return buildParticipantList(userMap, sectionsMap, profiles, new HashMap<String, Enrollment>());
 	}
 
 
-	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profiles) {
+	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profilesMap, Map<String, Enrollment> enrollmentsMap) {
 		List<Participant> participants = new ArrayList<Participant>();
-		for (Iterator<Entry<String, Profile>> iter = profiles.entrySet().iterator(); iter.hasNext();) {
+		for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Profile> entry = iter.next();
 			String userId = entry.getKey();
 			UserRole userRole = userMap.get(userId);
 			Profile profile = entry.getValue();
-			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, sectionsMap.get(userId)));
+			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, sectionsMap.get(userId), enrollmentsMap.get(userId)));
 		}
 		return participants;
 	}
@@ -490,14 +519,37 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return new LocalRosterFilter();
 	}
 
-	  public Set<Section> getOfficialSectionsInSite() {
-		  Set<Section> sections = new HashSet<Section>();
-		  Set<String> providerIds = authzGroupService().getProviderIds(getSiteId());
-		for(Iterator<String> iter = providerIds.iterator(); iter.hasNext();) {
-			sections.add(cmService().getSection(iter.next()));
+	public Set<Section> getOfficialSectionsInSite() {
+		Set<Section> sections = new HashSet<Section>();
+		Set<String> providerIds = authzGroupService().getProviderIds(getSiteReference());
+		for (Iterator<String> iter = providerIds.iterator(); iter.hasNext();) {
+			Section section = null;
+			try {
+				section = cmService().getSection(iter.next());
+			} catch (IdNotFoundException ide) {
+				LOG.warn(ide);
+				continue;
+			}
+			sections.add(section);
 		}
 		return sections;
-	  }
+	}
+
+	public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite() {
+		Set<Section> officialSections = getOfficialSectionsInSite();
+		if(LOG.isDebugEnabled()) LOG.debug("Found " + officialSections + " official sections in site " + getSiteId());
+		Set<EnrollmentSet> enrollmentSets = new HashSet<EnrollmentSet>();
+		for (Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
+			Section section = iter.next();
+			EnrollmentSet es = section.getEnrollmentSet();
+			if (es != null) {
+				enrollmentSets.add(es);
+			}
+		}
+		if(LOG.isDebugEnabled()) LOG.debug("Found " + officialSections + " official enrollmentSets in site " + getSiteId());
+		return enrollmentSets;
+	}
+
 	  
 
 	public boolean currentUserHasViewSectionMembershipsPerm() {
