@@ -22,8 +22,19 @@
         </dependency>
         <dependency>
             <groupId>sakaiproject</groupId>
-            <artifactId>sakai-roster-component-shared</artifactId>
+            <artifactId>sakai-roster-impl</artifactId>
             <version>${sakai.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-roster-model</artifactId>
+            <version>${sakai.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -70,6 +81,15 @@
             <artifactId>${sakai.hibernate.artifactId}</artifactId>
             <version>${sakai.hibernate.version}</version>
         </dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-util</artifactId>
+            <version>${sakai.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>

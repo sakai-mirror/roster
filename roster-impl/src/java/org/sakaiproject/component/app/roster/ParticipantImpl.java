@@ -21,19 +21,16 @@
 
 package org.sakaiproject.component.app.roster;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.io.Serializable;
-import java.text.Collator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
@@ -47,22 +44,12 @@ public class ParticipantImpl implements Participant, Serializable {
 	private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
 
 	protected User user;
-
 	protected Profile profile;
-
 	protected String roleTitle;
-
+	protected String enrollmentStatus;
+	protected String enrollmentCredits;
 	protected List<CourseSection> sections;
-
-	protected Enrollment enrollment;
-
 	private Map<String, CourseSection> sectionsMap;
-
-	public static final Comparator<ParticipantImpl> DisplayNameComparator;
-
-	public static final Comparator<ParticipantImpl> DisplayIdComparator;
-
-	public static final Comparator<ParticipantImpl> RoleComparator;
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -73,41 +60,14 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param enrolledSections
 	 */
 	public ParticipantImpl(User user, Profile profile, String roleTitle,
-			List<CourseSection> enrolledSections, Enrollment enrollment) {
+			List<CourseSection> enrolledSections, String enrollmentStatus,
+			String enrollmentCredits) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
 		this.sections = enrolledSections;
-		this.enrollment = enrollment;
-	}
-
-	static {
-		DisplayNameComparator = new Comparator<ParticipantImpl>() {
-			public int compare(ParticipantImpl one, ParticipantImpl another) {
-				int comparison = Collator.getInstance().compare(
-						one.user.getDisplayName(),
-						another.user.getDisplayName());
-				return comparison == 0 ? DisplayIdComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-		DisplayIdComparator = new Comparator<ParticipantImpl>() {
-			public int compare(ParticipantImpl one, ParticipantImpl another) {
-				return Collator.getInstance().compare(one.user.getDisplayId(),
-						another.user.getDisplayId());
-
-			}
-		};
-
-		RoleComparator = new Comparator<ParticipantImpl>() {
-			public int compare(ParticipantImpl one, ParticipantImpl another) {
-				int comparison = Collator.getInstance().compare(one.roleTitle,
-						another.roleTitle);
-				return comparison == 0 ? DisplayNameComparator.compare(one,
-						another) : comparison;
-			}
-		};
+		this.enrollmentStatus = enrollmentStatus;
+		this.enrollmentCredits = enrollmentCredits;
 	}
 
 	public Profile getProfile() {
@@ -152,8 +112,12 @@ public class ParticipantImpl implements Participant, Serializable {
 		this.user = user;
 	}
 
-	public Enrollment getEnrollment() {
-		return enrollment;
+	public String getEnrollmentCredits() {
+		return enrollmentCredits;
+	}
+
+	public String getEnrollmentStatus() {
+		return enrollmentStatus;
 	}
 
 }

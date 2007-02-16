@@ -2,9 +2,9 @@
 <project>
     <pomVersion>3</pomVersion>
     <extend>../../master/project.xml</extend>
-    <name>Sakai Roster Components Shared</name>
+    <name>sakai-roster-impl</name>
     <groupId>sakaiproject</groupId>
-    <id>sakai-roster-component-shared</id>
+    <id>sakai-roster-impl</id>
     <currentVersion>${sakai.version}</currentVersion>
     <organization>
         <name>Sakai Project</name>
@@ -13,7 +13,6 @@
     <inceptionYear>2003</inceptionYear>
     <properties>
         <deploy.type>jar</deploy.type>
-        <deploy.target>shared</deploy.target>
     </properties>
     <dependencies>
         <dependency>
@@ -61,6 +60,11 @@
 			<artifactId>sakai-util-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>sakaiproject</groupId>
+            <artifactId>sakai-util</artifactId>
+            <version>${sakai.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-sections-api</artifactId>

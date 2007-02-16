@@ -26,8 +26,6 @@ import java.util.Set;
 
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
-import org.sakaiproject.user.api.User;
 
 /**
  * @author rshastri 
@@ -85,12 +83,6 @@ public interface RosterManager
   public List getViewableSectionsForCurrentUser();
 
   /**
-   * @return List of all the participants in the site viewable to current user, matching
-   * the filter.
-   */
-  public List<Participant> getRoster(RosterFilter filter);
-  
-  /**
    * @return An unfiltered List of viewable (to current user) Participants in the site.
    */
   public List<Participant> getRoster();
@@ -102,24 +94,6 @@ public interface RosterManager
  public boolean currentUserHasSiteUpdatePerm();
  
  /**
-
-  /**
-   * Gets a new RosterFilter instance.
-   * 
-   * @param searchFilter
-   * @param sectionFilter
-   * @param statusFilter
-   * @return
-   */
-  public RosterFilter newFilter(String searchFilter, String sectionFilter, String statusFilter);
-
-  /**
-   * Gets a new RosterFilter instance that does no filtering.
-   * 
-   * @return
-   */
-  public RosterFilter newFilter();
-
   
   /**
    * Returns a participant by the id

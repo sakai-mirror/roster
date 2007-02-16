@@ -20,6 +20,9 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.custom.sortheader.HtmlCommandSortHeader;
+import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -56,6 +60,70 @@ public class RosterOverview extends InitializableBean {
 		this.filter = filter;
 	}
 
+	public static final Comparator<Participant> displayNameComparator;
+	public static final Comparator<Participant> displayIdComparator;
+	public static final Comparator<Participant> emailComparator;
+	public static final Comparator<Participant> roleComparator;
+	public static final Comparator<Participant> enrollmentStatusComparator;
+	public static final Comparator<Participant> enrollmentCreditsComparator;
+
+	static {
+		displayNameComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				int comparison = Collator.getInstance().compare(
+						one.getUser().getDisplayName(),
+						another.getUser().getDisplayName());
+				return comparison == 0 ? displayIdComparator.compare(one,
+						another) : comparison;
+			}
+		};
+
+		displayIdComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				return Collator.getInstance().compare(one.getUser().getDisplayId(),
+						another.getUser().getDisplayId());
+			}
+		};
+
+		emailComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				int comparison = Collator.getInstance().compare(one.getUser().getEmail(),
+						another.getUser().getEmail());
+				return comparison == 0 ? displayNameComparator.compare(one,
+						another) : comparison;
+			}
+		};
+
+		roleComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				int comparison = Collator.getInstance().compare(one.getRoleTitle(),
+						another.getRoleTitle());
+				return comparison == 0 ? displayNameComparator.compare(one,
+						another) : comparison;
+			}
+		};
+
+		enrollmentStatusComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				int comparison = Collator.getInstance().compare(one.getEnrollmentStatus(),
+						another.getEnrollmentStatus());
+				return comparison == 0 ? displayNameComparator.compare(one,
+						another) : comparison;
+			}
+		};
+
+		enrollmentCreditsComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				int comparison = Collator.getInstance().compare(one.getEnrollmentCredits(),
+						another.getEnrollmentCredits());
+				return comparison == 0 ? displayNameComparator.compare(one,
+						another) : comparison;
+			}
+		};
+
+}
+
+	
 	// UI method calls
 	
 	public boolean isRenderModifyMembersInstructions() {
@@ -78,7 +146,39 @@ public class RosterOverview extends InitializableBean {
 			return false;
 		}
 	}
+	
+	public List<Participant> getParticipants() {
+		List<Participant> participants = filter.getParticipants();
+		if (participants != null && participants.size() >= 1) {
+			Collections.sort(participants, getComparator());
+			if(!filter.prefs.sortAscending) {
+				Collections.reverse(participants);
+			}
+		}
+		return participants;
+	}
+	
+	protected Comparator<Participant> getComparator() {
+		String sortColumn = filter.prefs.sortColumn;
 
+		Comparator<Participant> comparator;
+
+		if (Participant.SORT_BY_NAME.equals(sortColumn)) {
+			comparator = displayNameComparator;
+		} else if (Participant.SORT_BY_ID.equals(sortColumn)) {
+			comparator = displayIdComparator;
+		} else if (Participant.SORT_BY_ROLE.equals(sortColumn)) {
+			comparator = roleComparator;
+		} else {
+			// This is a section-sorted list
+			// FIXME Replace with the section category sort
+			comparator = roleComparator;
+		}
+
+		return comparator;
+	}
+
+	
 	public HtmlDataTable getRosterDataTable() {
 		return null;
 	}
@@ -117,7 +217,7 @@ public class RosterOverview extends InitializableBean {
 				HtmlOutputText statusContents = new HtmlOutputText();
 				statusContents.setId("status_cell");
 				statusContents.setValueBinding("value",
-					app.createValueBinding("#{participant.enrollment.enrollmentStatus}"));
+					app.createValueBinding("#{participant.enrollmentStatus}"));
 				statusCol.getChildren().add(statusContents);
 				rosterDataTable.getChildren().add(statusCol);
 
@@ -141,7 +241,7 @@ public class RosterOverview extends InitializableBean {
 				HtmlOutputText creditsContents = new HtmlOutputText();
 				creditsContents.setId("credits_cell");
 				creditsContents.setValueBinding("value",
-					app.createValueBinding("#{participant.enrollment.credits}"));
+					app.createValueBinding("#{participant.enrollmentCredits}"));
 				creditsCol.getChildren().add(creditsContents);
 				rosterDataTable.getChildren().add(creditsCol);
 			}

@@ -27,15 +27,20 @@
       <version>${sakai.version}</version>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      
       <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-roster-component-shared</artifactId>
+      <artifactId>sakai-roster-impl</artifactId>
       <version>${sakai.version}</version>
-      <scope>provided</scope>
     </dependency>
+
     <dependency>
-      
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-roster-model</artifactId>
+      <version>${sakai.version}</version>
+    </dependency>
+
+    <dependency>      
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.1</version>

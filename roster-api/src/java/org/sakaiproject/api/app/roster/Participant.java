@@ -42,4 +42,6 @@ public interface Participant
   public String getRoleTitle();
   public Map<String, CourseSection> getSectionsMap();
   public User getUser();
+  public String getEnrollmentStatus();
+  public String getEnrollmentCredits();
 }

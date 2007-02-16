@@ -21,7 +21,6 @@
 
 package org.sakaiproject.component.app.roster;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,18 +28,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.api.app.roster.RosterFilter;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.api.privacy.PrivacyManager;
@@ -64,6 +62,7 @@ import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.api.UserDirectoryService;
+import org.sakaiproject.util.ResourceLoader;
 
 public abstract class RosterManagerImpl implements RosterManager {
 	private static final Log log = LogFactory.getLog(RosterManagerImpl.class);
@@ -117,8 +116,14 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Set<String> userIds = new HashSet<String>();
 		userIds.add(user.getId());
 
+		// Find the enrollment status descriptions for the current user's locale
+		Locale locale = new ResourceLoader().getLocale();
+		Map<String, String> codes = cmService().getEnrollmentStatusDescriptions(locale);
+		
 		return new ParticipantImpl(user, profile, getUserRoleTitle(user),
-				getSectionsMap(userIds).get(user.getId()), enrollment);
+				getSectionsMap(userIds).get(user.getId()),
+				codes.get(enrollment.getEnrollmentStatus()),
+				enrollment.getCredits());
 	}
 
 	private Map<String, Enrollment> getOfficialEnrollments() {
@@ -169,12 +174,8 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return null;
 	}
 
-	public List<Participant> getRoster() {
-		return getRoster(null);
-	}
-
 	/**
-	 * Retrieve a filtered list of site participants that are viewable by the
+	 * Retrieve a complete list of site participants that are viewable by the
 	 * current user.
 	 * 
 	 * We have three different view scenarios:
@@ -194,13 +195,9 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * 
 	 * </ol>
 	 * 
-	 * @param filter
 	 * @return List
 	 */
-	public List<Participant> getRoster(RosterFilter filter) {
-		log.debug("getRoster called with filter " + filter);
-		if (filter == null) filter = new LocalRosterFilter();
-
+	public List<Participant> getRoster() {
 		List<Participant> participants;
 
 		User currentUser = userDirectoryService().getCurrentUser();
@@ -287,13 +284,27 @@ public abstract class RosterManagerImpl implements RosterManager {
 
 
 	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profilesMap, Map<String, Enrollment> enrollmentsMap) {
+		// Find the enrollment status descriptions for the current user's locale
+		Locale locale = new ResourceLoader().getLocale();
+		Map<String, String> codes = cmService().getEnrollmentStatusDescriptions(locale);
+
 		List<Participant> participants = new ArrayList<Participant>();
 		for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Profile> entry = iter.next();
 			String userId = entry.getKey();
 			UserRole userRole = userMap.get(userId);
 			Profile profile = entry.getValue();
-			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, sectionsMap.get(userId), enrollmentsMap.get(userId)));
+			Enrollment enr = enrollmentsMap.get(userId);
+
+			String status = null;
+			String credits = null;
+			if(enr != null) {
+				status = codes.get(enr.getEnrollmentStatus());
+				credits = enr.getCredits();
+			}
+
+			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role,
+					sectionsMap.get(userId), status, credits));
 		}
 		return participants;
 	}
@@ -438,37 +449,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.api.app.roster.RosterManager#sortParticipants(java.util.List,
-	 *      java.lang.String, boolean)
-	 */
-	public void sortParticipants(List<ParticipantImpl> participants,
-			String sortByColumn, boolean ascending) {
-		if (participants == null || participants.size() <= 1)
-			return;
-
-		Comparator<ParticipantImpl> comparator;
-		if (Participant.SORT_BY_NAME.equals(sortByColumn)) {
-			comparator = ParticipantImpl.DisplayNameComparator;
-		} else if (Participant.SORT_BY_ID.equals(sortByColumn)) {
-			comparator = ParticipantImpl.DisplayIdComparator;
-		} else if (Participant.SORT_BY_ROLE.equals(sortByColumn)) {
-			comparator = ParticipantImpl.RoleComparator;
-		} else {
-			// This is a section-sorted list
-			// FIXME Replace with the section category sort
-			comparator = ParticipantImpl.RoleComparator;
-		}
-
-		Collections.sort(participants, comparator);
-		if (!ascending) {
-			Collections.reverse(participants);
-		}
-	}
-
 	/**
 	 * Check if given user has the given permission
 	 * 
@@ -521,14 +501,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return ! sectionService().getSections(getSiteId()).isEmpty();
 	}
 
-	public RosterFilter newFilter(String searchFilter, String sectionFilter,
-			String statusFilter) {
-		return new LocalRosterFilter(searchFilter, sectionFilter, statusFilter);
-	}
-
-	public RosterFilter newFilter() {
-		return new LocalRosterFilter();
-	}
 
 	public Set<Section> getOfficialSectionsInSite() {
 		Set<Section> sections = new HashSet<Section>();
@@ -548,7 +520,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 
 	public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite() {
 		Set<Section> officialSections = getOfficialSectionsInSite();
-		if(log.isDebugEnabled()) log.debug("Found " + officialSections + " official sections in site " + getSiteId());
+		if(log.isDebugEnabled()) log.debug("Found " + officialSections.size() + " official sections in site " + getSiteId());
 		Set<EnrollmentSet> enrollmentSets = new HashSet<EnrollmentSet>();
 		for (Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
 			Section section = iter.next();
@@ -557,7 +529,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 				enrollmentSets.add(es);
 			}
 		}
-		if(log.isDebugEnabled()) log.debug("Found " + officialSections + " official enrollmentSets in site " + getSiteId());
+		if(log.isDebugEnabled()) log.debug("Found " + officialSections.size() + " official enrollmentSets in site " + getSiteId());
 		return enrollmentSets;
 	}
 
@@ -584,56 +556,4 @@ public abstract class RosterManagerImpl implements RosterManager {
 		}
 		return usersSections;
 	}
-
-
-	public class LocalRosterFilter implements RosterFilter, Serializable {
-		private static final long serialVersionUID = 1L;
-
-		protected String statusFilter;
-
-		protected String searchFilter;
-
-		protected String sectionFilter;
-
-		public LocalRosterFilter() {
-			this.sectionFilter = VIEW_ALL_SECT;
-		}
-
-		public LocalRosterFilter(String statusFilter, String searchFilter,
-				String sectionFilter) {
-			this.statusFilter = statusFilter;
-			this.searchFilter = searchFilter;
-			this.sectionFilter = sectionFilter;
-		}
-
-		public String getSearchFilter() {
-			return searchFilter;
-		}
-
-		public void setSearchFilter(String searchFilter) {
-			this.searchFilter = searchFilter;
-		}
-
-		public String getSectionFilter() {
-			return sectionFilter;
-		}
-
-		public void setSectionFilter(String sectionFilter) {
-			this.sectionFilter = sectionFilter;
-		}
-
-		public String getStatusFilter() {
-			return statusFilter;
-		}
-
-		public void setStatusFilter(String statusFilter) {
-			this.statusFilter = statusFilter;
-		}
-
-		public String toString() {
-			return new ToStringBuilder(this).append(statusFilter).append(
-					searchFilter).append(sectionFilter).toString();
-		}
-	}
-
 }

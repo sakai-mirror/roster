@@ -2,7 +2,7 @@
 <project>
     <pomVersion>3</pomVersion>
     <extend>../../master/project.xml</extend>
-    <name>Sakai Roster List Tool</name>
+    <name>sakai-roster-tool</name>
     <groupId>sakaiproject</groupId>
     <id>sakai-roster-tool</id>
     <currentVersion>${sakai.version}</currentVersion>
@@ -54,6 +54,11 @@
 		<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-entity-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-user-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>

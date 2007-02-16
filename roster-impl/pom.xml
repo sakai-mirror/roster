@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../master/pom.xml</relativePath>
   </parent>
-  <name>Sakai Roster Components Shared</name>
+  <name>sakai-roster-impl</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-roster-component-shared</artifactId>
+  <artifactId>sakai-roster-impl</artifactId>
   <organization>
     <name>Sakai Project</name>
     <url>http://sakaiproject.org/</url>

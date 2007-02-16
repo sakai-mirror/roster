@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="roster-app/src/java"/>
-	<classpathentry kind="src" path="roster-component-shared/src/java"/>
 	<classpathentry kind="src" path="roster-api/src/java"/>
+	<classpathentry kind="src" path="roster-impl/src/java"/>
+	<classpathentry kind="src" path="roster-model/src/java"/>
+	<classpathentry kind="src" path="roster-app/src/java"/>
 	<classpathentry kind="src" path="roster-app/src/webapp/WEB-INF"/>
+	<classpathentry kind="src" path="components/src/webapp/WEB-INF"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/profile"/>

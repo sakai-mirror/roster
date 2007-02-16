@@ -47,7 +47,7 @@ response.setContentType("text/html; charset=UTF-8");
 
 			    <x:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"
-			        value="#{filter.participants}"
+			        value="#{overview.participants}"
 			        var="participant"
 			        binding="#{overview.rosterDataTable}"
 			        sortColumn="#{prefs.sortColumn}"

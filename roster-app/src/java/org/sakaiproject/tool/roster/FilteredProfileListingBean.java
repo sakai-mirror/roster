@@ -21,7 +21,6 @@
 package org.sakaiproject.tool.roster;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +28,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.api.app.roster.RosterFilter;
-import org.sakaiproject.coursemanagement.api.CourseOffering;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
-import org.sakaiproject.coursemanagement.api.Section;
 
 public class FilteredProfileListingBean extends InitializableBean implements Serializable {
 
@@ -47,18 +43,15 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public void setPrefs(RosterPreferences prefs) {
 		this.prefs = prefs;
 	}
-	
-	// A list of decorated users
-	protected List<Participant> participants;
 
-	// Our filter, used to limit the number of Participants displayed in the UI
-	protected RosterFilter filter;
+	protected String statusFilter;
+	protected String searchFilter;
+	protected String sectionFilter;
+
 
 	public List<Participant> getParticipants() {
-		if(participants == null) {
-			participants = services.rosterManager.getRoster(getFilter());			
-		}
-		return participants;
+		// TODO Filter the participants
+		return services.rosterManager.getRoster();
 	}
 
 	/**
@@ -96,15 +89,28 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		// TODO Deal with cross listings.  Multiple cross listed courses should still show enrollment details
 		return false;
 	}
-	
-	public RosterFilter getFilter() {
-		if(filter == null) {
-			filter = services.rosterManager.newFilter();
-		}
-		return filter;
+
+	public String getSearchFilter() {
+		return searchFilter;
 	}
 
-	public void setFilter(RosterFilter filter) {
-		this.filter = filter;
+	public void setSearchFilter(String searchFilter) {
+		this.searchFilter = searchFilter;
+	}
+
+	public String getSectionFilter() {
+		return sectionFilter;
+	}
+
+	public void setSectionFilter(String sectionFilter) {
+		this.sectionFilter = sectionFilter;
+	}
+
+	public String getStatusFilter() {
+		return statusFilter;
+	}
+
+	public void setStatusFilter(String statusFilter) {
+		this.statusFilter = statusFilter;
 	}
 }
