@@ -66,7 +66,7 @@ import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.api.UserDirectoryService;
 
 public abstract class RosterManagerImpl implements RosterManager {
-	private static final Log LOG = LogFactory.getLog(RosterManagerImpl.class);
+	private static final Log log = LogFactory.getLog(RosterManagerImpl.class);
 
 	public abstract ProfileManager profileManager();
 	public abstract PrivacyManager privacyManager();
@@ -80,7 +80,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public abstract CourseManagementService cmService();
 	
 	public void init() {
-		LOG.debug("init()");
+		log.debug("init()");
 
 		Collection registered = functionManager().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
 		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
@@ -101,7 +101,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 
 	public void destroy() {
-		LOG.debug("destroy()");
+		log.debug("destroy()");
 	}
 
 	private Participant createParticipantByUser(User user, Profile profile) {
@@ -126,13 +126,23 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, Enrollment> enrollmentMap = new HashMap<String, Enrollment>();
 		// TODO Deal with cross listings
 		if(enrollmentSets.size() != 1) {
+			if(log.isDebugEnabled()) log.debug(enrollmentSets.size() + " enrollment sets found in this site.  Can't determine user enrollments.");
 			return enrollmentMap;
 		}
 		EnrollmentSet es = enrollmentSets.iterator().next();
 		Set<Enrollment> enrollments = cmService().getEnrollments(es.getEid());
+
+		// Enrollments know a user's EID, not their ID, so we need to run a conversion.
 		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
 			Enrollment enr = iter.next();
-			enrollmentMap.put(enr.getUserId(), enr);
+			User user =null;
+			try {
+				user = userDirectoryService().getUserByEid(enr.getUserId());
+			} catch (UserNotDefinedException ue) {
+				log.warn("Can not find a sakai user with eid=" + enr.getUserId());
+				continue;
+			}
+			enrollmentMap.put(user.getId(), enr);
 		}
 		return enrollmentMap;
 	}
@@ -143,8 +153,8 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @see org.sakaiproject.api.app.roster.RosterManager#getParticipantById(java.lang.String)
 	 */
 	public Participant getParticipantById(String participantId) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("getParticipantById(String" + participantId + ")");
+		if (log.isDebugEnabled()) {
+			log.debug("getParticipantById(String" + participantId + ")");
 		}
 		if (participantId != null) {
 			try {
@@ -153,7 +163,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 						participantId);
 				return createParticipantByUser(user, profile);
 			} catch (UserNotDefinedException e) {
-				LOG.error("getParticipantById: " + e.getMessage(), e);
+				log.error("getParticipantById: " + e.getMessage(), e);
 			}
 		}
 		return null;
@@ -188,7 +198,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @return List
 	 */
 	public List<Participant> getRoster(RosterFilter filter) {
-		LOG.debug("getRoster called with filter " + filter);
+		log.debug("getRoster called with filter " + filter);
 		if (filter == null) filter = new LocalRosterFilter();
 
 		List<Participant> participants;
@@ -223,6 +233,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
 		Map<String, Enrollment> enrollments = getOfficialEnrollments();
+		if(log.isDebugEnabled()) log.debug(enrollments);
 		return buildParticipantList(userMap, sectionsMap, profiles, enrollments);
 	}
 	
@@ -353,7 +364,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 		try {
 			members = authzGroupService().getAuthzGroup(authzRef).getMembers();
 		} catch (GroupNotDefinedException e) {
-			LOG.error("getUsersInAllSections: " + e.getMessage(), e);
+			log.error("getUsersInAllSections: " + e.getMessage(), e);
 			return userMap;
 		}
 		
@@ -477,7 +488,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @return siteId
 	 */
 	private String getSiteReference() {
-		LOG.debug("getContextSiteId()");
+		log.debug("getContextSiteId()");
 		return ("/site/" + getSiteId());
 	}
 	
@@ -496,7 +507,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 			Role userRole = realm.getUserRole(user.getId());
 			return userRole.getId();
 		} catch (GroupNotDefinedException e) {
-			LOG.error("GroupNotDefinedException", e);
+			log.error("GroupNotDefinedException", e);
 		}
 		return "";
 	}
@@ -527,7 +538,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 			try {
 				section = cmService().getSection(iter.next());
 			} catch (IdNotFoundException ide) {
-				LOG.warn(ide);
+				log.warn(ide);
 				continue;
 			}
 			sections.add(section);
@@ -537,7 +548,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 
 	public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite() {
 		Set<Section> officialSections = getOfficialSectionsInSite();
-		if(LOG.isDebugEnabled()) LOG.debug("Found " + officialSections + " official sections in site " + getSiteId());
+		if(log.isDebugEnabled()) log.debug("Found " + officialSections + " official sections in site " + getSiteId());
 		Set<EnrollmentSet> enrollmentSets = new HashSet<EnrollmentSet>();
 		for (Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
 			Section section = iter.next();
@@ -546,7 +557,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 				enrollmentSets.add(es);
 			}
 		}
-		if(LOG.isDebugEnabled()) LOG.debug("Found " + officialSections + " official enrollmentSets in site " + getSiteId());
+		if(log.isDebugEnabled()) log.debug("Found " + officialSections + " official enrollmentSets in site " + getSiteId());
 		return enrollmentSets;
 	}
 
