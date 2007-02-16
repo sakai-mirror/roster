@@ -87,6 +87,17 @@ public class RosterOverview extends InitializableBean {
 
 		emailComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
+				String email1 = one.getUser().getEmail();
+				String email2 = another.getUser().getEmail();
+				if(email1 != null && email2 == null) {
+					return 1;
+				}
+				if(email1 == null && email2 != null) {
+					return -1;
+				}
+				if(email1 == null && email2 == null) {
+					return displayNameComparator.compare(one, another);
+				}
 				int comparison = Collator.getInstance().compare(one.getUser().getEmail(),
 						another.getUser().getEmail());
 				return comparison == 0 ? displayNameComparator.compare(one,
@@ -105,6 +116,17 @@ public class RosterOverview extends InitializableBean {
 
 		enrollmentStatusComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
+				String status1 = one.getEnrollmentStatus();
+				String status2 = another.getEnrollmentStatus();
+				if(status1 != null && status2 == null) {
+					return 1;
+				}
+				if(status1 == null && status2 != null) {
+					return -1;
+				}
+				if(status1 == null && status2 == null) {
+					return displayNameComparator.compare(one, another);
+				}
 				int comparison = Collator.getInstance().compare(one.getEnrollmentStatus(),
 						another.getEnrollmentStatus());
 				return comparison == 0 ? displayNameComparator.compare(one,
@@ -114,6 +136,17 @@ public class RosterOverview extends InitializableBean {
 
 		enrollmentCreditsComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
+				String credits1 = one.getEnrollmentCredits();
+				String credits2 = another.getEnrollmentCredits();
+				if(credits1 != null && credits2 == null) {
+					return 1;
+				}
+				if(credits1 == null && credits2 != null) {
+					return -1;
+				}
+				if(credits1 == null && credits2 == null) {
+					return displayNameComparator.compare(one, another);
+				}
 				int comparison = Collator.getInstance().compare(one.getEnrollmentCredits(),
 						another.getEnrollmentCredits());
 				return comparison == 0 ? displayNameComparator.compare(one,
@@ -163,12 +196,18 @@ public class RosterOverview extends InitializableBean {
 
 		Comparator<Participant> comparator;
 
-		if (Participant.SORT_BY_NAME.equals(sortColumn)) {
-			comparator = displayNameComparator;
-		} else if (Participant.SORT_BY_ID.equals(sortColumn)) {
+		if (Participant.SORT_BY_ID.equals(sortColumn)) {
 			comparator = displayIdComparator;
+		} else if (Participant.SORT_BY_NAME.equals(sortColumn)) {
+			comparator = displayNameComparator;
+		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
+			comparator = emailComparator;
 		} else if (Participant.SORT_BY_ROLE.equals(sortColumn)) {
 			comparator = roleComparator;
+		} else if (Participant.SORT_BY_STATUS.equals(sortColumn)) {
+			comparator = enrollmentStatusComparator;
+		} else if (Participant.SORT_BY_CREDITS.equals(sortColumn)) {
+			comparator = enrollmentCreditsComparator;
 		} else {
 			// This is a section-sorted list
 			// FIXME Replace with the section category sort
@@ -202,10 +241,10 @@ public class RosterOverview extends InitializableBean {
 				statusCol.setId("statusCol");
 
                 HtmlCommandSortHeader statusSortHeader = new HtmlCommandSortHeader();
-                statusSortHeader.setId("status");
+                statusSortHeader.setId(Participant.SORT_BY_STATUS);
                 statusSortHeader.setRendererType("org.apache.myfaces.SortHeader");
                 statusSortHeader.setArrow(true);
-                statusSortHeader.setColumnName("status");
+                statusSortHeader.setColumnName(Participant.SORT_BY_STATUS);
 
 				HtmlOutputText statusHeaderText = new HtmlOutputText();
 				statusHeaderText.setId("statusHdrTxt");
@@ -226,10 +265,10 @@ public class RosterOverview extends InitializableBean {
 				creditsCol.setId("creditsCol");
 
                 HtmlCommandSortHeader creditsSortHeader = new HtmlCommandSortHeader();
-                creditsSortHeader.setId("credits");
+                creditsSortHeader.setId(Participant.SORT_BY_CREDITS);
                 creditsSortHeader.setRendererType("org.apache.myfaces.SortHeader");
                 creditsSortHeader.setArrow(true);
-                creditsSortHeader.setColumnName("credits");
+                creditsSortHeader.setColumnName(Participant.SORT_BY_CREDITS);
 
 				HtmlOutputText creditsHeaderText = new HtmlOutputText();
 				creditsHeaderText.setId("creditsHdrTxt");

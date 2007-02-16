@@ -34,9 +34,13 @@ import java.util.Map;
  */
 public interface Participant 
 {
-  String SORT_BY_NAME = "displayName";
   String SORT_BY_ID = "displayId";
+  String SORT_BY_NAME = "displayName";
+  String SORT_BY_EMAIL = "email";
   String SORT_BY_ROLE = "role";
+  String SORT_BY_STATUS = "status";
+  String SORT_BY_CREDITS = "credits";
+
   
   public Profile getProfile();
   public String getRoleTitle();
