@@ -64,6 +64,10 @@
             <property-name>authzService</property-name>
             <value>#{org_sakaiproject_authz_api_AuthzGroupService}</value>
         </managed-property>
+        <managed-property>
+            <property-name>toolManager</property-name>
+            <value>#{org_sakaiproject_tool_api_ToolManager}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>

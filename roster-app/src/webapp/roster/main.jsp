@@ -11,6 +11,9 @@ response.setContentType("text/html; charset=UTF-8");
 <f:view>
 	<sakai:view_container title="#{msgs.facet_roster_list}">
 		<sakai:view_content>
+		
+		<%="<script src=js/roster.js></script>"%>
+
 			<h:form>
 				<sakai:tool_bar>
 					<sakai:tool_bar_item disabled="true"
@@ -33,11 +36,17 @@ response.setContentType("text/html; charset=UTF-8");
 					<h:outputText value="#{msgs.title_missing_participants}" />
 				</h:outputLink>
 
-				<x:div styleClass="navPanel" style="width: 98%">
-					<x:div styleClass="viewNav" style="width: 100%">
-
-					</x:div>
-				</x:div>
+		        <x:div>
+    		        <h:inputText id="search" value="#{filter.searchFilter}"
+        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
+        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{overview.search}"/>
+        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{overview.clearSearch}"/>
+        		    
+        		    <h:selectOneMenu value="#{filter.sectionFilter}" onchange="this.form.submit()" rendered="#{filter.displaySectionsFilter}">
+        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
+        		   	</h:selectOneMenu>
+        		    
+        		</x:div>
 
 				<x:div styleClass="instruction">
 					<h:outputText value="#{msgs.no_participants_msg}"

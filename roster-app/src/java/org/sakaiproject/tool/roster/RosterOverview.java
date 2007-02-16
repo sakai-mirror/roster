@@ -33,6 +33,7 @@ import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -156,6 +157,15 @@ public class RosterOverview extends InitializableBean {
 
 }
 
+	// UI Actions
+	public void search(ActionEvent ae) {
+		// Nothing needs to be done to search
+	}
+	
+	public void clearSearch(ActionEvent ae) {
+		filter.searchFilter = filter.getDefaultSearchText();
+	}
+	
 	
 	// UI method calls
 	

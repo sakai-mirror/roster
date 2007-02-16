@@ -24,6 +24,7 @@ import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
+import org.sakaiproject.tool.api.ToolManager;
 
 public class ServicesBean {
 
@@ -32,6 +33,7 @@ public class ServicesBean {
 	protected SectionAwareness sectionAwareness;
 	protected CourseManagementService cmService;
 	protected AuthzGroupService authzService;
+	protected ToolManager toolManager;
 	
 	// Service injection
 	public void setRosterManager(RosterManager rosterManager) {
@@ -45,6 +47,9 @@ public class ServicesBean {
 	}
 	public void setAuthzService(AuthzGroupService authzService) {
 		this.authzService = authzService;
+	}
+	public void setToolManager(ToolManager toolManager) {
+		this.toolManager = toolManager;
 	}
 
 }

@@ -230,7 +230,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
 		Map<String, Enrollment> enrollments = getOfficialEnrollments();
-		if(log.isDebugEnabled()) log.debug(enrollments);
 		return buildParticipantList(userMap, sectionsMap, profiles, enrollments);
 	}
 	
@@ -468,7 +467,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @return siteId
 	 */
 	private String getSiteReference() {
-		log.debug("getContextSiteId()");
 		return ("/site/" + getSiteId());
 	}
 	
@@ -529,7 +527,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 				enrollmentSets.add(es);
 			}
 		}
-		if(log.isDebugEnabled()) log.debug("Found " + officialSections.size() + " official enrollmentSets in site " + getSiteId());
+		if(log.isDebugEnabled()) log.debug("Found " + enrollmentSets.size() + " official enrollmentSets in site " + getSiteId());
 		return enrollmentSets;
 	}
 
