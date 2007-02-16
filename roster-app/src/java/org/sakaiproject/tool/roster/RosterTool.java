@@ -457,9 +457,18 @@ public class RosterTool
       ExternalContext context = FacesContext.getCurrentInstance()
           .getExternalContext();
       Map paramMap = context.getRequestParameterMap();
-      String participantId = (String) paramMap.get(PARTICIPANT_ID);
-      participant = new DecoratedParticipant(rosterManager.getParticipantById(participantId));
-      
+      Iterator itr = paramMap.keySet().iterator();
+      while (itr.hasNext())
+      {
+        String key = (String) itr.next();
+        if (key != null && key.equals(msgs.getString("participant_id")))
+        {
+          String participantId = (String) paramMap.get(key);
+          participant = new DecoratedParticipant(rosterManager
+              .getParticipantById(participantId));
+          break;
+        }
+      }
       if (participant.getParticipant().getProfile() != null)
       {
         if (participant.isDisplayCompleteProfile())

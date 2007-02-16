@@ -53,14 +53,6 @@ public interface Participant
    */
   public  void setId(String id);
 
-  public String getDisplayId();
-  public void setDisplayId(String displayId);
-  
-  /**
-   * @return
-   */
-  public  String getEid();
-
   /**
    * @return
    */
