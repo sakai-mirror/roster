@@ -13,7 +13,7 @@
     <tag>
         <name>roster_display_HTML</name>
         <tag-class>org.sakaiproject.jsf.roster.RosterDisplayHTMLTag</tag-class>
-        <tei-class>com.sun.faces.taglib.FacesTagExtraInfo</tei-class>
+        <!-- tei-class>com.sun.faces.taglib.FacesTagExtraInfo</tei-class -->
         <body-content>JSP</body-content>
         <attribute>
             <name>value</name>

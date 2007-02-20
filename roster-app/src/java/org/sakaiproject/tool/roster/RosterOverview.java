@@ -158,6 +158,7 @@ public class RosterOverview extends InitializableBean {
 }
 
 	// UI Actions
+	
 	public void search(ActionEvent ae) {
 		// Nothing needs to be done to search
 	}

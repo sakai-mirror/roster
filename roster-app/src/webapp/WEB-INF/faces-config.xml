@@ -28,8 +28,16 @@
             <redirect/>
         </navigation-case>
         <navigation-case>
-            <from-outcome>profile</from-outcome>
-            <to-view-id>/roster/profile.jsp</to-view-id>
+            <from-outcome>completeProfile</from-outcome>
+            <to-view-id>/roster/displayCompleteProfile.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>publicProfile</from-outcome>
+            <to-view-id>/roster/displayPublicProfile.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>profileNotFound</from-outcome>
+            <to-view-id>/roster/profileNotFound.jsp</to-view-id>
             <redirect/>
         </navigation-case>
         <navigation-case>
@@ -68,6 +76,14 @@
             <property-name>toolManager</property-name>
             <value>#{org_sakaiproject_tool_api_ToolManager}</value>
         </managed-property>
+        <managed-property>
+            <property-name>userDirectoryService</property-name>
+            <value>#{org_sakaiproject_user_api_UserDirectoryService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>profileManager</property-name>
+            <value>#{org_sakaiproject_api_app_profile_ProfileManager}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -93,6 +109,16 @@
     <managed-bean>
         <managed-bean-name>overview</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.RosterOverview</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>filter</property-name>
+            <value>#{filter}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>profile</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.RosterProfile</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>
             <property-name>filter</property-name>

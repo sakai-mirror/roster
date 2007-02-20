@@ -20,11 +20,13 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.tool.api.ToolManager;
+import org.sakaiproject.user.api.UserDirectoryService;
 
 public class ServicesBean {
 
@@ -34,6 +36,8 @@ public class ServicesBean {
 	protected CourseManagementService cmService;
 	protected AuthzGroupService authzService;
 	protected ToolManager toolManager;
+	protected UserDirectoryService userDirectoryService;
+	protected ProfileManager profileManager;
 	
 	// Service injection
 	public void setRosterManager(RosterManager rosterManager) {
@@ -50,6 +54,12 @@ public class ServicesBean {
 	}
 	public void setToolManager(ToolManager toolManager) {
 		this.toolManager = toolManager;
+	}
+	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
+		this.userDirectoryService = userDirectoryService;
+	}
+	public void setProfileManager(ProfileManager profileManager) {
+		this.profileManager = profileManager;
 	}
 
 }

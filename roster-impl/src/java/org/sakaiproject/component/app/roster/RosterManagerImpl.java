@@ -120,10 +120,19 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Locale locale = new ResourceLoader().getLocale();
 		Map<String, String> codes = cmService().getEnrollmentStatusDescriptions(locale);
 		
-		return new ParticipantImpl(user, profile, getUserRoleTitle(user),
-				getSectionsMap(userIds).get(user.getId()),
-				codes.get(enrollment.getEnrollmentStatus()),
-				enrollment.getCredits());
+		String roleTitle = getUserRoleTitle(user);
+		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userIds);
+		List<CourseSection> sections = sectionsMap.get(user.getId());
+		String status = null;
+		if(enrollment != null) {
+			status = enrollment.getEnrollmentStatus();
+		}
+		String credits = null;
+		if(enrollment != null) {
+			credits = enrollment.getCredits();
+		}
+		
+		return new ParticipantImpl(user, profile, roleTitle, sections, codes.get(status), credits);
 	}
 
 	private Map<String, Enrollment> getOfficialEnrollments() {
