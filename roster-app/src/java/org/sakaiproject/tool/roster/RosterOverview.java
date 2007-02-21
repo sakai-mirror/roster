@@ -154,19 +154,27 @@ public class RosterOverview extends InitializableBean {
 						another) : comparison;
 			}
 		};
-
-}
-
-	// UI Actions
-	
-	public void search(ActionEvent ae) {
-		// Nothing needs to be done to search
 	}
 	
-	public void clearSearch(ActionEvent ae) {
-		filter.searchFilter = filter.getDefaultSearchText();
+	protected static final Comparator<Participant> getCategoryComparator(final String sectionCategory) {
+		return new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				CourseSection secOne = one.getSectionsMap().get(sectionCategory);
+				CourseSection secAnother = another.getSectionsMap().get(sectionCategory);
+				if(secOne == null && secAnother == null) {
+					return displayNameComparator.compare(one, another);
+				}
+				if(secOne != null && secAnother == null) {
+					return 1;
+				}
+				if(secOne == null && secAnother != null) {
+					return -1;
+				}
+				int comparison = secOne.getTitle().compareTo(secAnother.getTitle());
+				return  comparison == 0 ? displayNameComparator.compare(one, another) : comparison;
+			}
+		};
 	}
-	
 	
 	// UI method calls
 	
@@ -213,16 +221,14 @@ public class RosterOverview extends InitializableBean {
 			comparator = displayNameComparator;
 		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = emailComparator;
-		} else if (Participant.SORT_BY_ROLE.equals(sortColumn)) {
-			comparator = roleComparator;
 		} else if (Participant.SORT_BY_STATUS.equals(sortColumn)) {
 			comparator = enrollmentStatusComparator;
 		} else if (Participant.SORT_BY_CREDITS.equals(sortColumn)) {
 			comparator = enrollmentCreditsComparator;
+		} else if(sortColumn != null) {
+			comparator = getCategoryComparator(sortColumn);
 		} else {
-			// This is a section-sorted list
-			// FIXME Replace with the section category sort
-			comparator = roleComparator;
+			return roleComparator;
 		}
 
 		return comparator;

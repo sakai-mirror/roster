@@ -36,23 +36,12 @@ response.setContentType("text/html; charset=UTF-8");
 					<h:outputText value="#{msgs.title_missing_participants}" />
 				</h:outputLink>
 
-		        <x:div>
-    		        <h:inputText id="search" value="#{filter.searchFilter}"
-        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
-        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{overview.search}"/>
-        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{overview.clearSearch}"/>
-        		    
-        		    <h:selectOneMenu value="#{filter.sectionFilter}" onchange="this.form.submit()" rendered="#{filter.displaySectionsFilter}">
-        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
-        		   	</h:selectOneMenu>
-        		    
-        		</x:div>
+				<%@include file="inc/filter.jspf" %>
 
 				<x:div styleClass="instruction">
 					<h:outputText value="#{msgs.no_participants_msg}"
 						rendered="#{empty filter.participants}" />
 				</x:div>
-
 
 			    <x:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"
@@ -68,7 +57,7 @@ response.setContentType("text/html; charset=UTF-8");
 			                    <h:outputText value="#{msgs.facet_name}" />
 			                </x:commandSortHeader>
 			            </f:facet>
-						<h:commandLink action="#{profile.displayProfile}" value="#{participant.user.displayName}">
+						<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayName}">
 							<f:param name="participantId" value="#{participant.user.id}" />
 						</h:commandLink>
 			        </h:column>

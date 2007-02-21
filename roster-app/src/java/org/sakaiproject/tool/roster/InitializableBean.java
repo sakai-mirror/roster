@@ -93,7 +93,12 @@ public class InitializableBean implements PhaseAware {
 		}
 	}
 
+	public String getSiteReference() {
+		return "/site/" + getSiteContext();
+	}
 	public String getSiteContext() {
 		return ToolManager.getInstance().getCurrentPlacement().getContext();
 	}
+	
+	
 }

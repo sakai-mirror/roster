@@ -117,7 +117,7 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>profile</managed-bean-name>
+        <managed-bean-name>profileBean</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.RosterProfile</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>

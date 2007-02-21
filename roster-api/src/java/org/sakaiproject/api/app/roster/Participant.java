@@ -44,8 +44,13 @@ public interface Participant
   
   public Profile getProfile();
   public String getRoleTitle();
-  public Map<String, CourseSection> getSectionsMap();
   public User getUser();
   public String getEnrollmentStatus();
   public String getEnrollmentCredits();
+  
+  /**
+   * Gets a map of CourseSection categories to this Participant's enrolled CourseSections.
+   * @return
+   */
+  public Map<String, CourseSection> getSectionsMap();
 }

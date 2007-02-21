@@ -22,27 +22,34 @@ package org.sakaiproject.tool.roster;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.authz.api.AuthzGroup;
+import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.jsf.util.LocaleUtil;
+import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
 public class FilteredProfileListingBean extends InitializableBean implements Serializable {
-
+	private static final String STATUS_STUDENTS = "roster_status_students";
+	private static final Log log = LogFactory.getLog(FilteredProfileListingBean.class);
 	private static final long serialVersionUID = 1L;
 
 	protected ServicesBean services;
@@ -59,15 +66,32 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
 
+	// UI Actions
+	
+	public void search(ActionEvent ae) {
+		// Nothing needs to be done to search
+	}
+	
+	public void clearSearch(ActionEvent ae) {
+		searchFilter = getDefaultSearchText();
+	}
 
 	public List<Participant> getParticipants() {
 		List<Participant> participants = services.rosterManager.getRoster();
 		String defaultText = getDefaultSearchText();
+		Set<String> studentRoles = getStudentRoles();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
 
 			// Remove this participant if they don't  pass the status filter
-			if(statusFilter != null  && ! statusFilter.equals(participant.getEnrollmentStatus())) {
+			if(STATUS_STUDENTS.equals(statusFilter)) {
+				// We are filtering on the collection of all student roles
+				if( ! studentRoles.contains(participant.getRoleTitle())) {
+					iter.remove();
+					continue;
+				}
+			} else if(statusFilter != null  && ! statusFilter.equals(participant.getEnrollmentStatus())) {
+				// We are filtering on a particular enrollment status
 				iter.remove();
 				continue;
 			}
@@ -87,6 +111,19 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		return participants;
 	}
 	
+	protected Set<String> getStudentRoles() {
+		AuthzGroup azg = null;
+		try {
+			azg = services.authzService.getAuthzGroup(getSiteReference());
+		} catch (GroupNotDefinedException gnde) {
+			log.error("Unable to find site " + getSiteReference());
+			return new HashSet<String>();
+		}
+		Set<String> roles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
+		if(log.isDebugEnabled()) log.debug("Student Roles = " + roles);
+		return roles;
+	}
+	
 	protected boolean searchMatches(String search, User user) {
 		return user.getDisplayName().toLowerCase().startsWith(search.toLowerCase()) ||
 				   user.getSortName().toLowerCase().startsWith(search.toLowerCase()) ||
@@ -103,18 +140,32 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		return false;
 	}
 	
-	
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
-		list.add(new SelectItem("",
-				LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-						InitializableBean.MESSAGE_BUNDLE, "roster_all_sections")));
-
 		// Get the available sections
 		List<CourseSection> sections = services.rosterManager.getViewableSectionsForCurrentUser();
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
 			list.add(new SelectItem(section.getUuid(), section.getTitle()));
+		}
+		return list;
+	}
+	
+	public List<SelectItem> getStatusSelectItems() {
+		List<SelectItem> list = new ArrayList<SelectItem>();
+		Map<String, String> map = services.cmService.getEnrollmentStatusDescriptions(LocaleUtil.getLocale(FacesContext.getCurrentInstance()));
+		
+		// The UI doesn't care about status IDs... just labels
+		List<String> statusLabels = new ArrayList<String>();
+		for(Iterator<Entry<String, String>> iter = map.entrySet().iterator(); iter.hasNext();) {
+			Entry<String, String> entry = iter.next();
+			statusLabels.add(entry.getValue());
+		}
+		Collections.sort(statusLabels);
+		for(Iterator<String> iter = statusLabels.iterator(); iter.hasNext();) {
+			String statusLabel = iter.next();
+			SelectItem item = new SelectItem(statusLabel, statusLabel);
+			list.add(item);
 		}
 		return list;
 	}
@@ -169,7 +220,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		if(trimmedArg == null) {
 			this.searchFilter = defaultText;
 		} else {
-			this.searchFilter =trimmedArg;
+			this.searchFilter = trimmedArg;
 		}
 	}
 
@@ -186,7 +237,14 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 
 	public void setStatusFilter(String statusFilter) {
-		this.statusFilter = StringUtils.trimToNull(statusFilter);
+		// Don't allow this value to be set to the separater line
+		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				InitializableBean.MESSAGE_BUNDLE, "roster_status_sep_line")
+				.equals(statusFilter)) {
+			this.statusFilter = null;
+		} else {
+			this.statusFilter = StringUtils.trimToNull(statusFilter);
+		}
 	}
 
 	public String getDefaultSearchText() {

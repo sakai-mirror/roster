@@ -21,7 +21,7 @@
 					<jsp:include page="personalInfoUnavailable.jsp"/>
 				</p>
 				<p class="act">
-					<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="#{RosterTool.processCancel}"/>
+					<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="overview"/>
 				</p>
 			</h:form>
 		</sakai:view_content>

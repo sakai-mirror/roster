@@ -15,19 +15,19 @@
 				<p class="shorttext">
 			 	<sakai:panel_edit >	
 					<h:outputLabel style ="shorttext" value="#{msgs.profile_first_name}"/>
-					<h:outputText value="#{profile.participant.profile.firstName}"/> 
+					<h:outputText value="#{profileBean.participant.profile.firstName}"/> 
 					<h:outputLabel value="#{msgs.profile_last_name}"/>
-					<h:outputText value="#{profile.participant.profile.lastName}"/>
+					<h:outputText value="#{profileBean.participant.profile.lastName}"/>
 					<h:outputLabel value="#{msgs.profile_nick_name}"/>				
-					<h:outputText value="#{profile.participant.profile.nickName}"/>
+					<h:outputText value="#{profileBean.participant.profile.nickName}"/>
 					<h:outputLabel value="#{msgs.profile_position}"/> 				
-					<h:outputText value="#{profile.participant.profile.position}"/> 
+					<h:outputText value="#{profileBean.participant.profile.position}"/> 
 					<h:outputLabel value="#{msgs.profile_department}"/>
-					<h:outputText value="#{profile.participant.profile.department}"/> 
+					<h:outputText value="#{profileBean.participant.profile.department}"/> 
 					<h:outputLabel value="#{msgs.profile_school}"/>
-					<h:outputText value="#{profile.participant.profile.school}"/>
+					<h:outputText value="#{profileBean.participant.profile.school}"/>
 					<h:outputLabel value="#{msgs.profile_room}"/>
-					<h:outputText value="#{profile.participant.profile.room}"/> 
+					<h:outputText value="#{profileBean.participant.profile.room}"/> 
 				</sakai:panel_edit>
 				</p>
 			 <h4><h:outputText  value="#{msgs.profile_personal_information}"/></h4>
