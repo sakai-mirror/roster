@@ -489,14 +489,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @return
 	 */
 	private String getUserRoleTitle(User user) {
-		try {
-			AuthzGroup realm = authzGroupService().getAuthzGroup(getSiteReference());
-			Role userRole = realm.getUserRole(user.getId());
-			return userRole.getId();
-		} catch (GroupNotDefinedException e) {
-			log.error("GroupNotDefinedException", e);
-		}
-		return "";
+		return authzGroupService().getUserRole(user.getId(),getSiteId()); 
 	}
 
 	/**

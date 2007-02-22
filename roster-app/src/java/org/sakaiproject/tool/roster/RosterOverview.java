@@ -33,7 +33,6 @@ import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -61,7 +60,7 @@ public class RosterOverview extends InitializableBean {
 		this.filter = filter;
 	}
 
-	public static final Comparator<Participant> displayNameComparator;
+	public static final Comparator<Participant> sortNameComparator;
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
@@ -69,11 +68,11 @@ public class RosterOverview extends InitializableBean {
 	public static final Comparator<Participant> enrollmentCreditsComparator;
 
 	static {
-		displayNameComparator = new Comparator<Participant>() {
+		sortNameComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
 				int comparison = Collator.getInstance().compare(
-						one.getUser().getDisplayName(),
-						another.getUser().getDisplayName());
+						one.getUser().getSortName(),
+						another.getUser().getSortName());
 				return comparison == 0 ? displayIdComparator.compare(one,
 						another) : comparison;
 			}
@@ -97,11 +96,11 @@ public class RosterOverview extends InitializableBean {
 					return -1;
 				}
 				if(email1 == null && email2 == null) {
-					return displayNameComparator.compare(one, another);
+					return sortNameComparator.compare(one, another);
 				}
 				int comparison = Collator.getInstance().compare(one.getUser().getEmail(),
 						another.getUser().getEmail());
-				return comparison == 0 ? displayNameComparator.compare(one,
+				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
@@ -110,7 +109,7 @@ public class RosterOverview extends InitializableBean {
 			public int compare(Participant one, Participant another) {
 				int comparison = Collator.getInstance().compare(one.getRoleTitle(),
 						another.getRoleTitle());
-				return comparison == 0 ? displayNameComparator.compare(one,
+				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
@@ -126,11 +125,11 @@ public class RosterOverview extends InitializableBean {
 					return -1;
 				}
 				if(status1 == null && status2 == null) {
-					return displayNameComparator.compare(one, another);
+					return sortNameComparator.compare(one, another);
 				}
 				int comparison = Collator.getInstance().compare(one.getEnrollmentStatus(),
 						another.getEnrollmentStatus());
-				return comparison == 0 ? displayNameComparator.compare(one,
+				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
@@ -146,11 +145,11 @@ public class RosterOverview extends InitializableBean {
 					return -1;
 				}
 				if(credits1 == null && credits2 == null) {
-					return displayNameComparator.compare(one, another);
+					return sortNameComparator.compare(one, another);
 				}
 				int comparison = Collator.getInstance().compare(one.getEnrollmentCredits(),
 						another.getEnrollmentCredits());
-				return comparison == 0 ? displayNameComparator.compare(one,
+				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
@@ -162,7 +161,7 @@ public class RosterOverview extends InitializableBean {
 				CourseSection secOne = one.getSectionsMap().get(sectionCategory);
 				CourseSection secAnother = another.getSectionsMap().get(sectionCategory);
 				if(secOne == null && secAnother == null) {
-					return displayNameComparator.compare(one, another);
+					return sortNameComparator.compare(one, another);
 				}
 				if(secOne != null && secAnother == null) {
 					return 1;
@@ -171,7 +170,7 @@ public class RosterOverview extends InitializableBean {
 					return -1;
 				}
 				int comparison = secOne.getTitle().compareTo(secAnother.getTitle());
-				return  comparison == 0 ? displayNameComparator.compare(one, another) : comparison;
+				return  comparison == 0 ? sortNameComparator.compare(one, another) : comparison;
 			}
 		};
 	}
@@ -218,7 +217,7 @@ public class RosterOverview extends InitializableBean {
 		if (Participant.SORT_BY_ID.equals(sortColumn)) {
 			comparator = displayIdComparator;
 		} else if (Participant.SORT_BY_NAME.equals(sortColumn)) {
-			comparator = displayNameComparator;
+			comparator = sortNameComparator;
 		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = emailComparator;
 		} else if (Participant.SORT_BY_STATUS.equals(sortColumn)) {

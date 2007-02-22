@@ -20,10 +20,43 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.app.roster.Participant;
 
 public class RosterPictures extends InitializableBean {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
+
+	protected boolean displayProfilePhoto;
+
+	protected FilteredProfileListingBean filter;
 	
+	// Service & Bean Setters & Getters
+	public FilteredProfileListingBean getFilter() {
+		return filter;
+	}
+	public void setFilter(FilteredProfileListingBean filter) {
+		this.filter = filter;
+	}
+
+	public List<Participant> getParticipants() {
+		List<Participant> participants = filter.getParticipants();
+		if (participants != null && participants.size() >= 1) {
+			Collections.sort(participants, RosterOverview.sortNameComparator);
+			if(!filter.prefs.sortAscending) {
+				Collections.reverse(participants);
+			}
+		}
+		return participants;
+	}
+	
+	public boolean isDisplayProfilePhoto() {
+		return displayProfilePhoto;
+	}
+	public void setDisplayProfilePhoto(boolean displayProfilePhoto) {
+		this.displayProfilePhoto = displayProfilePhoto;
+	}
 }
