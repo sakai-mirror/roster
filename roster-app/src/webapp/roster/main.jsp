@@ -1,6 +1,7 @@
 <%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %> 
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
 <% response.setContentType("text/html; charset=UTF-8"); %>
 
 
@@ -54,7 +55,10 @@
 			
 			<f:verbatim><div class="instruction"></f:verbatim>
 				 <h:outputText value="#{msgs.no_participants_msg}" rendered="#{!RosterTool.renderRoster}"/>
-				 <h:outputText value="#{msgs.participants_msg} #{RosterTool.allUserCount}" rendered="#{RosterTool.renderRoster}"/>
+				 <h:outputText value="#{msgs.participants_msg} #{RosterTool.allUserCount} - " rendered="#{RosterTool.renderRoster}"/>
+				 <x:dataList id="roles" value="#{RosterTool.roleStats}" var="roleResult" layout="simple">
+		 	         <h:outputText value="#{roleResult.key} (#{roleResult.value})" rendered="#{RosterTool.renderRoster}" />
+		 	     </x:dataList>
 		 	<f:verbatim></div></f:verbatim>
 		 		
 			<%--********************* Roster Display *********************--%>
@@ -113,8 +117,8 @@
 						   	</h:commandLink>
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.sectionsForDisplay}" /> 						
-					</h:column>
-				 </h:dataTable> 
+				    </h:column>
+				</h:dataTable> 
 				 
 			</h:panelGroup>
 

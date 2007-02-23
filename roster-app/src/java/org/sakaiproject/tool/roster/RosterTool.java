@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -80,6 +81,7 @@ public class RosterTool
   private List decoRoster = null;
   private List rosterList = null;
   private List menuItems = null;
+  private List roleStats = null;
   private boolean rosterProcessed = false;
 
   // sort column
@@ -520,18 +522,36 @@ public class RosterTool
   {
     Log.debug("getAllUsers()");
     decoRoster = new ArrayList();
+
+    Map roleMap = new HashMap();
     if (list == null || list.size() < 1)
     {
       return null;
     }
+    
     this.allUserCount = list.size();
     Iterator iter = list.iterator();
 
     while (iter.hasNext())
     {
-      decoRoster.add(new DecoratedParticipant((Participant) iter.next()));
+      DecoratedParticipant dp = new DecoratedParticipant((Participant) iter.next());
+      
+      String dpTitle = dp.getParticipant().getRoleTitle();
+      
+      Long roleCount = (Long)roleMap.get(dpTitle)==null ? 0 : (Long)roleMap.get(dpTitle);
+      roleMap.put(dpTitle, ++roleCount);
+      
+      decoRoster.add(dp);
+      
     }
+    this.roleStats = new ArrayList(roleMap.entrySet());
+    
     return decoRoster;
+  }
+  
+  public List getRoleStats()
+  {
+	return roleStats;
   }
 
   public int getAllUserCount()
