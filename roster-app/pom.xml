@@ -86,31 +86,8 @@
       <artifactId>sakai-util</artifactId>
       <version>${sakai.version}</version>
     </dependency>
-<!--My faces dependency -->
-<!-- Commented out - csev 05/02/2006 - we do not think that this is used
-	     if this passes 2.2 QA - remove these two dependencies.  The widgets-myfaces
-             dependency was commented out for 2.1 
 
-       <dependency>
-            <groupId>myfaces</groupId>
-            <artifactId>myfaces</artifactId>
-            <version>1.0.9</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency> 
-	-->
-<!--  <dependency>
-            <groupId>org.sakaiproject</groupId>
-            <artifactId>sakai-jsf-widgets-myfaces</artifactId>
-            <version>${sakai.version}</version>
-            <url>http://sakaiproject.org/</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>  -->
     <dependency>
-      
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-profile-tool</artifactId>
       <version>${sakai.version}</version>
