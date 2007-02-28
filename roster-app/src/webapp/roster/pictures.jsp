@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai"%>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <%
 response.setContentType("text/html; charset=UTF-8");
 %>
@@ -33,26 +33,26 @@ response.setContentType("text/html; charset=UTF-8");
 
 				<%@include file="inc/filter.jspf" %>
 
-				<x:div styleClass="instruction">
+				<t:div styleClass="instruction">
 					<h:outputText value="#{msgs.no_participants_msg}"
 						rendered="#{empty filter.participants}" />
-				</x:div>
+				</t:div>
 
-				<x:newspaperTable newspaperColumns="5" newspaperOrientation="horizontal" value="#{pictures.participants}" var="participant">
+				<t:dataTable newspaperColumns="5" newspaperOrientation="horizontal" value="#{pictures.participants}" var="participant">
 					<h:column>
 						<h:graphicImage id="profileImage" value="#{participant.profile.pictureUrl}" rendered="#{pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
 						<h:graphicImage id="rosterImage" value="ParticipantImageServlet.prf?photo=#{participant.user.id}" rendered="#{ ! pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
 						<f:verbatim><br/></f:verbatim>
 						<h:outputText value="#{participant.user.sortName}"/>
 					</h:column>
-				</x:newspaperTable>
+				</t:dataTable>
 
 <%--
-				<x:dataList layout="simple" value="#{pictures.participants}" var="participant">
+				<t:dataList layout="simple" value="#{pictures.participants}" var="participant">
 					<h:graphicImage id="profileImage" value="#{participant.profile.pictureUrl}" rendered="#{pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
 					<h:graphicImage id="rosterImage" value="ParticipantImageServlet.prf?photo=#{participant.user.id}" rendered="#{ ! pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
 					<h:outputText value="#{participant.user.sortName}"/>
-				</x:dataList>
+				</t:dataList>
 --%>
 			</h:form>
 		</sakai:view_content>

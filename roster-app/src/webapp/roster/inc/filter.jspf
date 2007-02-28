@@ -1,4 +1,4 @@
-		        <x:div>
+		        <t:div>
 
         		    <h:selectOneMenu value="#{filter.statusFilter}" onchange="this.form.submit()" rendered="#{filter.displayEnrollmentDetails}" immediate="trui">
         		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
@@ -23,4 +23,4 @@
         		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
         		   	</h:selectOneMenu>
         		    
-        		</x:div>
+        		</t:div>

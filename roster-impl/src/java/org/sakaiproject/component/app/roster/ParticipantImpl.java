@@ -41,7 +41,7 @@ import org.sakaiproject.user.api.User;
 public class ParticipantImpl implements Participant, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final static Log Log = LogFactory.getLog(ParticipantImpl.class);
+	private final static Log log = LogFactory.getLog(ParticipantImpl.class);
 
 	protected User user;
 	protected Profile profile;

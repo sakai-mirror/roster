@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
@@ -79,7 +80,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public abstract CourseManagementService cmService();
 	
 	public void init() {
-		log.debug("init()");
+		log.info("init()");
 
 		Collection registered = functionManager().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
 		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
@@ -504,23 +505,27 @@ public abstract class RosterManagerImpl implements RosterManager {
 
 	public Set<Section> getOfficialSectionsInSite() {
 		Set<Section> sections = new HashSet<Section>();
-		Set<String> providerIds = authzGroupService().getProviderIds(getSiteReference());
-		for (Iterator<String> iter = providerIds.iterator(); iter.hasNext();) {
+		for(Iterator<CourseSection> iter = sectionService().getSections(getSiteId()).iterator(); iter.hasNext();) {
+			CourseSection internalSection = iter.next();
+			String eid = StringUtils.trimToNull(internalSection.getEid());
+			if(eid == null) {
+				continue;
+			}
 			Section section = null;
 			try {
-				section = cmService().getSection(iter.next());
+				section = cmService().getSection(eid);
 			} catch (IdNotFoundException ide) {
 				log.warn(ide);
 				continue;
 			}
 			sections.add(section);
 		}
+		if(log.isDebugEnabled()) log.debug("Found " + sections.size() + " official sections in site " + getSiteId());
 		return sections;
 	}
 
 	public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite() {
 		Set<Section> officialSections = getOfficialSectionsInSite();
-		if(log.isDebugEnabled()) log.debug("Found " + officialSections.size() + " official sections in site " + getSiteId());
 		Set<EnrollmentSet> enrollmentSets = new HashSet<EnrollmentSet>();
 		for (Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
 			Section section = iter.next();

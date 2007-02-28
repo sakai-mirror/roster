@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai"%>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <%
 response.setContentType("text/html; charset=UTF-8");
 %>
@@ -38,12 +38,12 @@ response.setContentType("text/html; charset=UTF-8");
 
 				<%@include file="inc/filter.jspf" %>
 
-				<x:div styleClass="instruction">
+				<t:div styleClass="instruction">
 					<h:outputText value="#{msgs.no_participants_msg}"
 						rendered="#{empty filter.participants}" />
-				</x:div>
+				</t:div>
 
-			    <x:dataTable cellpadding="0" cellspacing="0"
+			    <t:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"
 			        value="#{overview.participants}"
 			        var="participant"
@@ -53,9 +53,9 @@ response.setContentType("text/html; charset=UTF-8");
 			        styleClass="listHier rosterTable">
 			        <h:column>
 			            <f:facet name="header">
-			                <x:commandSortHeader columnName="displayName" immediate="true" arrow="true">
+			                <t:commandSortHeader columnName="displayName" immediate="true" arrow="true">
 			                    <h:outputText value="#{msgs.facet_name}" />
-			                </x:commandSortHeader>
+			                </t:commandSortHeader>
 			            </f:facet>
 						<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayName}">
 							<f:param name="participantId" value="#{participant.user.id}" />
@@ -63,32 +63,32 @@ response.setContentType("text/html; charset=UTF-8");
 			        </h:column>
 			        <h:column>
 			            <f:facet name="header">
-			                <x:commandSortHeader columnName="displayId" immediate="true" arrow="true">
+			                <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
 			                    <h:outputText value="#{msgs.facet_userId}" />
-			                </x:commandSortHeader>
+			                </t:commandSortHeader>
 			            </f:facet>
 			            <h:outputText value="#{participant.user.displayId}"/>
 			        </h:column>
 			        <h:column>
 			            <f:facet name="header">
-			                <x:commandSortHeader columnName="email" immediate="true" arrow="true">
+			                <t:commandSortHeader columnName="email" immediate="true" arrow="true">
 			                    <h:outputText value="#{msgs.facet_email}" />
-			                </x:commandSortHeader>
+			                </t:commandSortHeader>
 			            </f:facet>
 			            <h:outputText value="#{participant.user.email}"/>
 			        </h:column>
 			        <h:column>
 			            <f:facet name="header">
-			                <x:commandSortHeader columnName="roleId" immediate="true" arrow="true">
+			                <t:commandSortHeader columnName="roleId" immediate="true" arrow="true">
 			                    <h:outputText value="#{msgs.facet_role}" />
-			                </x:commandSortHeader>
+			                </t:commandSortHeader>
 			            </f:facet>
 			            <h:outputText value="#{participant.roleTitle}"/>
 			        </h:column>
 			        
 			        <%/* A dynamic number of section columns will be appended here by the backing bean */%>
 			    
-			    </x:dataTable>
+			    </t:dataTable>
 
 			</h:form>
 		</sakai:view_content>
