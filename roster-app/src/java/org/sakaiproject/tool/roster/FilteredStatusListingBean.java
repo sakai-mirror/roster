@@ -22,27 +22,113 @@ package org.sakaiproject.tool.roster;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.coursemanagement.api.Enrollment;
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.util.ResourceLoader;
 
 public class FilteredStatusListingBean extends FilteredProfileListingBean implements Serializable {
 
+	private static final Log log = LogFactory.getLog(FilteredStatusListingBean.class);
 	private static final long serialVersionUID = 1L;
+
+	protected String statusFilter;
 	
+	public void init() {
+		super.init();
+	}
+	
+	protected List<Participant> findParticipants() {
+		// Find the enrollment status descriptions for the current user's locale
+		Locale locale = new ResourceLoader().getLocale();
+		Map<String, String> statusCodes = services.cmService.getEnrollmentStatusDescriptions(locale);
+
+		// Make sure we're looking at a section with an enrollment set
+		if(sectionFilter == null) {
+			this.sectionFilter = (String)getSectionSelectItems().get(0).getValue();
+		}
+		Map<String, Enrollment> enrollmentMap = getEnrollmentMap(sectionFilter);
+		List<Participant> participants = super.findParticipants();
+		
+		// Decorate the participants returned by our superclass filtering
+		List<Participant> enrolledParticipants = new ArrayList<Participant>(participants.size());
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
+			Participant participant = iter.next();
+			String status = null;
+			String credits = null;
+			Enrollment enr = enrollmentMap.get(participant.getUser().getEid());
+			if(enr != null) {
+				status = statusCodes.get(enr.getEnrollmentStatus());
+				credits = enr.getCredits();
+			}
+			EnrolledParticipant ep = new EnrolledParticipant(participant, status, credits);
+			enrolledParticipants.add(ep);
+		}
+		
+		if(StringUtils.trimToNull(statusFilter) == null) {
+			// No need for further filtering
+			return enrolledParticipants;
+		}
+		
+		// Filter the participants further, by status
+		for(Iterator<Participant> iter = enrolledParticipants.iterator(); iter.hasNext();) {
+			if( ! statusFilter.equals(((EnrolledParticipant)iter.next()).getEnrollmentStatus())) {
+				iter.remove();
+			}
+		}
+		
+		return enrolledParticipants;
+	}
+	
+	/**
+	 * Gets a map of user EIDs to Enrollments for a given section.
+	 * @param sectionEid
+	 * @return
+	 */
+	private Map<String, Enrollment> getEnrollmentMap(String sectionUuid) {
+		Map<String, Enrollment> enrollmentMap = new HashMap<String, Enrollment>();
+
+		CourseSection internalSection = null;
+		Section cmSection = null;
+		EnrollmentSet es = null;
+		try {
+			internalSection = services.sectionAwareness.getSection(sectionUuid);
+			cmSection = services.cmService.getSection(internalSection.getEid());
+			es = cmSection.getEnrollmentSet();
+		} catch (Exception e) {
+			log.warn(e);
+			return enrollmentMap;
+		}
+		
+		Set<Enrollment> enrollments = services.cmService.getEnrollments(es.getEid());
+		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
+			Enrollment enr = iter.next();
+			enrollmentMap.put(enr.getUserId(), enr);
+		}
+		return enrollmentMap;
+	}
+
 	/**
 	 * Overrides the behavior in FilteredParticipantListingBean.  Here, if the status filter
 	 * matches the participant's enrollment status, the participant is a match.
 	 */
-	protected boolean participantMatchesStatusFilter(Participant participant, String statusFilter, Set<String> studentRoles) {
-		// TODO Implement this method
-		return true;
+	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
+		// We are always filtering on student here
+		return studentRoles.contains(participant.getRoleTitle());
 	}
 
 	public List<SelectItem> getSectionSelectItems() {
@@ -61,5 +147,28 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 		}
 		return list;
 	}
-	
+
+	/**
+	 * Because the status filter is displayed here as a text, we need to ensure that
+	 * it's never null.
+	 * 
+	 * @return
+	 */
+	public String getViewFilter() {
+		String retValue = super.getViewFilter();
+		if(retValue == null) {
+			return "";
+		} else {
+			return retValue;
+		}
+	}
+
+	public String getStatusFilter() {
+		return statusFilter;
+	}
+
+	public void setStatusFilter(String statusFilter) {
+		this.statusFilter = statusFilter;
+	}
+
 }

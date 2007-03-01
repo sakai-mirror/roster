@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
-import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -63,7 +62,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		this.prefs = prefs;
 	}
 
-	protected String statusFilter;
+	protected String viewFilter;
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
 
@@ -115,7 +114,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
 			
-			if( ! participantMatchesStatusFilter(participant, statusFilter, studentRoles)) {
+			if( ! participantMatchesViewFilter(participant, studentRoles)) {
 				iter.remove();
 				continue;
 			}
@@ -127,7 +126,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 			}
 			
 			// Remove this participant if they don't  pass the section filter
-			if(sectionFilter != null && ! sectionMatches(sectionFilter, participant.getSectionsMap())) {
+			if(sectionFilter != null && isDisplaySectionsFilter() && ! sectionMatches(sectionFilter, participant.getSectionsMap())) {
 				iter.remove();
 				continue;
 			}
@@ -135,8 +134,8 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		return participants;
 	}
 	
-	protected boolean participantMatchesStatusFilter(Participant participant, String statusFilter, Set<String> studentRoles) {
-		if(STATUS_STUDENTS.equals(statusFilter)) {
+	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
+		if(STATUS_STUDENTS.equals(viewFilter)) {
 			// We are filtering on the collection of all student roles
 			if( ! studentRoles.contains(participant.getRoleTitle())) {
 				return false;
@@ -218,23 +217,6 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		}
 		return list;
 	}
-
-	/**
-	 * We display enrollment details when there is a single EnrollmentSet associated
-	 * with a site, or when multiple EnrollmentSets are children of cross listed
-	 * CourseOfferings.
-	 * 
-	 * @return
-	 */
-	public boolean isDisplayEnrollmentDetails() {
-		Set<EnrollmentSet> officialEnrollmentSets = services.rosterManager.getOfficialEnrollmentSetsInSite();
-		int count = officialEnrollmentSets.size();
-		if(count == 0) return false;
-		if(count == 1) return true;
-
-		// TODO Deal with cross listings.  Multiple cross listed courses should still show enrollment details
-		return false;
-	}
 	
 	public boolean isDisplaySectionsFilter() {
 		return services.rosterManager.getViewableSectionsForCurrentUser().size() > 1;
@@ -261,7 +243,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public void setSectionFilter(String sectionFilter) {
 		// Don't allow this value to be set to the separater line
 		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "roster_status_sep_line")
+				InitializableBean.MESSAGE_BUNDLE, "roster_section_sep_line")
 				.equals(sectionFilter)) {
 			this.sectionFilter = null;
 		} else {
@@ -269,12 +251,12 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		}
 	}
 
-	public String getStatusFilter() {
-		return statusFilter;
+	public String getViewFilter() {
+		return viewFilter;
 	}
 
-	public void setStatusFilter(String statusFilter) {
-		this.statusFilter = StringUtils.trimToNull(statusFilter);
+	public void setViewFilter(String statusFilter) {
+		this.viewFilter = StringUtils.trimToNull(statusFilter);
 	}
 
 	public String getDefaultSearchText() {

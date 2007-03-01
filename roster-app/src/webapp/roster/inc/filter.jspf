@@ -4,26 +4,17 @@
 		        <t:div>
 
 					<t:div>
-							<h:outputLabel for="statusFilter" value="#{msgs.status_filter}"/>
-		        		    <h:selectOneMenu id="statusFilter" value="#{filter.statusFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
+							<h:outputLabel for="viewFilter" value="#{msgs.status_filter}"/>
+		        		    <h:selectOneMenu id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue=""/>
+		        		    	<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_status_students"/>
 		        		   	</h:selectOneMenu>
-
-<%--
-						<h:panelGroup rendered="#{filter.displayEnrollmentDetails}">
-		        		    <h:selectOneMenu value="#{filter.statusFilter}" onchange="this.form.submit()" rendered="#{ ! filter.displayEnrollmentDetails}" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
-		        		   	</h:selectOneMenu>
-	        		   	</h:panelGroup>
---%>
 
 						<h:panelGroup rendered="#{filter.displaySectionsFilter}">
 							<h:outputLabel for="section_filter" value="#{msgs.section_filter}"/>
 		        		    <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true">
 		        		    	<f:selectItem itemLabel="#{msgs.roster_sections_all}" itemValue=""/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_status_sep_line}" itemValue="#{msgs.roster_status_sep_line}" />
+		        		    	<f:selectItem itemLabel="#{msgs.roster_section_sep_line}" itemValue="#{msgs.roster_section_sep_line}" />
 		        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
 		        		   	</h:selectOneMenu>
 		        		</h:panelGroup>

@@ -21,11 +21,11 @@
 
 package org.sakaiproject.api.app.roster;
 
+import java.util.Map;
+
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
-
-import java.util.Map;
 
 
 /**
@@ -38,15 +38,11 @@ public interface Participant
   String SORT_BY_NAME = "displayName";
   String SORT_BY_EMAIL = "email";
   String SORT_BY_ROLE = "role";
-  String SORT_BY_STATUS = "status";
-  String SORT_BY_CREDITS = "credits";
 
   
   public Profile getProfile();
   public String getRoleTitle();
   public User getUser();
-  public String getEnrollmentStatus();
-  public String getEnrollmentCredits();
   
   /**
    * Gets a map of CourseSection categories to this Participant's enrolled CourseSections.

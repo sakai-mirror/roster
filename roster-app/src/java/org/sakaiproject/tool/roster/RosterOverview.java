@@ -206,58 +206,6 @@ public class RosterOverview extends InitializableBean {
 			// Can this user see section memberships?
 			boolean displaySectionMemberships = filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
 			if(! displaySectionMemberships) return;
-
-			boolean displayStatusAndCredits = filter.isDisplayEnrollmentDetails();
-			// Add status and credits columns, if necessary
-			if(displayStatusAndCredits) {
-				// Status Column
-				UIColumn statusCol = new UIColumn();
-				statusCol.setId("statusCol");
-
-                HtmlCommandSortHeader statusSortHeader = new HtmlCommandSortHeader();
-                statusSortHeader.setId(Participant.SORT_BY_STATUS);
-                statusSortHeader.setRendererType("org.apache.myfaces.SortHeader");
-                statusSortHeader.setArrow(true);
-                statusSortHeader.setColumnName(Participant.SORT_BY_STATUS);
-
-				HtmlOutputText statusHeaderText = new HtmlOutputText();
-				statusHeaderText.setId("statusHdrTxt");
-				statusHeaderText.setValue(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), MESSAGE_BUNDLE, "facet_status"));
-
-                statusSortHeader.getChildren().add(statusHeaderText);
-                statusCol.setHeader(statusSortHeader);
-
-				HtmlOutputText statusContents = new HtmlOutputText();
-				statusContents.setId("status_cell");
-				statusContents.setValueBinding("value",
-					app.createValueBinding("#{participant.enrollmentStatus}"));
-				statusCol.getChildren().add(statusContents);
-				rosterDataTable.getChildren().add(statusCol);
-
-				// Credits Column
-				UIColumn creditsCol = new UIColumn();
-				creditsCol.setId("creditsCol");
-
-                HtmlCommandSortHeader creditsSortHeader = new HtmlCommandSortHeader();
-                creditsSortHeader.setId(Participant.SORT_BY_CREDITS);
-                creditsSortHeader.setRendererType("org.apache.myfaces.SortHeader");
-                creditsSortHeader.setArrow(true);
-                creditsSortHeader.setColumnName(Participant.SORT_BY_CREDITS);
-
-				HtmlOutputText creditsHeaderText = new HtmlOutputText();
-				creditsHeaderText.setId("creditsHdrTxt");
-				creditsHeaderText.setValue(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), MESSAGE_BUNDLE, "facet_credits"));
-
-                creditsSortHeader.getChildren().add(creditsHeaderText);
-                creditsCol.setHeader(creditsSortHeader);
-
-				HtmlOutputText creditsContents = new HtmlOutputText();
-				creditsContents.setId("credits_cell");
-				creditsContents.setValueBinding("value",
-					app.createValueBinding("#{participant.enrollmentCredits}"));
-				creditsCol.getChildren().add(creditsContents);
-				rosterDataTable.getChildren().add(creditsCol);
-			}
 			
 			// Add columns for each category. Be sure to create unique IDs
 			// for all child components.

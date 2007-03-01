@@ -20,8 +20,6 @@
  **********************************************************************************/
 package org.sakaiproject.component.app.roster;
 
-import java.util.List;
-
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.privacy.PrivacyManager;
 import org.sakaiproject.authz.api.AuthzGroupService;

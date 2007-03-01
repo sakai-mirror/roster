@@ -103,22 +103,4 @@ public interface RosterManager
    */
   public Participant getParticipantById(String participantId);
   
-  /**
-   * Gets the set of Sections (as defined in the CM API) that are attached to this site
-   * via the site's provider id.
-   * 
-   * @return
-   */
-  public Set<Section> getOfficialSectionsInSite();
-  
-  /**
-   * Gets the set of EnrollmentSets (as defined in the CM API) that are attached to
-   * Sections that are attached to this site via the site's provider id.
-   * 
-   * @return
-   */
-  public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite();
-  
-  
-  
 }

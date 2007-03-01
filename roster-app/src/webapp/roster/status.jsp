@@ -9,7 +9,7 @@ response.setContentType("text/html; charset=UTF-8");
    <jsp:setProperty name="msgs" property="baseName" value="org.sakaiproject.tool.roster.bundle.Messages"/>
 </jsp:useBean>
 <f:view>
-	<sakai:view_container title="#{msgs.title_enrollment_status}">
+	<sakai:view_container title="#{status.pageTitle}">
 		<sakai:view_content>
 		
 		<%="<script src=js/roster.js></script>"%>
@@ -92,6 +92,14 @@ response.setContentType("text/html; charset=UTF-8");
 			                </t:commandSortHeader>
 			            </f:facet>
 			            <h:outputText value="#{participant.enrollmentStatus}"/>
+			        </h:column>
+			        <h:column>
+			            <f:facet name="header">
+			                <t:commandSortHeader columnName="credits" immediate="true" arrow="true">
+			                    <h:outputText value="#{msgs.facet_credits}" />
+			                </t:commandSortHeader>
+			            </f:facet>
+			            <h:outputText value="#{participant.enrollmentCredits}"/>
 			        </h:column>
 			    
 			    </t:dataTable>

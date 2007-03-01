@@ -23,15 +23,12 @@ package org.sakaiproject.component.app.roster;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,19 +37,15 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.api.app.roster.RosterFunctions;
+import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.api.privacy.PrivacyManager;
-import org.sakaiproject.authz.api.AuthzGroup;
-import org.sakaiproject.authz.api.GroupNotDefinedException;
-import org.sakaiproject.authz.api.Member;
-import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
+import org.sakaiproject.authz.api.GroupNotDefinedException;
+import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
-import org.sakaiproject.coursemanagement.api.Enrollment;
-import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.section.api.SectionAwareness;
@@ -61,9 +54,8 @@ import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.api.UserDirectoryService;
-import org.sakaiproject.util.ResourceLoader;
+import org.sakaiproject.user.api.UserNotDefinedException;
 
 public abstract class RosterManagerImpl implements RosterManager {
 	private static final Log log = LogFactory.getLog(RosterManagerImpl.class);
@@ -105,62 +97,15 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 
 	private Participant createParticipantByUser(User user, Profile profile) {
-		Set<EnrollmentSet> enrollmentSets = getOfficialEnrollmentSetsInSite();
-		Enrollment enrollment = null;
-		// TODO Deal with cross listings
-		if(enrollmentSets.size() == 1) {
-			EnrollmentSet es = enrollmentSets.iterator().next();
-			// Note: use the EID when talking to the CM service!
-			enrollment = cmService().findEnrollment(user.getEid(), es.getEid());
-		}
-
 		Set<String> userIds = new HashSet<String>();
 		userIds.add(user.getId());
 
-		// Find the enrollment status descriptions for the current user's locale
-		Locale locale = new ResourceLoader().getLocale();
-		Map<String, String> codes = cmService().getEnrollmentStatusDescriptions(locale);
-		
 		String roleTitle = getUserRoleTitle(user);
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userIds);
 		List<CourseSection> sections = sectionsMap.get(user.getId());
-		String status = null;
-		if(enrollment != null) {
-			status = enrollment.getEnrollmentStatus();
-		}
-		String credits = null;
-		if(enrollment != null) {
-			credits = enrollment.getCredits();
-		}
-		
-		return new ParticipantImpl(user, profile, roleTitle, sections, codes.get(status), credits);
+		return new ParticipantImpl(user, profile, roleTitle, sections);
 	}
 
-	private Map<String, Enrollment> getOfficialEnrollments() {
-		Set<EnrollmentSet> enrollmentSets = getOfficialEnrollmentSetsInSite();
-		Map<String, Enrollment> enrollmentMap = new HashMap<String, Enrollment>();
-		// TODO Deal with cross listings
-		if(enrollmentSets.size() != 1) {
-			if(log.isDebugEnabled()) log.debug(enrollmentSets.size() + " enrollment sets found in this site.  Can't determine user enrollments.");
-			return enrollmentMap;
-		}
-		EnrollmentSet es = enrollmentSets.iterator().next();
-		Set<Enrollment> enrollments = cmService().getEnrollments(es.getEid());
-
-		// Enrollments know a user's EID, not their ID, so we need to run a conversion.
-		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
-			Enrollment enr = iter.next();
-			User user =null;
-			try {
-				user = userDirectoryService().getUserByEid(enr.getUserId());
-			} catch (UserNotDefinedException ue) {
-				log.warn("Can not find a sakai user with eid=" + enr.getUserId());
-				continue;
-			}
-			enrollmentMap.put(user.getId(), enr);
-		}
-		return enrollmentMap;
-	}
 	
 	/*
 	 * (non-Javadoc)
@@ -229,8 +174,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		} else {
 			participants = getPublicParticipants(currentUser);
 		}
-
-		// TODO Filter the partipant list
 		
 		return participants;
 	}
@@ -239,8 +182,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
-		Map<String, Enrollment> enrollments = getOfficialEnrollments();
-		return buildParticipantList(userMap, sectionsMap, profiles, enrollments);
+		return buildParticipantList(userMap, sectionsMap, profiles);
 	}
 	
 	private List<Participant> getSectionLeaderParticipants(User currentUser) {
@@ -269,8 +211,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 		
 		// Build the list of participants from the filteredSectionsMap
 		Map<String, Profile> profilesMap = profileManager().getProfiles(filteredSectionsMap.keySet());
-		Map<String, Enrollment> enrollmentsMap = getOfficialEnrollments();
-		return buildParticipantList(userMap, sectionsMap, profilesMap, enrollmentsMap);
+		return buildParticipantList(userMap, sectionsMap, profilesMap);
 	}
 
 	private List<Participant> getPublicParticipants(User currentUser) {
@@ -288,32 +229,20 @@ public abstract class RosterManagerImpl implements RosterManager {
 		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
 
-		return buildParticipantList(userMap, sectionsMap, profiles, new HashMap<String, Enrollment>());
+		return buildParticipantList(userMap, sectionsMap, profiles);
 	}
 
 
-	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profilesMap, Map<String, Enrollment> enrollmentsMap) {
-		// Find the enrollment status descriptions for the current user's locale
-		Locale locale = new ResourceLoader().getLocale();
-		Map<String, String> codes = cmService().getEnrollmentStatusDescriptions(locale);
-
+	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profilesMap) {
 		List<Participant> participants = new ArrayList<Participant>();
 		for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Profile> entry = iter.next();
 			String userId = entry.getKey();
 			UserRole userRole = userMap.get(userId);
 			Profile profile = entry.getValue();
-			Enrollment enr = enrollmentsMap.get(userId);
-
-			String status = null;
-			String credits = null;
-			if(enr != null) {
-				status = codes.get(enr.getEnrollmentStatus());
-				credits = enr.getCredits();
-			}
 
 			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role,
-					sectionsMap.get(userId), status, credits));
+					sectionsMap.get(userId)));
 		}
 		return participants;
 	}
@@ -501,44 +430,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public boolean siteHasSections() {
 		return ! sectionService().getSections(getSiteId()).isEmpty();
 	}
-
-
-	public Set<Section> getOfficialSectionsInSite() {
-		Set<Section> sections = new HashSet<Section>();
-		for(Iterator<CourseSection> iter = sectionService().getSections(getSiteId()).iterator(); iter.hasNext();) {
-			CourseSection internalSection = iter.next();
-			String eid = StringUtils.trimToNull(internalSection.getEid());
-			if(eid == null) {
-				continue;
-			}
-			Section section = null;
-			try {
-				section = cmService().getSection(eid);
-			} catch (IdNotFoundException ide) {
-				log.warn(ide);
-				continue;
-			}
-			sections.add(section);
-		}
-		if(log.isDebugEnabled()) log.debug("Found " + sections.size() + " official sections in site " + getSiteId());
-		return sections;
-	}
-
-	public Set<EnrollmentSet> getOfficialEnrollmentSetsInSite() {
-		Set<Section> officialSections = getOfficialSectionsInSite();
-		Set<EnrollmentSet> enrollmentSets = new HashSet<EnrollmentSet>();
-		for (Iterator<Section> iter = officialSections.iterator(); iter.hasNext();) {
-			Section section = iter.next();
-			EnrollmentSet es = section.getEnrollmentSet();
-			if (es != null) {
-				enrollmentSets.add(es);
-			}
-		}
-		if(log.isDebugEnabled()) log.debug("Found " + enrollmentSets.size() + " official enrollmentSets in site " + getSiteId());
-		return enrollmentSets;
-	}
-
-	  
 
 	public boolean currentUserHasViewSectionMembershipsPerm() {
 		User user = userDirectoryService().getCurrentUser();

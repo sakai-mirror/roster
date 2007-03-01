@@ -21,11 +21,11 @@
 
 package org.sakaiproject.component.app.roster;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,8 +46,6 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected User user;
 	protected Profile profile;
 	protected String roleTitle;
-	protected String enrollmentStatus;
-	protected String enrollmentCredits;
 	protected List<CourseSection> sections;
 	private Map<String, CourseSection> sectionsMap;
 
@@ -60,14 +58,11 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param enrolledSections
 	 */
 	public ParticipantImpl(User user, Profile profile, String roleTitle,
-			List<CourseSection> enrolledSections, String enrollmentStatus,
-			String enrollmentCredits) {
+			List<CourseSection> enrolledSections) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
 		this.sections = enrolledSections;
-		this.enrollmentStatus = enrollmentStatus;
-		this.enrollmentCredits = enrollmentCredits;
 	}
 
 	public Profile getProfile() {
@@ -110,14 +105,6 @@ public class ParticipantImpl implements Participant, Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	public String getEnrollmentCredits() {
-		return enrollmentCredits;
-	}
-
-	public String getEnrollmentStatus() {
-		return enrollmentStatus;
 	}
 
 }

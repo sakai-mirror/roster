@@ -23,24 +23,14 @@ package org.sakaiproject.tool.roster;
 import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import javax.faces.application.Application;
-import javax.faces.component.UIColumn;
-import javax.faces.component.html.HtmlDataTable;
-import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.custom.sortheader.HtmlCommandSortHeader;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.util.LocaleUtil;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 public class RosterStatus extends InitializableBean {
 	private static final Log log = LogFactory.getLog(RosterStatus.class);
@@ -51,8 +41,10 @@ public class RosterStatus extends InitializableBean {
 	static {
 		enrollmentStatusComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
-				String status1 = one.getEnrollmentStatus();
-				String status2 = another.getEnrollmentStatus();
+				EnrolledParticipant p1 = (EnrolledParticipant)one;
+				EnrolledParticipant p2 = (EnrolledParticipant)another;
+				String status1 = p1.getEnrollmentStatus();
+				String status2 = p2.getEnrollmentStatus();
 				if(status1 != null && status2 == null) {
 					return 1;
 				}
@@ -62,8 +54,8 @@ public class RosterStatus extends InitializableBean {
 				if(status1 == null && status2 == null) {
 					return RosterOverview.sortNameComparator.compare(one, another);
 				}
-				int comparison = Collator.getInstance().compare(one.getEnrollmentStatus(),
-						another.getEnrollmentStatus());
+				int comparison = Collator.getInstance().compare(p1.getEnrollmentStatus(),
+						p2.getEnrollmentStatus());
 				return comparison == 0 ? RosterOverview.sortNameComparator.compare(one,
 						another) : comparison;
 			}
@@ -71,8 +63,11 @@ public class RosterStatus extends InitializableBean {
 
 		enrollmentCreditsComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
-				String credits1 = one.getEnrollmentCredits();
-				String credits2 = another.getEnrollmentCredits();
+				EnrolledParticipant p1 = (EnrolledParticipant)one;
+				EnrolledParticipant p2 = (EnrolledParticipant)another;
+
+				String credits1 = p1.getEnrollmentCredits();
+				String credits2 = p2.getEnrollmentCredits();
 				if(credits1 != null && credits2 == null) {
 					return 1;
 				}
@@ -82,8 +77,8 @@ public class RosterStatus extends InitializableBean {
 				if(credits1 == null && credits2 == null) {
 					return RosterOverview.sortNameComparator.compare(one, another);
 				}
-				int comparison = Collator.getInstance().compare(one.getEnrollmentCredits(),
-						another.getEnrollmentCredits());
+				int comparison = Collator.getInstance().compare(p1.getEnrollmentCredits(),
+						p2.getEnrollmentCredits());
 				return comparison == 0 ? RosterOverview.sortNameComparator.compare(one,
 						another) : comparison;
 			}
@@ -117,15 +112,15 @@ public class RosterStatus extends InitializableBean {
 
 		Comparator<Participant> comparator;
 
-		if (Participant.SORT_BY_ID.equals(sortColumn)) {
+		if (EnrolledParticipant.SORT_BY_ID.equals(sortColumn)) {
 			comparator = RosterOverview.displayIdComparator;
-		} else if (Participant.SORT_BY_NAME.equals(sortColumn)) {
+		} else if (EnrolledParticipant.SORT_BY_NAME.equals(sortColumn)) {
 			comparator = RosterOverview.sortNameComparator;
-		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
+		} else if (EnrolledParticipant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = RosterOverview.emailComparator;
-		} else if (Participant.SORT_BY_STATUS.equals(sortColumn)) {
+		} else if (EnrolledParticipant.SORT_BY_STATUS.equals(sortColumn)) {
 			comparator = enrollmentStatusComparator;
-		} else if (Participant.SORT_BY_CREDITS.equals(sortColumn)) {
+		} else if (EnrolledParticipant.SORT_BY_CREDITS.equals(sortColumn)) {
 			comparator = enrollmentCreditsComparator;
 		} else {
 			comparator = RosterOverview.sortNameComparator;
@@ -137,5 +132,4 @@ public class RosterStatus extends InitializableBean {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				InitializableBean.MESSAGE_BUNDLE, "title_status");
 	}
-
 }
