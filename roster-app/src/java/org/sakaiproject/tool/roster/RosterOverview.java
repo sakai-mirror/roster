@@ -52,6 +52,11 @@ public class RosterOverview extends InitializableBean {
 	// Service & Bean References
 	protected FilteredProfileListingBean filter;
 
+	public void init() {
+		// Reinitialize the filter for each request
+		filter.init();
+	}
+	
 	// Service & Bean Setters & Getters
 	public FilteredProfileListingBean getFilter() {
 		return filter;
@@ -64,8 +69,6 @@ public class RosterOverview extends InitializableBean {
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
-	public static final Comparator<Participant> enrollmentStatusComparator;
-	public static final Comparator<Participant> enrollmentCreditsComparator;
 
 	static {
 		sortNameComparator = new Comparator<Participant>() {
@@ -109,46 +112,6 @@ public class RosterOverview extends InitializableBean {
 			public int compare(Participant one, Participant another) {
 				int comparison = Collator.getInstance().compare(one.getRoleTitle(),
 						another.getRoleTitle());
-				return comparison == 0 ? sortNameComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-		enrollmentStatusComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				String status1 = one.getEnrollmentStatus();
-				String status2 = another.getEnrollmentStatus();
-				if(status1 != null && status2 == null) {
-					return 1;
-				}
-				if(status1 == null && status2 != null) {
-					return -1;
-				}
-				if(status1 == null && status2 == null) {
-					return sortNameComparator.compare(one, another);
-				}
-				int comparison = Collator.getInstance().compare(one.getEnrollmentStatus(),
-						another.getEnrollmentStatus());
-				return comparison == 0 ? sortNameComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-		enrollmentCreditsComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				String credits1 = one.getEnrollmentCredits();
-				String credits2 = another.getEnrollmentCredits();
-				if(credits1 != null && credits2 == null) {
-					return 1;
-				}
-				if(credits1 == null && credits2 != null) {
-					return -1;
-				}
-				if(credits1 == null && credits2 == null) {
-					return sortNameComparator.compare(one, another);
-				}
-				int comparison = Collator.getInstance().compare(one.getEnrollmentCredits(),
-						another.getEnrollmentCredits());
 				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
@@ -220,16 +183,11 @@ public class RosterOverview extends InitializableBean {
 			comparator = sortNameComparator;
 		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = emailComparator;
-		} else if (Participant.SORT_BY_STATUS.equals(sortColumn)) {
-			comparator = enrollmentStatusComparator;
-		} else if (Participant.SORT_BY_CREDITS.equals(sortColumn)) {
-			comparator = enrollmentCreditsComparator;
 		} else if(sortColumn != null) {
 			comparator = getCategoryComparator(sortColumn);
 		} else {
 			return roleComparator;
 		}
-
 		return comparator;
 	}
 
@@ -350,6 +308,11 @@ public class RosterOverview extends InitializableBean {
 			used.add(StringUtils.trimToNull(section.getCategory()));
 		}
 		return used;
+	}
+	
+	public String getPageTitle() {
+		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				InitializableBean.MESSAGE_BUNDLE, "title_overview");
 	}
 
 }

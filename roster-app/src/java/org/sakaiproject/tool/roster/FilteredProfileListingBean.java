@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -66,6 +67,37 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
 
+	// Cache the participants list so we don't have to fetch it twice (once for the list,
+	// and again for its size)
+	protected List<Participant> participants;
+	protected Integer participantCount;
+	protected SortedMap<String, Integer> roleCounts;
+	protected boolean displayingParticipants = false;
+
+	/**
+	 * Initialize this bean once, so we can call our access method as often as we like
+	 * without invoking unnecessary service calls.
+	 */
+	public void init() {
+		this.participants = findParticipants();
+		this.participantCount = this.participants.size();
+		this.roleCounts = findRoleCounts(this.participants);
+		
+		// if we have entries in the roleCounts map, we have participants to display
+		if( ! roleCounts.isEmpty()) {
+			displayingParticipants = true;
+		}
+	}
+
+	/**
+	 * JSF hack to call init() when a filtering page is rendered.
+	 * @return null;
+	 */
+	public String getInit() {
+		init();
+		return null;
+	}
+	
 	// UI Actions
 	
 	public void search(ActionEvent ae) {
@@ -76,22 +108,14 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		searchFilter = getDefaultSearchText();
 	}
 
-	public List<Participant> getParticipants() {
+	protected List<Participant> findParticipants() {
 		List<Participant> participants = services.rosterManager.getRoster();
 		String defaultText = getDefaultSearchText();
 		Set<String> studentRoles = getStudentRoles();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
-
-			// Remove this participant if they don't  pass the status filter
-			if(STATUS_STUDENTS.equals(statusFilter)) {
-				// We are filtering on the collection of all student roles
-				if( ! studentRoles.contains(participant.getRoleTitle())) {
-					iter.remove();
-					continue;
-				}
-			} else if(statusFilter != null  && ! statusFilter.equals(participant.getEnrollmentStatus())) {
-				// We are filtering on a particular enrollment status
+			
+			if( ! participantMatchesStatusFilter(participant, statusFilter, studentRoles)) {
 				iter.remove();
 				continue;
 			}
@@ -106,9 +130,19 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 			if(sectionFilter != null && ! sectionMatches(sectionFilter, participant.getSectionsMap())) {
 				iter.remove();
 				continue;
-			}			
+			}
 		}
 		return participants;
+	}
+	
+	protected boolean participantMatchesStatusFilter(Participant participant, String statusFilter, Set<String> studentRoles) {
+		if(STATUS_STUDENTS.equals(statusFilter)) {
+			// We are filtering on the collection of all student roles
+			if( ! studentRoles.contains(participant.getRoleTitle())) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	protected Set<String> getStudentRoles() {
@@ -122,6 +156,21 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		Set<String> roles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
 		if(log.isDebugEnabled()) log.debug("Student Roles = " + roles);
 		return roles;
+	}
+	
+	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
+		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
+			Participant participant = iter.next();
+			String role = participant.getRoleTitle();
+			Integer count = roleCountMap.get(role);
+			if(count == null) {
+				roleCountMap.put(role, new Integer(1));
+			} else {
+				roleCountMap.put(role, ++count);
+			}
+		}
+		return roleCountMap;
 	}
 	
 	protected boolean searchMatches(String search, User user) {
@@ -171,25 +220,6 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 
 	/**
-	 * Gets a Map of roles to the number of users in the site with those roles.
-	 * @return
-	 */
-	public Map<String, Integer> getRoleCounts() {
-		Map<String, Integer> map = new TreeMap<String, Integer>();
-		for(Iterator<Participant> iter = getParticipants().iterator(); iter.hasNext();) {
-			Participant participant = iter.next();
-			String key = participant.getRoleTitle();
-			if(map.containsKey(key)) {
-				Integer prevCount = map.get(key);
-				map.put(key, ++prevCount);
-			} else {
-				map.put(key, 1);
-			}
-		}
-		return map;
-	}
-
-	/**
 	 * We display enrollment details when there is a single EnrollmentSet associated
 	 * with a site, or when multiple EnrollmentSets are children of cross listed
 	 * CourseOfferings.
@@ -207,7 +237,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 	
 	public boolean isDisplaySectionsFilter() {
-		return services.rosterManager.getViewableSectionsForCurrentUser().size() >1;
+		return services.rosterManager.getViewableSectionsForCurrentUser().size() > 1;
 	}
 
 	public String getSearchFilter() {
@@ -229,7 +259,14 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 
 	public void setSectionFilter(String sectionFilter) {
-		this.sectionFilter = StringUtils.trimToNull(sectionFilter);
+		// Don't allow this value to be set to the separater line
+		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				InitializableBean.MESSAGE_BUNDLE, "roster_status_sep_line")
+				.equals(sectionFilter)) {
+			this.sectionFilter = null;
+		} else {
+			this.sectionFilter = StringUtils.trimToNull(sectionFilter);
+		}
 	}
 
 	public String getStatusFilter() {
@@ -237,18 +274,44 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 
 	public void setStatusFilter(String statusFilter) {
-		// Don't allow this value to be set to the separater line
-		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "roster_status_sep_line")
-				.equals(statusFilter)) {
-			this.statusFilter = null;
-		} else {
-			this.statusFilter = StringUtils.trimToNull(statusFilter);
-		}
+		this.statusFilter = StringUtils.trimToNull(statusFilter);
 	}
 
 	public String getDefaultSearchText() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				InitializableBean.MESSAGE_BUNDLE, "roster_search_text");
+	}
+
+	public Integer getParticipantCount() {
+		return participantCount;
+	}
+
+	public List<Participant> getParticipants() {
+		return participants;
+	}
+
+	public String getRoleCountMessage() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("(");
+		for(Iterator<Entry<String, Integer>> iter = roleCounts.entrySet().iterator(); iter.hasNext();) {
+			Entry<String, Integer> entry = iter.next();
+			int count = entry.getValue();
+			sb.append(count);
+			sb.append(" ");
+			sb.append(entry.getKey());
+			// Make the role plural if necessary
+			if(count != 1) {
+				sb.append("s");
+			}
+			if (iter.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
+	public boolean isDisplayingParticipants() {
+		return displayingParticipants;
 	}
 }

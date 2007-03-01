@@ -23,9 +23,12 @@ package org.sakaiproject.tool.roster;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.jsf.util.LocaleUtil;
 
 public class RosterPictures extends InitializableBean {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
@@ -59,4 +62,10 @@ public class RosterPictures extends InitializableBean {
 	public void setDisplayProfilePhoto(boolean displayProfilePhoto) {
 		this.displayProfilePhoto = displayProfilePhoto;
 	}
+	
+	public String getPageTitle() {
+		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				InitializableBean.MESSAGE_BUNDLE, "title_pictures");
+	}
+
 }

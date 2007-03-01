@@ -546,7 +546,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 				|| sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.TA));
 	}
 
-	public List getViewableSectionsForCurrentUser() {
+	public List<CourseSection> getViewableSectionsForCurrentUser() {
 		User user = userDirectoryService().getCurrentUser();
 		List<CourseSection> allSections = sectionService().getSections(getSiteId());
 		List<CourseSection> usersSections = new ArrayList<CourseSection>();

@@ -1,26 +1,46 @@
+<%-- Initialize the filter --%>
+<h:outputText value="#{filter.init}"/>
+
 		        <t:div>
 
-        		    <h:selectOneMenu value="#{filter.statusFilter}" onchange="this.form.submit()" rendered="#{filter.displayEnrollmentDetails}" immediate="trui">
-        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
-        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
-        		    	<f:selectItem itemLabel="#{msgs.roster_status_sep_line}" itemValue="#{msgs.roster_status_sep_line}" />
-        		    	<f:selectItems value="#{filter.statusSelectItems}" />
-        		   	</h:selectOneMenu>
+					<t:div>
+							<h:outputLabel for="statusFilter" value="#{msgs.status_filter}"/>
+		        		    <h:selectOneMenu id="statusFilter" value="#{filter.statusFilter}" onchange="this.form.submit()" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
+		        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
+		        		   	</h:selectOneMenu>
 
-        		    <h:selectOneMenu value="#{filter.statusFilter}" onchange="this.form.submit()"  rendered="#{ ! filter.displayEnrollmentDetails}">
-        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
-        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
-        		   	</h:selectOneMenu>
+<%--
+						<h:panelGroup rendered="#{filter.displayEnrollmentDetails}">
+		        		    <h:selectOneMenu value="#{filter.statusFilter}" onchange="this.form.submit()" rendered="#{ ! filter.displayEnrollmentDetails}" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_status_all}" itemValue=""/>
+		        		    	<f:selectItem itemLabel="#{msgs.roster_status_students}" itemValue="roster_status_students"/>
+		        		   	</h:selectOneMenu>
+	        		   	</h:panelGroup>
+--%>
+
+						<h:panelGroup rendered="#{filter.displaySectionsFilter}">
+							<h:outputLabel for="section_filter" value="#{msgs.section_filter}"/>
+		        		    <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_sections_all}" itemValue=""/>
+		        		    	<f:selectItem itemLabel="#{msgs.roster_status_sep_line}" itemValue="#{msgs.roster_status_sep_line}" />
+		        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
+		        		   	</h:selectOneMenu>
+		        		</h:panelGroup>
+	        		</t:div>
 
 
-    		        <h:inputText id="search" value="#{filter.searchFilter}"
-        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
-        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{filter.search}"/>
-        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{filter.clearSearch}"/>
+					<t:div>
+	    		        <h:inputText id="search" value="#{filter.searchFilter}"
+	        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
+	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{filter.search}"/>
+	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{filter.clearSearch}"/>
+	        		    
+	        		    <h:outputFormat value="#{msgs.currently_displaying}">
+	        		    	<f:param value="#{filter.participantCount}"/>
+	        		    </h:outputFormat>
+	        		    <h:outputText value="#{filter.roleCountMessage}" rendered="#{filter.displayingParticipants}"/>
+	        		</t:div>
         		    
-        		    <h:selectOneMenu value="#{filter.sectionFilter}" onchange="this.form.submit()" rendered="#{filter.displaySectionsFilter}">
-        		    	<f:selectItem itemLabel="#{msgs.roster_sections_all}" itemValue=""/>
-        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
-        		   	</h:selectOneMenu>
         		    
         		</t:div>

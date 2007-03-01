@@ -15,17 +15,10 @@ response.setContentType("text/html; charset=UTF-8");
 		<%="<script src=js/roster.js></script>"%>
 
 			<h:form>
-				<sakai:tool_bar>
-					<sakai:tool_bar_item disabled="true"
-						value="#{msgs.navbar_overview}" />
-					<sakai:tool_bar_item action="pictures" value="#{msgs.navbar_pics}" />
-					<h:outputLink value="printFriendlyRoster" target="_new">
-						<h:graphicImage url="/images/printer.png"
-							alt="#{msgs.print_friendly}" title="#{msgs.print_friendly}" />
-					</h:outputLink>
-				</sakai:tool_bar>
 
-				<sakai:view_title value="#{msgs.title_show_roster}" />
+				<t:aliasBean alias="#{viewBean}" value="#{overview}">
+					<%@include file="inc/nav.jspf" %>
+				</t:aliasBean>
 
 				<h:outputText value="#{msgs.title_msg}"
 					rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"

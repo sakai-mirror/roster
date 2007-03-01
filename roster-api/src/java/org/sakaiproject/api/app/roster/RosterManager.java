@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 /**
  * @author rshastri 
@@ -80,7 +81,7 @@ public interface RosterManager
    *  Get the sections viewable by current user
    * @return
    */
-  public List getViewableSectionsForCurrentUser();
+  public List<CourseSection> getViewableSectionsForCurrentUser();
 
   /**
    * @return An unfiltered List of viewable (to current user) Participants in the site.

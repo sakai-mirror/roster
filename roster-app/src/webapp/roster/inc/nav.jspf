@@ -1,0 +1,14 @@
+<sakai:tool_bar>
+	<sakai:tool_bar_item action="overview" value="#{msgs.navbar_overview}" disabled="#{viewBean eq overview}" />
+	<sakai:tool_bar_item action="pictures" value="#{msgs.navbar_pics}" disabled="#{viewBean eq pictures}" />
+	<sakai:tool_bar_item action="status" value="#{msgs.navbar_status}" disabled="#{viewBean eq status}" />
+</sakai:tool_bar>
+
+<sakai:view_title value="#{viewBean.pageTitle}" />
+
+<sakai:tool_bar>
+	<h:outputLink value="javascript:window.print()">
+		<h:outputText value="#{msgs.print}"/>
+	</h:outputLink>
+</sakai:tool_bar>
+	
