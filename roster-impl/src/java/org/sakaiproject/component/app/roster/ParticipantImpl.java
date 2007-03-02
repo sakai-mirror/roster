@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
@@ -88,7 +89,8 @@ public class ParticipantImpl implements Participant, Serializable {
 				for (Iterator<CourseSection> iter = sections.iterator(); iter
 						.hasNext();) {
 					CourseSection section = iter.next();
-					sectionsMap.put(section.getCategory(), section);
+					String key = StringUtils.trimToEmpty(section.getCategory());
+					sectionsMap.put(key, section);
 				}
 			}
 		}

@@ -30,14 +30,12 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
-public class RosterPictures extends InitializableBean {
+public class RosterPictures {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
 
 	protected boolean displayProfilePhoto;
 
 	protected FilteredProfileListingBean filter;
-	
-	// Service & Bean Setters & Getters
 	public FilteredProfileListingBean getFilter() {
 		return filter;
 	}
@@ -45,11 +43,17 @@ public class RosterPictures extends InitializableBean {
 		this.filter = filter;
 	}
 
+
+	protected RosterPreferences prefs;
+	public void setPrefs(RosterPreferences prefs) {
+		this.prefs = prefs;
+	}
+
 	public List<Participant> getParticipants() {
 		List<Participant> participants = filter.getParticipants();
 		if (participants != null && participants.size() >= 1) {
 			Collections.sort(participants, RosterOverview.sortNameComparator);
-			if(!filter.prefs.sortAscending) {
+			if(!prefs.sortAscending) {
 				Collections.reverse(participants);
 			}
 		}
@@ -65,7 +69,7 @@ public class RosterPictures extends InitializableBean {
 	
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "title_pictures");
+				ServicesBean.MESSAGE_BUNDLE, "title_pictures");
 	}
 
 }

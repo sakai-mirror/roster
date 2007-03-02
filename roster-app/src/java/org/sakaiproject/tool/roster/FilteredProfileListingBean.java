@@ -23,6 +23,7 @@ package org.sakaiproject.tool.roster;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,8 +48,9 @@ import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
-public class FilteredProfileListingBean extends InitializableBean implements Serializable {
-	private static final String STATUS_STUDENTS = "roster_status_students";
+public class FilteredProfileListingBean implements Serializable {
+	private static final String VIEW_ALL = "roster_view_all";
+	private static final String VIEW_STUDENTS = "roster_view_students";
 	private static final Log log = LogFactory.getLog(FilteredProfileListingBean.class);
 	private static final long serialVersionUID = 1L;
 
@@ -57,14 +59,11 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		this.services = services;
 	}
 
-	protected RosterPreferences prefs;
-	public void setPrefs(RosterPreferences prefs) {
-		this.prefs = prefs;
-	}
-
 	protected String viewFilter;
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
+	
+	protected Map<String, String> sectionCategoryMap;
 
 	// Cache the participants list so we don't have to fetch it twice (once for the list,
 	// and again for its size)
@@ -85,6 +84,13 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 		// if we have entries in the roleCounts map, we have participants to display
 		if( ! roleCounts.isEmpty()) {
 			displayingParticipants = true;
+		}
+		
+		// Build the section category map
+		sectionCategoryMap = new HashMap<String, String>();
+		for(Iterator<String> iter = services.cmService.getSectionCategories().iterator(); iter.hasNext();) {
+			String category = iter.next();
+			sectionCategoryMap.put(category, services.cmService.getSectionCategoryDescription(category));
 		}
 	}
 
@@ -135,7 +141,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	}
 	
 	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
-		if(STATUS_STUDENTS.equals(viewFilter)) {
+		if(VIEW_STUDENTS.equals(viewFilter)) {
 			// We are filtering on the collection of all student roles
 			if( ! studentRoles.contains(participant.getRoleTitle())) {
 				return false;
@@ -153,7 +159,6 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 			return new HashSet<String>();
 		}
 		Set<String> roles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
-		if(log.isDebugEnabled()) log.debug("Student Roles = " + roles);
 		return roles;
 	}
 	
@@ -243,7 +248,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public void setSectionFilter(String sectionFilter) {
 		// Don't allow this value to be set to the separater line
 		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "roster_section_sep_line")
+				ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line")
 				.equals(sectionFilter)) {
 			this.sectionFilter = null;
 		} else {
@@ -261,7 +266,7 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 
 	public String getDefaultSearchText() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "roster_search_text");
+				ServicesBean.MESSAGE_BUNDLE, "roster_search_text");
 	}
 
 	public Integer getParticipantCount() {
@@ -296,4 +301,16 @@ public class FilteredProfileListingBean extends InitializableBean implements Ser
 	public boolean isDisplayingParticipants() {
 		return displayingParticipants;
 	}
+	
+	protected String getSiteReference() {
+		return "/site/" + getSiteContext();
+	}
+	protected String getSiteContext() {
+		return services.toolManager.getCurrentPlacement().getContext();
+	}
+
+	public Map<String, String> getSectionCategoryMap() {
+		return sectionCategoryMap;
+	}
+
 }

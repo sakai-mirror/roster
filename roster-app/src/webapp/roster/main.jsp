@@ -36,11 +36,22 @@ response.setContentType("text/html; charset=UTF-8");
 						rendered="#{empty filter.participants}" />
 				</t:div>
 
+				<h:commandButton
+					actionListener="#{overview.showSections}"
+					immediate="true"
+					value="#{msgs.show_sections}"
+					rendered="#{ ! prefs.displaySectionColumns}"/>
+
+				<h:commandButton
+					actionListener="#{overview.hideSections}"
+					immediate="true"
+					value="#{msgs.hide_sections}"
+					rendered="#{prefs.displaySectionColumns}"/>
+				
 			    <t:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"
 			        value="#{overview.participants}"
 			        var="participant"
-			        binding="#{overview.rosterDataTable}"
 			        sortColumn="#{prefs.sortColumn}"
 			        sortAscending="#{prefs.sortAscending}"
 			        styleClass="listHier rosterTable">
@@ -79,7 +90,15 @@ response.setContentType("text/html; charset=UTF-8");
 			            <h:outputText value="#{participant.roleTitle}"/>
 			        </h:column>
 			        
-			        <%/* A dynamic number of section columns will be appended here by the backing bean */%>
+					<t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
+			            <f:facet name="header">
+			                <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
+			                    <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
+			                    <h:outputText value="#{msgs.group}" rendered="#{empty category}" />
+			                </t:commandSortHeader>
+			            </f:facet>
+        				<h:outputText value="#{participant.sectionsMap[category].title}"/>
+					</t:columns>
 			    
 			    </t:dataTable>
 

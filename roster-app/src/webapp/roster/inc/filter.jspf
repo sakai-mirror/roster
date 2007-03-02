@@ -5,10 +5,10 @@
 
 					<t:div>
 							<h:outputLabel for="viewFilter" value="#{msgs.status_filter}"/>
-		        		    <h:selectOneMenu id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue=""/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_status_students"/>
-		        		   	</h:selectOneMenu>
+		        		    <h:selectOneRadio id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue="roster_view_all"/>
+		        		    	<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_view_students"/>
+		        		   	</h:selectOneRadio>
 
 						<h:panelGroup rendered="#{filter.displaySectionsFilter}">
 							<h:outputLabel for="section_filter" value="#{msgs.section_filter}"/>

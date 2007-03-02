@@ -105,10 +105,6 @@
             <property-name>services</property-name>
             <value>#{services}</value>
         </managed-property>
-        <managed-property>
-            <property-name>prefs</property-name>
-            <value>#{prefs}</value>
-        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -125,10 +121,6 @@
             <property-name>services</property-name>
             <value>#{services}</value>
         </managed-property>
-        <managed-property>
-            <property-name>prefs</property-name>
-            <value>#{enrollmentStatusPrefs}</value>
-        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -139,6 +131,10 @@
             <property-name>filter</property-name>
             <value>#{filter}</value>
         </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{prefs}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -146,8 +142,8 @@
         <managed-bean-class>org.sakaiproject.tool.roster.RosterProfile</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>
-            <property-name>filter</property-name>
-            <value>#{filter}</value>
+            <property-name>services</property-name>
+            <value>#{services}</value>
         </managed-property>
     </managed-bean>
 
@@ -159,6 +155,10 @@
             <property-name>filter</property-name>
             <value>#{filter}</value>
         </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{prefs}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -168,6 +168,10 @@
         <managed-property>
             <property-name>filter</property-name>
             <value>#{enrollmentStatusFilter}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{enrollmentStatusPrefs}</value>
         </managed-property>
     </managed-bean>
 

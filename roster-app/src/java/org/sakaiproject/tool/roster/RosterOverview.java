@@ -28,36 +28,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.faces.application.Application;
-import javax.faces.component.UIColumn;
-import javax.faces.component.html.HtmlDataTable;
-import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.custom.sortheader.HtmlCommandSortHeader;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
-public class RosterOverview extends InitializableBean {
+public class RosterOverview {
 	private static final Log log = LogFactory.getLog(RosterOverview.class);
 
 	private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
-	private static final String SECTION_COLUMN_PREFIX = "roster_section_cat_";
+//	private static final String SECTION_COLUMN_PREFIX = "roster_section_cat_";
 	
 	// Service & Bean References
 	protected FilteredProfileListingBean filter;
-
-	public void init() {
-		// Reinitialize the filter for each request
-		filter.init();
-	}
-	
-	// Service & Bean Setters & Getters
 	public FilteredProfileListingBean getFilter() {
 		return filter;
 	}
@@ -65,6 +54,12 @@ public class RosterOverview extends InitializableBean {
 		this.filter = filter;
 	}
 
+	protected RosterPreferences prefs;
+	public void setPrefs(RosterPreferences prefs) {
+		this.prefs = prefs;
+	}
+
+	
 	public static final Comparator<Participant> sortNameComparator;
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
@@ -140,6 +135,14 @@ public class RosterOverview extends InitializableBean {
 	
 	// UI method calls
 	
+	public void showSections(ActionEvent event) {
+		prefs.setDisplaySectionColumns(true);
+	}
+
+	public void hideSections(ActionEvent event) {
+		prefs.setDisplaySectionColumns(false);
+	}
+	
 	public boolean isRenderModifyMembersInstructions() {
 		return filter.services.rosterManager.currentUserHasSiteUpdatePerm();
 	}
@@ -165,7 +168,7 @@ public class RosterOverview extends InitializableBean {
 		List<Participant> participants = filter.getParticipants();
 		if (participants != null && participants.size() >= 1) {
 			Collections.sort(participants, getComparator());
-			if(!filter.prefs.sortAscending) {
+			if(!prefs.sortAscending) {
 				Collections.reverse(participants);
 			}
 		}
@@ -173,7 +176,7 @@ public class RosterOverview extends InitializableBean {
 	}
 	
 	protected Comparator<Participant> getComparator() {
-		String sortColumn = filter.prefs.sortColumn;
+		String sortColumn = prefs.sortColumn;
 
 		Comparator<Participant> comparator;
 
@@ -192,53 +195,53 @@ public class RosterOverview extends InitializableBean {
 	}
 
 	
-	public HtmlDataTable getRosterDataTable() {
-		return null;
-	}
-	
-	public void setRosterDataTable(HtmlDataTable rosterDataTable) {
-		Set usedCategories = getUsedCategories();
-		
-		// Do we need to build the table?
-		if (rosterDataTable.findComponent(SECTION_COLUMN_PREFIX + "0") == null) {
-			Application app = FacesContext.getCurrentInstance().getApplication();
-
-			// Can this user see section memberships?
-			boolean displaySectionMemberships = filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
-			if(! displaySectionMemberships) return;
-			
-			// Add columns for each category. Be sure to create unique IDs
-			// for all child components.
-			int colPos = 0;
-			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colPos++) {
-				String category = (String)iter.next();
-				String categoryName = filter.services.cmService.getSectionCategoryDescription(category);
-
-				UIColumn col = new UIColumn();
-				col.setId(SECTION_COLUMN_PREFIX + colPos);
-
-                HtmlCommandSortHeader sortHeader = new HtmlCommandSortHeader();
-                sortHeader.setId(SECTION_COLUMN_PREFIX + "sorthdr_" + colPos);
-                sortHeader.setRendererType("org.apache.myfaces.SortHeader");
-                sortHeader.setArrow(true);
-                sortHeader.setColumnName(category);
-
-				HtmlOutputText headerText = new HtmlOutputText();
-				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colPos);
-				headerText.setValue(categoryName);
-
-                sortHeader.getChildren().add(headerText);
-                col.setHeader(sortHeader);
-
-				HtmlOutputText contents = new HtmlOutputText();
-				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colPos);
-				contents.setValueBinding("value",
-					app.createValueBinding("#{participant.sectionsMap['" + category + "'].title}"));
-				col.getChildren().add(contents);
-				rosterDataTable.getChildren().add(col);
-			}
-		}
-	}
+//	public HtmlDataTable getRosterDataTable() {
+//		return null;
+//	}
+//	
+//	public void setRosterDataTable(HtmlDataTable rosterDataTable) {
+//		Set usedCategories = getUsedCategories();
+//		
+//		// Do we need to build the table?
+//		if (rosterDataTable.findComponent(SECTION_COLUMN_PREFIX + "0") == null) {
+//			Application app = FacesContext.getCurrentInstance().getApplication();
+//
+//			// Can this user see section memberships?
+//			boolean displaySectionMemberships = filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
+//			if(! displaySectionMemberships) return;
+//			
+//			// Add columns for each category. Be sure to create unique IDs
+//			// for all child components.
+//			int colPos = 0;
+//			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colPos++) {
+//				String category = (String)iter.next();
+//				String categoryName = filter.services.cmService.getSectionCategoryDescription(category);
+//
+//				UIColumn col = new UIColumn();
+//				col.setId(SECTION_COLUMN_PREFIX + colPos);
+//
+//                HtmlCommandSortHeader sortHeader = new HtmlCommandSortHeader();
+//                sortHeader.setId(SECTION_COLUMN_PREFIX + "sorthdr_" + colPos);
+//                sortHeader.setRendererType("org.apache.myfaces.SortHeader");
+//                sortHeader.setArrow(true);
+//                sortHeader.setColumnName(category);
+//
+//				HtmlOutputText headerText = new HtmlOutputText();
+//				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colPos);
+//				headerText.setValue(categoryName);
+//
+//                sortHeader.getChildren().add(headerText);
+//                col.setHeader(sortHeader);
+//
+//				HtmlOutputText contents = new HtmlOutputText();
+//				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colPos);
+//				contents.setValueBinding("value",
+//					app.createValueBinding("#{participant.sectionsMap['" + category + "'].title}"));
+//				col.getChildren().add(contents);
+//				rosterDataTable.getChildren().add(col);
+//			}
+//		}
+//	}
 	
 	/**
 	 * Gets the categories (including the null category for groups) that are currently
@@ -248,19 +251,26 @@ public class RosterOverview extends InitializableBean {
 	 * @param sections
 	 * @return
 	 */
-	protected Set<String> getUsedCategories() {
+	public Set<String> getUsedCategories() {
 		Set<String> used = new HashSet<String>();
 		List sections = filter.services.sectionAwareness.getSections(getSiteContext());
 		for(Iterator iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = (CourseSection)iter.next();
-			used.add(StringUtils.trimToNull(section.getCategory()));
+			used.add(StringUtils.trimToEmpty(section.getCategory()));
 		}
 		return used;
 	}
 	
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "title_overview");
+				ServicesBean.MESSAGE_BUNDLE, "title_overview");
+	}
+
+	protected String getSiteReference() {
+		return "/site/" + getSiteContext();
+	}
+	protected String getSiteContext() {
+		return filter.services.toolManager.getCurrentPlacement().getContext();
 	}
 
 }

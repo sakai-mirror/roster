@@ -30,6 +30,8 @@ import org.sakaiproject.user.api.UserDirectoryService;
 
 public class ServicesBean {
 
+	static final String MESSAGE_BUNDLE = "org.sakaiproject.tool.roster.bundle.Messages";
+
 	// Our service references
 	protected RosterManager rosterManager;
 	protected SectionAwareness sectionAwareness;

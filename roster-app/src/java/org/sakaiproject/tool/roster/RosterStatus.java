@@ -32,8 +32,14 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
-public class RosterStatus extends InitializableBean {
+public class RosterStatus {
 	private static final Log log = LogFactory.getLog(RosterStatus.class);
+
+
+	protected RosterPreferences prefs;
+	public void setPrefs(RosterPreferences prefs) {
+		this.prefs = prefs;
+	}
 
 	public static final Comparator<Participant> enrollmentStatusComparator;
 	public static final Comparator<Participant> enrollmentCreditsComparator;
@@ -100,7 +106,7 @@ public class RosterStatus extends InitializableBean {
 		List<Participant> participants = filter.getParticipants();
 		if (participants != null && participants.size() >= 1) {
 			Collections.sort(participants, getComparator());
-			if(!filter.prefs.sortAscending) {
+			if(!prefs.sortAscending) {
 				Collections.reverse(participants);
 			}
 		}
@@ -108,7 +114,7 @@ public class RosterStatus extends InitializableBean {
 	}
 	
 	protected Comparator<Participant> getComparator() {
-		String sortColumn = filter.prefs.sortColumn;
+		String sortColumn = prefs.sortColumn;
 
 		Comparator<Participant> comparator;
 
@@ -130,6 +136,6 @@ public class RosterStatus extends InitializableBean {
 	
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				InitializableBean.MESSAGE_BUNDLE, "title_status");
+				ServicesBean.MESSAGE_BUNDLE, "title_status");
 	}
 }

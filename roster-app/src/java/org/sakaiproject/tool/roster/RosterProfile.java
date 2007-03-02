@@ -28,21 +28,15 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
 
-public class RosterProfile extends InitializableBean {
+public class RosterProfile {
 	private static final Log log = LogFactory.getLog(RosterProfile.class);
 
 	// Service & Bean References
-	protected FilteredProfileListingBean filter;
-
-	// Service & Bean Setters & Getters
-	public FilteredProfileListingBean getFilter() {
-		return filter;
+	protected ServicesBean services;
+	public void setServices(ServicesBean services) {
+		this.services = services;
 	}
-
-	public void setFilter(FilteredProfileListingBean filter) {
-		this.filter = filter;
-	}
-
+	
 	protected Participant participant;
 
 	public String displayProfile() {
@@ -53,9 +47,9 @@ public class RosterProfile extends InitializableBean {
 			log.debug("Can not display a profile for null");
 			return "profileNotFound";
 		}
-		participant = filter.services.rosterManager.getParticipantById(userId);
+		participant = services.rosterManager.getParticipantById(userId);
 
-		if (filter.services.userDirectoryService.getCurrentUser().getId()
+		if (services.userDirectoryService.getCurrentUser().getId()
 				.equals(userId)) {
 			// This user is looking at him/her self
 			return "completeProfile";
@@ -87,7 +81,7 @@ public class RosterProfile extends InitializableBean {
 			return true;
 		}
 		Profile profile = participant.getProfile();
-		if (!filter.services.profileManager.displayCompleteProfile(profile)) {
+		if (!services.profileManager.displayCompleteProfile(profile)) {
 			return true;
 		}
 
@@ -106,7 +100,7 @@ public class RosterProfile extends InitializableBean {
 			return false;
 		}
 		Profile profile = participant.getProfile();
-		if (filter.services.profileManager.displayCompleteProfile(profile)
+		if (services.profileManager.displayCompleteProfile(profile)
 				&& profile.getPictureUrl() != null
 				&& profile.getPictureUrl().length() > 0) {
 			return true;
@@ -124,7 +118,7 @@ public class RosterProfile extends InitializableBean {
       {
         return false;
       }
-      if (filter.services.profileManager.displayCompleteProfile(profile)
+      if (services.profileManager.displayCompleteProfile(profile)
           && profile.isInstitutionalPictureIdPreferred().booleanValue())
       {
         return true;
