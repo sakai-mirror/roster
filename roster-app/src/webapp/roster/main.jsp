@@ -32,34 +32,33 @@
 			    </h:outputLink>
  
 		  	  <f:verbatim><div class="navPanel" style="width: 98%">
-		  		  <div class="viewNav" style="width: 100%"></f:verbatim>
+		  		  <div class="viewNav" style="width: 99%"></f:verbatim>
 							<h:panelGrid columns="2" cellspacing="0" cellpadding="0" style="width: 100%" rendered="#{RosterTool.renderViewMenu || RosterTool.renderExportButton}">
-								<h:panelGroup>
-									<h:outputLabel for="select1" rendered="#{RosterTool.renderViewMenu}">
-										<h:outputText value="#{msgs.roster_view}"/>
-									</h:outputLabel>	
-									<h:selectOneMenu  id="select1" onchange="this.form.submit();"  valueChangeListener="#{RosterTool.processValueChangeForView}" 
-																		value="#{RosterTool.selectedView}" rendered="#{RosterTool.renderViewMenu}">  
-										<f:selectItems value="#{RosterTool.viewMenuItems}"/>
-									</h:selectOneMenu>
-							  </h:panelGroup>	
 							  <h:panelGroup>
-							    <f:verbatim><div class="itemNav"></f:verbatim>
+								<h:outputLabel for="select1" rendered="#{RosterTool.renderViewMenu}">
+								  <h:outputText value="#{msgs.roster_view}"/>
+								</h:outputLabel>	
+								<h:selectOneMenu  id="select1" onchange="this.form.submit();"  valueChangeListener="#{RosterTool.processValueChangeForView}" 
+																		value="#{RosterTool.selectedView}" rendered="#{RosterTool.renderViewMenu}">  
+								  <f:selectItems value="#{RosterTool.viewMenuItems}"/>
+								</h:selectOneMenu>
+								<f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
 							      <h:commandButton id="exportButton" actionListener="#{RosterTool.exportRosterCsv}" value="#{msgs.export_for_csv}" 
 							 								 title="#{msgs.export_buttonTitle}" accesskey="e" rendered="#{RosterTool.renderExportButton}" />
-							    <f:verbatim></div></f:verbatim>
-						  	</h:panelGroup>
-						  </h:panelGrid>
-						<f:verbatim></div>
+							  </h:panelGroup>
+						  	  <h:panelGroup style="text-align: right">
+						  	    <f:verbatim><div class="instruction"></f:verbatim>
+				                <h:outputText value="#{msgs.no_participants_msg}" rendered="#{!RosterTool.renderRoster}"/>
+				                <h:outputText value="#{msgs.participants_pre_msg} #{RosterTool.allUserCount} #{msgs.participants_post_msg}" rendered="#{RosterTool.renderRoster}"/>
+				                <f:verbatim><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+				                <t:dataList id="roles" value="#{RosterTool.roleStats}" var="roleResult" layout="simple">
+		 	                      <h:outputText value="#{roleResult.key}(#{roleResult.value})" rendered="#{RosterTool.renderRoster}" />
+		 	                    </t:dataList>
+		 	                    <f:verbatim></div></f:verbatim>
+		 	                  </h:panelGroup>
+						    </h:panelGrid>
+						  <f:verbatim></div>
 					</div></f:verbatim>
-			
-			<f:verbatim><div class="instruction"></f:verbatim>
-				 <h:outputText value="#{msgs.no_participants_msg}" rendered="#{!RosterTool.renderRoster}"/>
-				 <h:outputText value="#{msgs.participants_msg} #{RosterTool.allUserCount} - " rendered="#{RosterTool.renderRoster}"/>
-				 <t:dataList id="roles" value="#{RosterTool.roleStats}" var="roleResult" layout="simple">
-		 	         <h:outputText value="#{roleResult.key} (#{roleResult.value})" rendered="#{RosterTool.renderRoster}" />
-		 	     </t:dataList>
-		 	<f:verbatim></div></f:verbatim>
 		 		
 			<%--********************* Roster Display *********************--%>
 				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
