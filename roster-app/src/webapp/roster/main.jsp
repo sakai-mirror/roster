@@ -94,11 +94,19 @@ response.setContentType("text/html; charset=UTF-8");
 			            <f:facet name="header">
 			                <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
 			                    <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
-			                    <h:outputText value="#{msgs.group}" rendered="#{empty category}" />
 			                </t:commandSortHeader>
 			            </f:facet>
         				<h:outputText value="#{participant.sectionsMap[category].title}"/>
 					</t:columns>
+
+			        <h:column rendered="#{prefs.displaySectionColumns && overview.groupsInSite}">
+			            <f:facet name="header">
+			                <t:commandSortHeader columnName="group" immediate="true" arrow="true">
+			                    <h:outputText value="#{msgs.group}" />
+			                </t:commandSortHeader>
+			            </f:facet>
+						<h:outputText value="#{participant.groupsForDisplay}" />
+			        </h:column>
 			    
 			    </t:dataTable>
 

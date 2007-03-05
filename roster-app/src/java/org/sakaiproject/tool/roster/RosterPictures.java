@@ -24,13 +24,14 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
-public class RosterPictures {
+public class RosterPictures implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
 
 	protected boolean displayProfilePhoto;
@@ -70,6 +71,12 @@ public class RosterPictures {
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_pictures");
+	}
+	public boolean isExportablePage() {
+		return false;
+	}
+	public void export(ActionEvent event) {
+		// Do nothing
 	}
 
 }

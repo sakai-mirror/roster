@@ -21,6 +21,7 @@
 
 package org.sakaiproject.api.app.roster;
 
+import java.util.List;
 import java.util.Map;
 
 import org.sakaiproject.api.app.profile.Profile;
@@ -34,10 +35,11 @@ import org.sakaiproject.user.api.User;
  */
 public interface Participant 
 {
-  String SORT_BY_ID = "displayId";
-  String SORT_BY_NAME = "displayName";
-  String SORT_BY_EMAIL = "email";
-  String SORT_BY_ROLE = "role";
+  public static final String SORT_BY_ID = "displayId";
+  public static final String SORT_BY_NAME = "displayName";
+  public static final String SORT_BY_EMAIL = "email";
+  public static final String SORT_BY_ROLE = "role";
+  public static final String SORT_BY_GROUP = "group";
 
   
   public Profile getProfile();
@@ -49,4 +51,8 @@ public interface Participant
    * @return
    */
   public Map<String, CourseSection> getSectionsMap();
+  
+  public List<CourseSection> getGroups();
+  public String getGroupsForDisplay();
+
 }

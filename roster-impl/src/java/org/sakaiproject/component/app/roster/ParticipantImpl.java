@@ -22,6 +22,9 @@
 package org.sakaiproject.component.app.roster;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +51,11 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected Profile profile;
 	protected String roleTitle;
 	protected List<CourseSection> sections;
-	private Map<String, CourseSection> sectionsMap;
+	protected String groupsForDisplay;
+	
+	// These are dynamically built from the full list of sections and groups (in field 'sections').
+	protected Map<String, CourseSection> sectionsMap;
+	protected List<CourseSection> groups;
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -63,7 +70,52 @@ public class ParticipantImpl implements Participant, Serializable {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
-		this.sections = enrolledSections;
+		if(enrolledSections == null) {
+			this.sections = new ArrayList<CourseSection>();
+		} else {
+			this.sections = enrolledSections;
+		}
+
+		// Build the map of categories to sections
+		sectionsMap = new HashMap<String, CourseSection>();
+		if (sections != null) {
+			for (Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+				CourseSection section = iter.next();
+				String cat = StringUtils.trimToNull(section.getCategory());
+				if(cat != null) sectionsMap.put(cat, section);
+			}
+		}
+
+		// Build the list of groups
+		groups = new ArrayList<CourseSection>();
+		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection sec = iter.next();
+			if(StringUtils.trimToNull(sec.getCategory()) == null) {
+				groups.add(sec);
+			}
+		}
+		Collections.sort(groups, groupComparator);
+		
+		// And the groups list to display in the UI
+		StringBuffer sb = new StringBuffer();
+		for(Iterator<CourseSection> iter = groups.iterator(); iter.hasNext();) {
+			CourseSection  group = iter.next();
+			sb.append(group.getTitle());
+			if(iter.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		groupsForDisplay = sb.toString();
+	}
+
+	protected static final Comparator<CourseSection> groupComparator = new Comparator<CourseSection>() {
+		public int compare(CourseSection one, CourseSection another) {
+			return one.getTitle().compareTo(another.getTitle());
+		}
+	};
+
+	public String getGroupsForDisplay() {
+		return groupsForDisplay;
 	}
 
 	public Profile getProfile() {
@@ -83,17 +135,6 @@ public class ParticipantImpl implements Participant, Serializable {
 	}
 
 	public Map<String, CourseSection> getSectionsMap() {
-		if (sectionsMap == null) {
-			sectionsMap = new HashMap<String, CourseSection>();
-			if (sections != null) {
-				for (Iterator<CourseSection> iter = sections.iterator(); iter
-						.hasNext();) {
-					CourseSection section = iter.next();
-					String key = StringUtils.trimToEmpty(section.getCategory());
-					sectionsMap.put(key, section);
-				}
-			}
-		}
 		return sectionsMap;
 	}
 
@@ -108,5 +149,8 @@ public class ParticipantImpl implements Participant, Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
+	
+	public List<CourseSection> getGroups() {
+		return groups;
+	}
 }

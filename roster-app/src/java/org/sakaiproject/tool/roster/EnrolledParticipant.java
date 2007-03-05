@@ -20,6 +20,7 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.util.List;
 import java.util.Map;
 
 import org.sakaiproject.api.app.profile.Profile;
@@ -82,6 +83,12 @@ public class EnrolledParticipant implements Participant {
 	public User getUser() {
 		return participant.getUser();
 	}
-	
 
+	public String getGroupsForDisplay() {
+		return participant.getGroupsForDisplay();
+	}
+
+	public List<CourseSection> getGroups() {
+		return participant.getGroups();
+	}
 }

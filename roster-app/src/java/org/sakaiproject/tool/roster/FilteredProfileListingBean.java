@@ -70,7 +70,6 @@ public class FilteredProfileListingBean implements Serializable {
 	protected List<Participant> participants;
 	protected Integer participantCount;
 	protected SortedMap<String, Integer> roleCounts;
-	protected boolean displayingParticipants = false;
 
 	/**
 	 * Initialize this bean once, so we can call our access method as often as we like
@@ -80,10 +79,9 @@ public class FilteredProfileListingBean implements Serializable {
 		this.participants = findParticipants();
 		this.participantCount = this.participants.size();
 		this.roleCounts = findRoleCounts(this.participants);
-		
-		// if we have entries in the roleCounts map, we have participants to display
-		if( ! roleCounts.isEmpty()) {
-			displayingParticipants = true;
+				
+		if(viewFilter == null) {
+			viewFilter = VIEW_ALL;
 		}
 		
 		// Build the section category map
@@ -132,7 +130,7 @@ public class FilteredProfileListingBean implements Serializable {
 			}
 			
 			// Remove this participant if they don't  pass the section filter
-			if(sectionFilter != null && isDisplaySectionsFilter() && ! sectionMatches(sectionFilter, participant.getSectionsMap())) {
+			if(sectionFilter != null && isDisplaySectionsFilter() && ! sectionMatches(sectionFilter, participant)) {
 				iter.remove();
 				continue;
 			}
@@ -184,7 +182,15 @@ public class FilteredProfileListingBean implements Serializable {
 				   user.getEmail().toLowerCase().startsWith(search.toLowerCase());
 	}
 
-	protected boolean sectionMatches(String sectionUuid, Map<String, CourseSection> sectionsMap) {
+	protected boolean sectionMatches(String sectionUuid, Participant participant) {
+		Map<String, CourseSection> sectionsMap = participant.getSectionsMap();
+		List<CourseSection> groups = participant.getGroups();
+		List<String> groupIds = new ArrayList<String>();
+		for(Iterator<CourseSection> iter = groups.iterator(); iter.hasNext();) {
+			groupIds.add(iter.next().getUuid());
+		}
+		if(groupIds.contains(sectionUuid)) return true;
+		
 		for(Iterator<Entry<String, CourseSection>> iter = sectionsMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, CourseSection> entry = iter.next();
 			CourseSection section = entry.getValue();
@@ -278,6 +284,7 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	public String getRoleCountMessage() {
+		if(roleCounts.size() == 0) return "";
 		StringBuffer sb = new StringBuffer();
 		sb.append("(");
 		for(Iterator<Entry<String, Integer>> iter = roleCounts.entrySet().iterator(); iter.hasNext();) {
@@ -299,7 +306,8 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	public boolean isDisplayingParticipants() {
-		return displayingParticipants;
+		// if we have entries in the roleCounts map, we have participants to display
+		return ! roleCounts.isEmpty();
 	}
 	
 	protected String getSiteReference() {

@@ -50,6 +50,9 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	
 	public void init() {
 		super.init();
+		if(this.statusFilter == null) {
+			this.statusFilter = "";
+		}
 	}
 	
 	protected List<Participant> findParticipants() {

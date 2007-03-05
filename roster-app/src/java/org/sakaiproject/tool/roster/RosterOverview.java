@@ -21,12 +21,11 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -39,11 +38,14 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
-public class RosterOverview {
+public class RosterOverview implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterOverview.class);
 
 	private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
 //	private static final String SECTION_COLUMN_PREFIX = "roster_section_cat_";
+	
+	protected Boolean groupsInSite = null;
+	protected List<CourseSection> siteSections;
 	
 	// Service & Bean References
 	protected FilteredProfileListingBean filter;
@@ -64,6 +66,7 @@ public class RosterOverview {
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
+	public static final Comparator<Participant> groupsComparator;
 
 	static {
 		sortNameComparator = new Comparator<Participant>() {
@@ -111,8 +114,28 @@ public class RosterOverview {
 						another) : comparison;
 			}
 		};
+
+		groupsComparator = new Comparator<Participant>() {
+			public int compare(Participant one, Participant another) {
+				String groups1 = one.getGroupsForDisplay();
+				String groups2 = another.getGroupsForDisplay();
+
+				if(groups1 != null && groups2 == null) {
+					return 1;
+				}
+				if(groups1 == null && groups2 != null) {
+					return -1;
+				}
+				if(groups1 == null && groups2 == null) {
+					return sortNameComparator.compare(one, another);
+				}
+
+				int comparison = one.getGroupsForDisplay().compareTo(another.getGroupsForDisplay());
+				return comparison == 0 ? sortNameComparator.compare(one, another) : comparison;
+			}
+		};
 	}
-	
+
 	protected static final Comparator<Participant> getCategoryComparator(final String sectionCategory) {
 		return new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
@@ -186,79 +209,49 @@ public class RosterOverview {
 			comparator = sortNameComparator;
 		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = emailComparator;
-		} else if(sortColumn != null) {
-			comparator = getCategoryComparator(sortColumn);
+		} else if(Participant.SORT_BY_GROUP.equals(sortColumn)) {
+			comparator = groupsComparator;
+		} else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
+			comparator = roleComparator;
 		} else {
-			return roleComparator;
+			comparator = getCategoryComparator(sortColumn);
 		}
 		return comparator;
 	}
-
-	
-//	public HtmlDataTable getRosterDataTable() {
-//		return null;
-//	}
-//	
-//	public void setRosterDataTable(HtmlDataTable rosterDataTable) {
-//		Set usedCategories = getUsedCategories();
-//		
-//		// Do we need to build the table?
-//		if (rosterDataTable.findComponent(SECTION_COLUMN_PREFIX + "0") == null) {
-//			Application app = FacesContext.getCurrentInstance().getApplication();
-//
-//			// Can this user see section memberships?
-//			boolean displaySectionMemberships = filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
-//			if(! displaySectionMemberships) return;
-//			
-//			// Add columns for each category. Be sure to create unique IDs
-//			// for all child components.
-//			int colPos = 0;
-//			for (Iterator iter = usedCategories.iterator(); iter.hasNext(); colPos++) {
-//				String category = (String)iter.next();
-//				String categoryName = filter.services.cmService.getSectionCategoryDescription(category);
-//
-//				UIColumn col = new UIColumn();
-//				col.setId(SECTION_COLUMN_PREFIX + colPos);
-//
-//                HtmlCommandSortHeader sortHeader = new HtmlCommandSortHeader();
-//                sortHeader.setId(SECTION_COLUMN_PREFIX + "sorthdr_" + colPos);
-//                sortHeader.setRendererType("org.apache.myfaces.SortHeader");
-//                sortHeader.setArrow(true);
-//                sortHeader.setColumnName(category);
-//
-//				HtmlOutputText headerText = new HtmlOutputText();
-//				headerText.setId(SECTION_COLUMN_PREFIX + "hdr_" + colPos);
-//				headerText.setValue(categoryName);
-//
-//                sortHeader.getChildren().add(headerText);
-//                col.setHeader(sortHeader);
-//
-//				HtmlOutputText contents = new HtmlOutputText();
-//				contents.setId(SECTION_COLUMN_PREFIX + "cell_" + colPos);
-//				contents.setValueBinding("value",
-//					app.createValueBinding("#{participant.sectionsMap['" + category + "'].title}"));
-//				col.getChildren().add(contents);
-//				rosterDataTable.getChildren().add(col);
-//			}
-//		}
-//	}
 	
 	/**
 	 * Gets the categories (including the null category for groups) that are currently
 	 * being used in this site context.
 	 * 
 	 * @param categories
-	 * @param sections
+	 * @param siteSections
 	 * @return
 	 */
-	public Set<String> getUsedCategories() {
-		Set<String> used = new HashSet<String>();
-		List sections = filter.services.sectionAwareness.getSections(getSiteContext());
+	public List<String> getUsedCategories() {
+		List<String> used = new ArrayList<String>();
+		List<CourseSection> sections = getSiteSections();
 		for(Iterator iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = (CourseSection)iter.next();
-			used.add(StringUtils.trimToEmpty(section.getCategory()));
+			String catId = StringUtils.trimToNull(section.getCategory());
+			if(catId != null && ! used.contains(catId)) used.add(catId);
 		}
+		Collections.sort(used);
 		return used;
+	}
+	
+	public boolean isGroupsInSite() {
+		if(groupsInSite == null) {
+			groupsInSite = false;
+			List<CourseSection> sections = getSiteSections();
+			for(Iterator iter = sections.iterator(); iter.hasNext();) {
+				CourseSection section = (CourseSection)iter.next();
+				if(StringUtils.trimToNull(section.getCategory()) == null) {
+					groupsInSite = true;
+					break;
+				}
+			}
+		}
+		return groupsInSite;
 	}
 	
 	public String getPageTitle() {
@@ -271,6 +264,20 @@ public class RosterOverview {
 	}
 	protected String getSiteContext() {
 		return filter.services.toolManager.getCurrentPlacement().getContext();
+	}
+	
+	protected List<CourseSection> getSiteSections() {
+		if(siteSections == null) {
+			siteSections = filter.services.sectionAwareness.getSections(getSiteContext());
+		}
+		return siteSections;
+	}
+	
+	public boolean isExportablePage() {
+		return true;
+	}
+	public void export(ActionEvent event) {
+		
 	}
 
 }
