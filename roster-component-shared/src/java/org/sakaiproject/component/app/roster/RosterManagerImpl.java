@@ -460,13 +460,11 @@ public class RosterManagerImpl implements RosterManager
   private String getUserRoleTitle(User user) {
 	  try
 	  {
-		  AuthzGroup realm = AuthzGroupService.getAuthzGroup(getContextSiteId());
-		  Role userRole = realm.getUserRole(user.getId());
-		  return userRole.getId();
+		  return AuthzGroupService.getUserRole(user.getId(),getContextSiteId());
 	  }
-	  catch(GroupNotDefinedException e)
+	  catch(Exception e)
 	  {
-		  LOG.error("GroupNotDefinedException", e);
+		  LOG.error("Exception", e);
 	  }
 	  return "";
   }
