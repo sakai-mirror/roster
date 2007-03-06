@@ -146,4 +146,8 @@ public class RosterStatus implements RosterPageBean {
 	public void export(ActionEvent event) {
 		
 	}
+	
+	public boolean isRenderStatus() {
+		return true;
+	}
 }

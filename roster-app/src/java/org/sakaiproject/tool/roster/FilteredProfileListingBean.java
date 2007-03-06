@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -70,6 +71,9 @@ public class FilteredProfileListingBean implements Serializable {
 	protected List<Participant> participants;
 	protected Integer participantCount;
 	protected SortedMap<String, Integer> roleCounts;
+	
+	// Cache the viewable sections
+	protected List<CourseSection> viewableSections;
 
 	/**
 	 * Initialize this bean once, so we can call our access method as often as we like
@@ -202,7 +206,7 @@ public class FilteredProfileListingBean implements Serializable {
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		// Get the available sections
-		List<CourseSection> sections = services.rosterManager.getViewableSectionsForCurrentUser();
+		List<CourseSection> sections = getViewableSections();
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
 			list.add(new SelectItem(section.getUuid(), section.getTitle()));
@@ -210,6 +214,29 @@ public class FilteredProfileListingBean implements Serializable {
 		return list;
 	}
 	
+	protected List<CourseSection> getViewableSections() {
+		if(viewableSections == null) {
+			viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();
+		}
+		return viewableSections;
+	}
+	
+	protected List<CourseSection> getViewableEnrollableSections() {
+		List<CourseSection> enrollableSections = new ArrayList<CourseSection>();
+		for(Iterator<CourseSection> iter = getViewableSections().iterator(); iter.hasNext();) {
+			CourseSection sakaiSection = iter.next();
+			if(sakaiSection.getEid() != null) {
+				// This is an official section.  Does it have an enrollment set?
+				Section cmSection = services.cmService.getSection(sakaiSection.getEid());
+				if(cmSection.getEnrollmentSet() != null) {
+					enrollableSections.add(sakaiSection);
+				}
+			}
+		}
+		return enrollableSections;
+	}
+
+
 	public List<SelectItem> getStatusSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		Map<String, String> map = services.cmService.getEnrollmentStatusDescriptions(LocaleUtil.getLocale(FacesContext.getCurrentInstance()));
@@ -230,6 +257,12 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 	
 	public boolean isDisplaySectionsFilter() {
+		// This gets called pretty often, and this is session scoped so we can't cache our answer.
+		// Try to use the cheapest calls to return our answer, resorting to the expensive
+		// rosterManager call last.
+		
+		// TODO Check whether this user is a student
+		
 		return services.rosterManager.getViewableSectionsForCurrentUser().size() > 1;
 	}
 

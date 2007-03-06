@@ -27,17 +27,19 @@ response.setContentType("text/html; charset=UTF-8");
 		        <t:div>
 
 					<t:div>
-		        		    <h:selectOneMenu id="statusFilter" value="#{enrollmentStatusFilter.statusFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_enrollment_status_all}" itemValue=""/>
-		        		    	<f:selectItems value="#{enrollmentStatusFilter.statusSelectItems}"/>
-		        		   	</h:selectOneMenu>
-
 						<h:panelGroup>
 							<h:outputLabel for="sectionFilter" value="#{msgs.enrollment_status_filter}"/>
 		        		    <h:selectOneMenu id="sectionFilter" value="#{enrollmentStatusFilter.sectionFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItems value="#{enrollmentStatusFilter.sectionSelectItems}"/>
+		        		    	<f:selectItems value="#{enrollmentStatusFilter.viewableEnrollableSectionSelectItems}"/>
 		        		   	</h:selectOneMenu>
 		        		</h:panelGroup>
+	        		</t:div>
+
+	        		<t:div>
+		        		    <h:selectOneRadio id="statusFilter" value="#{enrollmentStatusFilter.statusFilter}" onchange="this.form.submit()" immediate="true">
+		        		    	<f:selectItem itemLabel="#{msgs.roster_enrollment_status_all}" itemValue="#{enrollmentStatusFilter.allStatus}"/>
+		        		    	<f:selectItems value="#{enrollmentStatusFilter.statusSelectItems}"/>
+		        		   	</h:selectOneRadio>
 	        		</t:div>
 
 					<t:div>
@@ -46,13 +48,9 @@ response.setContentType("text/html; charset=UTF-8");
 	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{enrollmentStatusFilter.search}"/>
 	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{enrollmentStatusFilter.clearSearch}"/>
 	        		    
-	        		    <h:outputFormat value="#{msgs.enrollments_currently_displaying}">
-	        		    	<f:param value="#{enrollmentStatusFilter.participantCount}"/>
-	        		    	<f:param value="#{enrollmentStatusFilter.statusFilter}"/>
-	        		    </h:outputFormat>
+	        		    <h:outputText value="#{enrollmentStatusFilter.currentlyDisplayingMessage}" />
 	        		</t:div>
         		</t:div>
-
 
 			    <t:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"

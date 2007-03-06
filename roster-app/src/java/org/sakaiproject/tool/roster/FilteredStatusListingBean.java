@@ -21,6 +21,7 @@
 package org.sakaiproject.tool.roster;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,11 +40,13 @@ import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
+import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.util.ResourceLoader;
 
 public class FilteredStatusListingBean extends FilteredProfileListingBean implements Serializable {
 
+	private static final String ALL_STATUS="ALL_STATUS";
 	private static final Log log = LogFactory.getLog(FilteredStatusListingBean.class);
 	private static final long serialVersionUID = 1L;
 
@@ -51,7 +55,7 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	public void init() {
 		super.init();
 		if(this.statusFilter == null) {
-			this.statusFilter = "";
+			this.statusFilter = ALL_STATUS;
 		}
 	}
 	
@@ -82,7 +86,7 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 			enrolledParticipants.add(ep);
 		}
 		
-		if(StringUtils.trimToNull(statusFilter) == null) {
+		if(ALL_STATUS.equals(statusFilter) || StringUtils.trimToNull(statusFilter) == null) {
 			// No need for further filtering
 			return enrolledParticipants;
 		}
@@ -150,7 +154,17 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 		}
 		return list;
 	}
+	
+	public List<SelectItem> getViewableEnrollableSectionSelectItems() {
+		List<SelectItem> selectItems = new ArrayList<SelectItem>();
+		for(Iterator<CourseSection> iter = getViewableEnrollableSections().iterator(); iter.hasNext();) {
+			CourseSection section = iter.next();
+			selectItems.add(new SelectItem(section.getUuid(), section.getTitle()));
+		}
+		return selectItems;
+	}
 
+	
 	/**
 	 * Because the status filter is displayed here as a text, we need to ensure that
 	 * it's never null.
@@ -172,6 +186,25 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 
 	public void setStatusFilter(String statusFilter) {
 		this.statusFilter = statusFilter;
+	}
+	
+
+	public String getCurrentlyDisplayingMessage() {
+		String key = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				ServicesBean.MESSAGE_BUNDLE, "enrollments_currently_displaying");
+
+		Object[] params = new Object[2];
+		params[0] = participantCount;
+		if(ALL_STATUS.equals(statusFilter)) {
+			params[1] = "";
+		} else {
+			params[1] = statusFilter;
+		}
+		return MessageFormat.format(key, params);
+	}
+	
+	public String getAllStatus() {
+		return ALL_STATUS;
 	}
 
 }

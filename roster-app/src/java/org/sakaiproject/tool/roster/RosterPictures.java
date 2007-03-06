@@ -79,4 +79,7 @@ public class RosterPictures implements RosterPageBean {
 		// Do nothing
 	}
 
+	public boolean isRenderStatus() {
+		return ! filter.getViewableEnrollableSections().isEmpty();
+	}
 }

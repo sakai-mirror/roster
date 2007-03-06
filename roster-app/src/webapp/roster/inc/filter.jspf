@@ -1,37 +1,47 @@
 <%-- Initialize the filter --%>
-<h:outputText value="#{filter.init}"/>
+<h:outputText value="#{filter.init}" />
 
-		        <t:div>
+<h:panelGrid columns="4" columnClasses="filterLabel,filterElement,shortFilterLabel,filterElement">
+	<h:outputLabel for="viewFilter" value="#{msgs.status_filter}" />
 
-					<t:div>
-							<h:outputLabel for="viewFilter" value="#{msgs.status_filter}"/>
-		        		    <h:selectOneRadio id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue="roster_view_all"/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_view_students"/>
-		        		   	</h:selectOneRadio>
+	<h:panelGroup>
+		<%-- Don't use tables to display the radio buttons --%>
+		<t:selectOneRadio id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true" layout="spread">
+			<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue="roster_view_all" />
+			<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_view_students" />
+		</t:selectOneRadio>
+		<t:div>
+			<t:radio for="viewFilter" index="0"/>	
+		</t:div>
+		<t:div>
+			<t:radio for="viewFilter" index="1"/>	
+		</t:div>
+	</h:panelGroup>
+	
+	<h:outputLabel for="section_filter" value="#{msgs.section_filter}" rendered="#{filter.displaySectionsFilter}" />
+	<h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true" rendered="#{filter.displaySectionsFilter}">
+		<f:selectItem itemLabel="#{msgs.roster_sections_all}" itemValue="" />
+		<f:selectItem itemLabel="#{msgs.roster_section_sep_line}" itemValue="#{msgs.roster_section_sep_line}" />
+		<f:selectItems value="#{filter.sectionSelectItems}" />
+	</h:selectOneMenu>
+</h:panelGrid>
 
-						<h:panelGroup rendered="#{filter.displaySectionsFilter}">
-							<h:outputLabel for="section_filter" value="#{msgs.section_filter}"/>
-		        		    <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_sections_all}" itemValue=""/>
-		        		    	<f:selectItem itemLabel="#{msgs.roster_section_sep_line}" itemValue="#{msgs.roster_section_sep_line}" />
-		        		    	<f:selectItems value="#{filter.sectionSelectItems}"/>
-		        		   	</h:selectOneMenu>
-		        		</h:panelGroup>
-	        		</t:div>
+<h:panelGrid columns="2" styleClass="searchFilter">
+	<h:panelGroup>
+		<h:inputText id="search" value="#{filter.searchFilter}" onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')" />
+		<h:commandButton value="#{msgs.roster_search_button}" actionListener="#{filter.search}" />
+		<h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{filter.clearSearch}" />
+	</h:panelGroup>
 
+	<h:panelGroup styleClass="instruction">
+		<t:div>
+			<h:outputFormat value="#{msgs.currently_displaying}">
+				<f:param value="#{filter.participantCount}" />
+			</h:outputFormat>
+		</t:div>
+		<t:div>
+			<h:outputText value="#{filter.roleCountMessage}" rendered="#{filter.displayingParticipants}" />
+		</t:div>
+	</h:panelGroup>
+</h:panelGrid>
 
-					<t:div>
-	    		        <h:inputText id="search" value="#{filter.searchFilter}"
-	        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
-	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{filter.search}"/>
-	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{filter.clearSearch}"/>
-	        		    
-	        		    <h:outputFormat value="#{msgs.currently_displaying}">
-	        		    	<f:param value="#{filter.participantCount}"/>
-	        		    </h:outputFormat>
-	        		    <h:outputText value="#{filter.roleCountMessage}" rendered="#{filter.displayingParticipants}"/>
-	        		</t:div>
-        		    
-        		    
-        		</t:div>

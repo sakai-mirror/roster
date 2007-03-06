@@ -279,5 +279,8 @@ public class RosterOverview implements RosterPageBean {
 	public void export(ActionEvent event) {
 		
 	}
+	public boolean isRenderStatus() {
+		return ! filter.getViewableEnrollableSections().isEmpty();
+	}
 
 }

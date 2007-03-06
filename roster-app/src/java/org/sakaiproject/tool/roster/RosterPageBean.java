@@ -24,7 +24,10 @@ import javax.faces.event.ActionEvent;
 
 public interface RosterPageBean {
 	public String getPageTitle();
+
 	public boolean isExportablePage();
+	public boolean isRenderStatus();
+	
 	public void export(ActionEvent event);
 
 }
