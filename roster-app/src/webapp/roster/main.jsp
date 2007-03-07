@@ -54,11 +54,11 @@ response.setContentType("text/html; charset=UTF-8");
 		        styleClass="listHier rosterTable">
 		        <h:column>
 		            <f:facet name="header">
-		                <t:commandSortHeader columnName="displayName" immediate="true" arrow="true">
+		                <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
 		                    <h:outputText value="#{msgs.facet_name}" />
 		                </t:commandSortHeader>
 		            </f:facet>
-					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayName}">
+					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}">
 						<f:param name="participantId" value="#{participant.user.id}" />
 					</h:commandLink>
 		        </h:column>

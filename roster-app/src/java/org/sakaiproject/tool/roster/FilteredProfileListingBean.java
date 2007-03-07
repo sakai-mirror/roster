@@ -335,14 +335,17 @@ public class FilteredProfileListingBean implements Serializable {
 	// DO NOT cache the RequestCache itself.  Always obtain a reference using
 	// requestCache().
 	protected RequestCache requestCache() {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		
-		// This will either retrieve the existing request cache for this request, or generate a new one
-		RequestCache rc = (RequestCache)facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, "requestCache");
-		
+		RequestCache rc = (RequestCache)resolveManagedBean("requestCache");
 		// Manually initialize the cache, if necessary
-		if( ! rc.init) rc.init(services);
+		if( ! rc.isInitizlized()) rc.init(services);
 		return rc;
 	}
+
+	// This will either retrieve the existing managed bean, or generate a new one
+	protected Object resolveManagedBean(String managedBeanId) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		return facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, managedBeanId);
+	}
+
 
 }

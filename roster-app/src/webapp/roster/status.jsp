@@ -9,10 +9,8 @@ response.setContentType("text/html; charset=UTF-8");
    <jsp:setProperty name="msgs" property="baseName" value="org.sakaiproject.tool.roster.bundle.Messages"/>
 </jsp:useBean>
 <f:view>
-	<sakai:view_container title="#{status.pageTitle}">
-		<sakai:view_content>
-		
-		<%="<script src=js/roster.js></script>"%>
+<sakai:view title="#{msgs.title_status}" toolCssHref="/sakai-roster-tool/css/roster.css">		
+	<%="<script src=js/roster.js></script>"%>
 
 			<h:form>
 
@@ -24,33 +22,35 @@ response.setContentType("text/html; charset=UTF-8");
 				<%-- Initialize the filter --%>
 				<h:outputText value="#{enrollmentStatusFilter.init}"/>
 
-		        <t:div>
+				<h:panelGrid columns="2" columnClasses="filterLabel,filterElement">
+						<h:outputLabel for="sectionFilter" value="#{msgs.enrollment_status_filter}"/>
+	        		    <h:selectOneMenu
+							id="sectionFilter"
+							value="#{enrollmentStatusFilter.sectionFilter}"
+							rendered="#{enrollmentStatusFilter.multipleEnrollableSectionsDisplayed}"
+							onchange="this.form.submit()"
+							immediate="true">
+	        		    	<f:selectItems value="#{enrollmentStatusFilter.viewableEnrollableSectionSelectItems}"/>
+	        		   	</h:selectOneMenu>
+	        		   	<h:outputText value="#{enrollmentStatusFilter.firstSectionTitle}" rendered="#{ ! enrollmentStatusFilter.multipleEnrollableSectionsDisplayed}" />
 
-					<t:div>
-						<h:panelGroup>
-							<h:outputLabel for="sectionFilter" value="#{msgs.enrollment_status_filter}"/>
-		        		    <h:selectOneMenu id="sectionFilter" value="#{enrollmentStatusFilter.sectionFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItems value="#{enrollmentStatusFilter.viewableEnrollableSectionSelectItems}"/>
-		        		   	</h:selectOneMenu>
-		        		</h:panelGroup>
-	        		</t:div>
+						<h:outputLabel for="statusFilter" value="#{msgs.enrollment_status_filter_label}"/>
+	        		    <h:selectOneMenu id="statusFilter" value="#{enrollmentStatusFilter.statusFilter}" onchange="this.form.submit()" immediate="true">
+	        		    	<f:selectItem itemLabel="#{msgs.roster_enrollment_status_all}" itemValue="#{enrollmentStatusFilter.allStatus}"/>
+	        		    	<f:selectItems value="#{enrollmentStatusFilter.statusSelectItems}"/>
+	        		   	</h:selectOneMenu>
+		        </h:panelGrid>
 
-	        		<t:div>
-		        		    <h:selectOneRadio id="statusFilter" value="#{enrollmentStatusFilter.statusFilter}" onchange="this.form.submit()" immediate="true">
-		        		    	<f:selectItem itemLabel="#{msgs.roster_enrollment_status_all}" itemValue="#{enrollmentStatusFilter.allStatus}"/>
-		        		    	<f:selectItems value="#{enrollmentStatusFilter.statusSelectItems}"/>
-		        		   	</h:selectOneRadio>
-	        		</t:div>
-
-					<t:div>
+				<h:panelGrid columns="2">
+					<h:panelGroup>
 	    		        <h:inputText id="search" value="#{enrollmentStatusFilter.searchFilter}"
 	        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
 	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{enrollmentStatusFilter.search}"/>
 	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{enrollmentStatusFilter.clearSearch}"/>
+					</h:panelGroup>
 	        		    
-	        		    <h:outputText value="#{enrollmentStatusFilter.currentlyDisplayingMessage}" />
-	        		</t:div>
-        		</t:div>
+	        		    <h:outputText value="#{enrollmentStatusFilter.currentlyDisplayingMessage}" styleClass="instruction" />
+				</h:panelGrid>
 
 			    <t:dataTable cellpadding="0" cellspacing="0"
 			        id="rosterTable"
@@ -61,11 +61,11 @@ response.setContentType("text/html; charset=UTF-8");
 			        styleClass="listHier rosterTable">
 			        <h:column>
 			            <f:facet name="header">
-			                <t:commandSortHeader columnName="displayName" immediate="true" arrow="true">
+			                <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
 			                    <h:outputText value="#{msgs.facet_name}" />
 			                </t:commandSortHeader>
 			            </f:facet>
-						<h:outputText value="#{participant.user.displayName}"/>
+						<h:outputText value="#{participant.user.sortName}"/>
 			        </h:column>
 			        <h:column>
 			            <f:facet name="header">
@@ -103,6 +103,5 @@ response.setContentType("text/html; charset=UTF-8");
 			    </t:dataTable>
 
 			</h:form>
-		</sakai:view_content>
-	</sakai:view_container>
+</sakai:view>
 </f:view>

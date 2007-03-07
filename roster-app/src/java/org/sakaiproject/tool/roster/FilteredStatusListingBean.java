@@ -139,20 +139,11 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	}
 
 	public List<SelectItem> getSectionSelectItems() {
-		List<SelectItem> list = new ArrayList<SelectItem>();
-		// Get the available sections
-		List<CourseSection> sections = requestCache().viewableSections;
-		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-			CourseSection sakaiSection = iter.next();
-			if(sakaiSection.getEid() != null) {
-				// This is an official section.  Does it have an enrollment set?
-				Section cmSection = services.cmService.getSection(sakaiSection.getEid());
-				if(cmSection.getEnrollmentSet() != null) {
-					list.add(new SelectItem(sakaiSection.getUuid(), sakaiSection.getTitle()));
-				}
-			}
-		}
-		return list;
+		return statusRequestCache().getSectionSelectItems();
+	}
+	
+	public boolean isMultipleEnrollableSectionsDisplayed() {
+		return getSectionSelectItems().size() > 1;
 	}
 	
 	public List<SelectItem> getViewableEnrollableSectionSelectItems() {
@@ -205,6 +196,17 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	
 	public String getAllStatus() {
 		return ALL_STATUS;
+	}
+	
+	protected StatusRequestCache statusRequestCache() {
+		StatusRequestCache rc = (StatusRequestCache)resolveManagedBean("statusRequestCache");
+		// Manually initialize the cache, if necessary
+		if( ! rc.isInitizlized()) rc.init(services);
+		return rc;
+	}
+	
+	public String getFirstSectionTitle() {
+		return statusRequestCache().sectionSelectItems.get(0).getLabel();
 	}
 
 }

@@ -20,11 +20,15 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.model.SelectItem;
+
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 /**
@@ -37,24 +41,30 @@ import org.sakaiproject.section.api.coursemanagement.CourseSection;
  * @author <a href="mailto:jholtzman@berkeley.edu">jholtzman@berkeley.edu</a>
  *
  */
-public class RequestCache {
+public class StatusRequestCache extends RequestCache {
 	
-	private boolean init;
-	protected List<CourseSection> viewableSections;
-	protected Map<String, String> sectionCategoryMap;
+	protected boolean init;
+	List<SelectItem> sectionSelectItems;
 
-	protected boolean isInitizlized() {
-		return init;
-	}
-	
 	protected void init(ServicesBean services) {
-		this.viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();
-
-		sectionCategoryMap = new HashMap<String, String>();
-		for(Iterator<String> iter = services.cmService.getSectionCategories().iterator(); iter.hasNext();) {
-			String category = iter.next();
-			sectionCategoryMap.put(category, services.cmService.getSectionCategoryDescription(category));
+		super.init(services);
+		sectionSelectItems = new ArrayList<SelectItem>();
+		// Get the available sections
+		List<CourseSection> sections = super.viewableSections;
+		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection sakaiSection = iter.next();
+			if(sakaiSection.getEid() != null) {
+				// This is an official section.  Does it have an enrollment set?
+				Section cmSection = services.cmService.getSection(sakaiSection.getEid());
+				if(cmSection.getEnrollmentSet() != null) {
+					sectionSelectItems.add(new SelectItem(sakaiSection.getUuid(), sakaiSection.getTitle()));
+				}
+			}
 		}
-		this.init = true;
+		init = true;
+	}
+
+	public List<SelectItem> getSectionSelectItems() {
+		return sectionSelectItems;
 	}
 }

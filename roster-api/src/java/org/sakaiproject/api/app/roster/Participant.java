@@ -36,7 +36,7 @@ import org.sakaiproject.user.api.User;
 public interface Participant 
 {
   public static final String SORT_BY_ID = "displayId";
-  public static final String SORT_BY_NAME = "displayName";
+  public static final String SORT_BY_NAME = "sortName";
   public static final String SORT_BY_EMAIL = "email";
   public static final String SORT_BY_ROLE = "role";
   public static final String SORT_BY_GROUP = "group";
