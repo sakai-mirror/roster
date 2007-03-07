@@ -21,9 +21,12 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -31,7 +34,10 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
+import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 public class RosterStatus implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterStatus.class);
@@ -144,7 +150,30 @@ public class RosterStatus implements RosterPageBean {
 	}
 	
 	public void export(ActionEvent event) {
+		List<List<Object>> spreadsheetData = new ArrayList<List<Object>>();
 		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		
+		// Add the header row
+		List<Object> header = new ArrayList<Object>();
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_name"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_userId"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_email"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_status"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_credits"));
+		spreadsheetData.add(header);
+
+		for(Iterator<Participant> participantIter = getParticipants().iterator(); participantIter.hasNext();) {
+			Participant participant = participantIter.next();
+			List<Object> row = new ArrayList<Object>();
+			row.add(participant.getUser().getSortName());
+			row.add(participant.getUser().getDisplayId());
+			row.add(participant.getUser().getEmail());
+			row.add(((EnrolledParticipant)participant).getEnrollmentStatus());
+			row.add(((EnrolledParticipant)participant).getEnrollmentCredits());
+			spreadsheetData.add(row);
+		}
+		SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, "roster", new SpreadsheetDataFileWriterCsv());
 	}
 	
 	public boolean isRenderStatus() {
