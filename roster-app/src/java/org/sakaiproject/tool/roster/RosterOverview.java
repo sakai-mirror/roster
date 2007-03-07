@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -35,6 +36,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
+import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -278,8 +281,58 @@ public class RosterOverview implements RosterPageBean {
 		return true;
 	}
 	public void export(ActionEvent event) {
+		List<List<Object>> spreadsheetData = new ArrayList<List<Object>>();
 		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		
+		// Add the header row
+		List<Object> header = new ArrayList<Object>();
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_name"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_userId"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_email"));
+		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_role"));
+		if(prefs.isDisplaySectionColumns()) {
+			// Sections
+			Map<String, String> catMap = filter.getSectionCategoryMap();
+			for(Iterator<String> catIter = getUsedCategories().iterator(); catIter.hasNext();) {
+				String cat = catIter.next();
+				header.add(catMap.get(cat));
+			}
+			// Group column
+			if(isGroupsInSite()) {
+				header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "group"));
+			}
+		}
+		
+		spreadsheetData.add(header);
+		for(Iterator<Participant> participantIter = getParticipants().iterator(); participantIter.hasNext();) {
+			Participant participant = participantIter.next();
+			List<Object> row = new ArrayList<Object>();
+			row.add(participant.getUser().getSortName());
+			row.add(participant.getUser().getDisplayId());
+			row.add(participant.getUser().getEmail());
+			row.add(participant.getRoleTitle());
+			if(prefs.isDisplaySectionColumns()) {
+				// Sections
+				for(Iterator<String> catIter = getUsedCategories().iterator(); catIter.hasNext();) {
+					String cat = catIter.next();
+					CourseSection section = participant.getSectionsMap().get(cat);
+					if(section == null) {
+						row.add("");
+					} else {
+						row.add(section.getTitle());
+					}
+				}
+				// Group column
+				if(isGroupsInSite()) {
+					row.add(participant.getGroupsForDisplay());
+				}
+			}
+			spreadsheetData.add(row);
+		}
+		SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, "roster", new SpreadsheetDataFileWriterCsv());
 	}
+	
 	public boolean isRenderStatus() {
 		return ! filter.getViewableEnrollableSections().isEmpty();
 	}
