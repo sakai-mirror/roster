@@ -9,46 +9,67 @@ response.setContentType("text/html; charset=UTF-8");
    <jsp:setProperty name="msgs" property="baseName" value="org.sakaiproject.tool.roster.bundle.Messages"/>
 </jsp:useBean>
 <f:view>
-	<sakai:view_container title="#{msgs.facet_roster_pictures}">
-		<sakai:view_content>
-		
+	<sakai:view title="#{msgs.facet_roster_pictures}" toolCssHref="/sakai-roster-tool/css/roster.css">
 		<%="<script src=js/roster.js></script>"%>
+		<h:form>
+			<t:aliasBean alias="#{viewBean}" value="#{pictures}">
+				<%@include file="inc/nav.jspf" %>
+			</t:aliasBean>
 
-			<h:form>
+			<%@include file="inc/filter.jspf" %>
 
-				<t:aliasBean alias="#{viewBean}" value="#{pictures}">
-					<%@include file="inc/nav.jspf" %>
-				</t:aliasBean>
+			<h:panelGrid columns="2" styleClass="rosterPicturesFilter" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
+				<t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true">
+					<f:selectItems value="#{pictures.photoSelectItems}" />
+				</t:selectOneRadio>
+	
+				<h:commandButton value="#{msgs.roster_show_names}" actionListener="#{pictures.showNames}" rendered="#{ ! prefs.displayNames}" />
+				<h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
+			</h:panelGrid>
 
-				<h:outputLink rendered="#{overview.renderPrivacyMessage}"
-					value="#{msgs.title_missing_participants_link}" target="_blank">
-					<h:outputText value="#{msgs.title_missing_participants}" />
-				</h:outputLink>
+			<t:div styleClass="instruction">
+				<h:outputText value="#{msgs.no_participants_msg}"
+					rendered="#{empty filter.participants}" />
+			</t:div>
 
-				<%@include file="inc/filter.jspf" %>
+			<t:dataTable
+				newspaperColumns="5"
+				newspaperOrientation="horizontal"
+				value="#{pictures.participants}"
+				var="participant"
+				styleClass="rosterPictures">
+				<h:column>
+					<t:div>
+						<h:graphicImage
+							id="profileImage"
+							value="#{participant.profile.pictureUrl}"
+							rendered="#{prefs.displayProfilePhotos && not empty participant.profile.pictureUrl}"
+							title="#{msgs.profile_picture_alt} #{participant.user.displayName}"
+							styleClass="rosterImage"/>
+							
+						<h:graphicImage
+							id="profileImageNotAvailable"
+							value="#{msgs.img_unavail}"
+							rendered="#{prefs.displayProfilePhotos && empty participant.profile.pictureUrl}"
+							title="#{msgs.profile_no_picture_available}"
+							styleClass="rosterImage"/>
 
-				<t:div styleClass="instruction">
-					<h:outputText value="#{msgs.no_participants_msg}"
-						rendered="#{empty filter.participants}" />
-				</t:div>
-
-				<t:dataTable newspaperColumns="5" newspaperOrientation="horizontal" value="#{pictures.participants}" var="participant">
-					<h:column>
-						<h:graphicImage id="profileImage" value="#{participant.profile.pictureUrl}" rendered="#{pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
-						<h:graphicImage id="rosterImage" value="ParticipantImageServlet.prf?photo=#{participant.user.id}" rendered="#{ ! pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
-						<f:verbatim><br/></f:verbatim>
+						<h:graphicImage
+							id="rosterImage"
+							value="ParticipantImageServlet.prf?photo=#{participant.user.id}"
+							rendered="#{ ! prefs.displayProfilePhotos}"
+							title="#{msgs.profile_picture_alt} #{participant.user.displayName}"
+							styleClass="rosterImage"/>
+							
+					</t:div>
+					<t:div rendered="#{prefs.displayNames}">
 						<h:outputText value="#{participant.user.sortName}"/>
-					</h:column>
-				</t:dataTable>
-
-<%--
-				<t:dataList layout="simple" value="#{pictures.participants}" var="participant">
-					<h:graphicImage id="profileImage" value="#{participant.profile.pictureUrl}" rendered="#{pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
-					<h:graphicImage id="rosterImage" value="ParticipantImageServlet.prf?photo=#{participant.user.id}" rendered="#{ ! pictures.displayProfilePhoto}" title="#{msgs.profile_picture_alt} #{participant.user.displayName}" styleClass="rosterImage"/>
-					<h:outputText value="#{participant.user.sortName}"/>
-				</t:dataList>
---%>
-			</h:form>
-		</sakai:view_content>
-	</sakai:view_container>
+					</t:div>
+					<t:div>
+						<h:outputText value="#{participant.user.displayId}"/>
+					</t:div>
+				</h:column>
+			</t:dataTable>
+		</h:form>
+	</sakai:view>
 </f:view>

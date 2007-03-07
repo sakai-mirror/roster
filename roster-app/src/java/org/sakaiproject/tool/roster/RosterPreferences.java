@@ -29,10 +29,13 @@ public class RosterPreferences {
 	protected String sortColumn;
 	protected boolean sortAscending;
 	protected boolean displaySectionColumns;
+	protected boolean displayNames;
+	protected boolean displayProfilePhotos;
 	
 	public RosterPreferences() {
 		sortColumn = ROLE_COLUMN;
 		sortAscending = true;
+		displayNames = true;
 	}
 	
 	public boolean isSortAscending() {
@@ -52,5 +55,21 @@ public class RosterPreferences {
 	}
 	public void setDisplaySectionColumns(boolean displaySectionColumns) {
 		this.displaySectionColumns = displaySectionColumns;
+	}
+
+	public boolean isDisplayNames() {
+		return displayNames;
+	}
+
+	public void setDisplayNames(boolean displayNames) {
+		this.displayNames = displayNames;
+	}
+
+	public boolean isDisplayProfilePhotos() {
+		return displayProfilePhotos;
+	}
+
+	public void setDisplayProfilePhotos(boolean displayProfilePhotos) {
+		this.displayProfilePhotos = displayProfilePhotos;
 	}	
 }

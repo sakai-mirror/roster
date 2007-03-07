@@ -22,7 +22,7 @@ table.rosterPageHeader {
 
 .shortFilterLabel {
 	vertical-align:top;
-	width:5em;
+	width:6em;
 }
 
 .shortFilterLabel label {
@@ -34,4 +34,19 @@ table.rosterPageHeader {
 
 table.searchFilter {
 	margin-left: 5em;
+}
+
+table.rosterPicturesFilter {
+	width:45em;
+}
+
+table.rosterPictures {
+	width:45em;
+}
+
+
+table.rosterPictures td {
+	width:9em;
+	height:10em;
+	vertical-align:top;
 }

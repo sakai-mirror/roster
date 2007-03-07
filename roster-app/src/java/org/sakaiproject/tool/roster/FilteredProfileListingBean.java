@@ -64,7 +64,6 @@ public class FilteredProfileListingBean implements Serializable {
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
 	
-	protected Map<String, String> sectionCategoryMap;
 
 	// Cache the participants list so we don't have to fetch it twice (once for the list,
 	// and again for its size)
@@ -72,9 +71,6 @@ public class FilteredProfileListingBean implements Serializable {
 	protected Integer participantCount;
 	protected SortedMap<String, Integer> roleCounts;
 	
-	// Cache the viewable sections
-	protected List<CourseSection> viewableSections;
-
 	/**
 	 * Initialize this bean once, so we can call our access method as often as we like
 	 * without invoking unnecessary service calls.
@@ -86,13 +82,6 @@ public class FilteredProfileListingBean implements Serializable {
 				
 		if(viewFilter == null) {
 			viewFilter = VIEW_ALL;
-		}
-		
-		// Build the section category map
-		sectionCategoryMap = new HashMap<String, String>();
-		for(Iterator<String> iter = services.cmService.getSectionCategories().iterator(); iter.hasNext();) {
-			String category = iter.next();
-			sectionCategoryMap.put(category, services.cmService.getSectionCategoryDescription(category));
 		}
 	}
 
@@ -206,7 +195,7 @@ public class FilteredProfileListingBean implements Serializable {
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		// Get the available sections
-		List<CourseSection> sections = getViewableSections();
+		List<CourseSection> sections = requestCache().viewableSections;
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
 			list.add(new SelectItem(section.getUuid(), section.getTitle()));
@@ -214,16 +203,9 @@ public class FilteredProfileListingBean implements Serializable {
 		return list;
 	}
 	
-	protected List<CourseSection> getViewableSections() {
-		if(viewableSections == null) {
-			viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();
-		}
-		return viewableSections;
-	}
-	
 	protected List<CourseSection> getViewableEnrollableSections() {
 		List<CourseSection> enrollableSections = new ArrayList<CourseSection>();
-		for(Iterator<CourseSection> iter = getViewableSections().iterator(); iter.hasNext();) {
+		for(Iterator<CourseSection> iter = requestCache().viewableSections.iterator(); iter.hasNext();) {
 			CourseSection sakaiSection = iter.next();
 			if(sakaiSection.getEid() != null) {
 				// This is an official section.  Does it have an enrollment set?
@@ -257,13 +239,7 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 	
 	public boolean isDisplaySectionsFilter() {
-		// This gets called pretty often, and this is session scoped so we can't cache our answer.
-		// Try to use the cheapest calls to return our answer, resorting to the expensive
-		// rosterManager call last.
-		
-		// TODO Check whether this user is a student
-		
-		return services.rosterManager.getViewableSectionsForCurrentUser().size() > 1;
+		return requestCache().viewableSections.size() > 1;
 	}
 
 	public String getSearchFilter() {
@@ -326,7 +302,8 @@ public class FilteredProfileListingBean implements Serializable {
 			sb.append(count);
 			sb.append(" ");
 			sb.append(entry.getKey());
-			// Make the role plural if necessary
+			// Make the role plural if necessary.  This is a hack, but there is currently
+			// no good option for displaying a role as a plural.
 			if(count != 1) {
 				sb.append("s");
 			}
@@ -351,7 +328,21 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	public Map<String, String> getSectionCategoryMap() {
-		return sectionCategoryMap;
+		return requestCache().sectionCategoryMap;
+	}
+
+	// We use this request-scoped bean to hold a reference to the sections in this site.
+	// DO NOT cache the RequestCache itself.  Always obtain a reference using
+	// requestCache().
+	protected RequestCache requestCache() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		
+		// This will either retrieve the existing request cache for this request, or generate a new one
+		RequestCache rc = (RequestCache)facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, "requestCache");
+		
+		// Manually initialize the cache, if necessary
+		if( ! rc.init) rc.init(services);
+		return rc;
 	}
 
 }

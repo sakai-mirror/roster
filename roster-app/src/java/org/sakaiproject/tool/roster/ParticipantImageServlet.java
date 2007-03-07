@@ -41,8 +41,7 @@ import org.sakaiproject.util.ResourceLoader;
 public class ParticipantImageServlet extends HttpServlet
 {
   private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
-  private static final Log LOG = LogFactory
-      .getLog(ParticipantImageServlet.class);
+  private static final Log LOG = LogFactory.getLog(ParticipantImageServlet.class);
   private static final String UNIVERSITY_ID_PHOTO = "photo";
   private static final String CONTENT_TYPE = "image/jpeg";
   private ProfileManager profileManager;

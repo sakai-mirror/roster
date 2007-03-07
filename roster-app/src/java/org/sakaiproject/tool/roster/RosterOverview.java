@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.util.LocaleUtil;
+import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 public class RosterOverview implements RosterPageBean {
@@ -283,4 +284,13 @@ public class RosterOverview implements RosterPageBean {
 		return ! filter.getViewableEnrollableSections().isEmpty();
 	}
 
+	public boolean isSectionColumnsViewable() {
+		// Don't show sections to students
+		String currentUserId = filter.services.userDirectoryService.getCurrentUser().getId();
+		if(filter.services.authzService.isAllowed(currentUserId, SectionAwareness.INSTRUCTOR_MARKER, getSiteReference()))
+			return true;
+		if(filter.services.authzService.isAllowed(currentUserId, SectionAwareness.TA_MARKER, getSiteReference()))
+			return true;
+		return false;
+	}
 }

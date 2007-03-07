@@ -141,7 +141,7 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		// Get the available sections
-		List<CourseSection> sections = services.rosterManager.getViewableSectionsForCurrentUser();
+		List<CourseSection> sections = requestCache().viewableSections;
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection sakaiSection = iter.next();
 			if(sakaiSection.getEid() != null) {

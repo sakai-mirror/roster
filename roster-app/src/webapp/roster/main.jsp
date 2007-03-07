@@ -37,13 +37,13 @@ response.setContentType("text/html; charset=UTF-8");
 				actionListener="#{overview.showSections}"
 				immediate="true"
 				value="#{msgs.show_sections}"
-				rendered="#{ ! prefs.displaySectionColumns}"/>
+				rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
 
 			<h:commandButton
 				actionListener="#{overview.hideSections}"
 				immediate="true"
 				value="#{msgs.hide_sections}"
-				rendered="#{prefs.displaySectionColumns}"/>
+				rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
 			
 		    <t:dataTable cellpadding="0" cellspacing="0"
 		        id="rosterTable"

@@ -20,11 +20,13 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,8 +35,6 @@ import org.sakaiproject.jsf.util.LocaleUtil;
 
 public class RosterPictures implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
-
-	protected boolean displayProfilePhoto;
 
 	protected FilteredProfileListingBean filter;
 	public FilteredProfileListingBean getFilter() {
@@ -60,14 +60,7 @@ public class RosterPictures implements RosterPageBean {
 		}
 		return participants;
 	}
-	
-	public boolean isDisplayProfilePhoto() {
-		return displayProfilePhoto;
-	}
-	public void setDisplayProfilePhoto(boolean displayProfilePhoto) {
-		this.displayProfilePhoto = displayProfilePhoto;
-	}
-	
+		
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_pictures");
@@ -78,8 +71,31 @@ public class RosterPictures implements RosterPageBean {
 	public void export(ActionEvent event) {
 		// Do nothing
 	}
+	
+	public void hideNames(ActionEvent event) {
+		prefs.setDisplayNames(false);
+	}
+
+	public void showNames(ActionEvent event) {
+		prefs.setDisplayNames(true);
+	}
 
 	public boolean isRenderStatus() {
 		return ! filter.getViewableEnrollableSections().isEmpty();
+	}
+
+	/**
+	 * JSF (at least myfaces) doesn't translate strings to boolean values for radio
+	 * buttons properly.  As a workaround, we build the select items manually.
+	 * 
+	 * @return
+	 */
+	public List<SelectItem> getPhotoSelectItems() {
+		List<SelectItem> items = new ArrayList<SelectItem>(2);
+		items.add(new SelectItem(Boolean.FALSE, LocaleUtil.getLocalizedString(
+				FacesContext.getCurrentInstance(), ServicesBean.MESSAGE_BUNDLE, "roster_official_photos")));
+		items.add(new SelectItem(Boolean.TRUE, LocaleUtil.getLocalizedString(
+				FacesContext.getCurrentInstance(), ServicesBean.MESSAGE_BUNDLE, "roster_profile_photos")));
+		return items;
 	}
 }
