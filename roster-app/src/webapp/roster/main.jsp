@@ -31,8 +31,8 @@
 			      <h:outputText value="#{msgs.title_missing_participants}"/>
 			    </h:outputLink>
  
-		  	  <f:verbatim><div class="navPanel" style="width: 98%">
-		  		  <div class="viewNav" style="width: 99%"></f:verbatim>
+		  	  <f:verbatim><!--  commented out when wait page added <div class="navPanel" style="width: 98%; background:green;"> -->
+		  		  <div class="viewNav" style="width: 99%;"></f:verbatim>
 							<h:panelGrid columns="2" cellspacing="0" cellpadding="0" style="width: 100%" rendered="#{RosterTool.renderViewMenu || RosterTool.renderExportButton}">
 							  <h:panelGroup>
 								<h:outputLabel for="select1" rendered="#{RosterTool.renderViewMenu}">
@@ -57,8 +57,7 @@
 		 	                    <f:verbatim></div></f:verbatim>
 		 	                  </h:panelGroup>
 						    </h:panelGrid>
-						  <f:verbatim></div>
-					</div></f:verbatim>
+						  <f:verbatim></div></f:verbatim>
 		 		
 			<%--********************* Roster Display *********************--%>
 				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
@@ -120,6 +119,8 @@
 				</h:dataTable> 
 				 
 			</h:panelGroup>
+
+			<f:verbatim><!-- commented out when wait page added </div> --></f:verbatim>
 
 	 </h:form>
   </sakai:view_content>	
