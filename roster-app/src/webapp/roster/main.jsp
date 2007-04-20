@@ -58,7 +58,7 @@ response.setContentType("text/html; charset=UTF-8");
 		                    <h:outputText value="#{msgs.facet_name}" />
 		                </t:commandSortHeader>
 		            </f:facet>
-					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}">
+					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
 						<f:param name="participantId" value="#{participant.user.id}" />
 					</h:commandLink>
 		        </h:column>
