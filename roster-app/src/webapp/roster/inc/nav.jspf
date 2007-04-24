@@ -12,5 +12,3 @@
 		<h:commandButton onclick="javascript:window.print();return false;" value="#{msgs.print}" />
 	</h:panelGroup>
 </h:panelGrid>
-
-	

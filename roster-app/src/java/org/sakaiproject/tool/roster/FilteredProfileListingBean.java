@@ -194,6 +194,18 @@ public class FilteredProfileListingBean implements Serializable {
 	
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		String sepLine = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line");
+		String all = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all");
+		String my = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all_my");
+		if(isSiteInstructor()) {
+			list.add(new SelectItem("", all));
+		} else {
+			list.add(new SelectItem("", my));
+		}
+		list.add(new SelectItem(sepLine, sepLine));
+
 		// Get the available sections
 		List<CourseSection> sections = requestCache().viewableSections;
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
@@ -240,6 +252,10 @@ public class FilteredProfileListingBean implements Serializable {
 	
 	public boolean isDisplaySectionsFilter() {
 		return requestCache().viewableSections.size() > 1;
+	}
+	
+	public boolean isSiteInstructor() {
+		return services.authzService.isAllowed(services.userDirectoryService.getCurrentUser().getId(), SectionAwareness.INSTRUCTOR_MARKER, getSiteReference());
 	}
 
 	public String getSearchFilter() {
