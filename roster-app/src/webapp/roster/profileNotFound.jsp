@@ -5,7 +5,7 @@
 <f:view>
 	<sakai:view_container title="#{msgs.not_found_roster_profile}">
 		<sakai:view_content>
-			<h:form>
+			<h:form id="roster_form">
 				<sakai:view_title value="#{msgs.profile_user_profile}"/>
 				<h:graphicImage id="image" alt="#{msgs.profile_no_picture_available}" url="#{msgs.img_unavail}" styleClass="rosterImage"/>
 				<h4>

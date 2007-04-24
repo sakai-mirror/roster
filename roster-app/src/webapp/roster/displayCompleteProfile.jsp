@@ -7,7 +7,7 @@
 <f:view>
 	<sakai:view_container title="#{msgs.profile_site_roster}">
 		<sakai:view_content>
-			<h:form>
+			<h:form id="roster_form">
 				<sakai:view_title value="#{msgs.profile_user_profile}"/>
 				<%-- TODO: should the image sizes be predetermine for this view? --%>
 				<h:graphicImage value="#{msgs.img_unavail}"  rendered="#{profileBean.showCustomPhotoUnavailableForSelectedProfile}" title="#{msgs.profile_no_picture_available}" styleClass="rosterImage"/>

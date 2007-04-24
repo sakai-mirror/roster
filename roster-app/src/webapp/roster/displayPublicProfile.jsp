@@ -5,7 +5,7 @@
  <f:view>
 	<sakai:view_container title="#{msgs.profile_site_roster}">
 		<sakai:view_content>
-		 <h:form>
+		 <h:form id="roster_form">
 		    <sakai:view_title  value="#{msgs.profile_user_profile}"/>
 			<h:panelGrid columns="1" border="0" >
 			<%-- TODO: should the image sizes be predetermine for this view? --%>

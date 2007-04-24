@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -37,7 +36,6 @@ import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 public class RosterStatus implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterStatus.class);

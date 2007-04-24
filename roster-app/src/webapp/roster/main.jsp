@@ -11,8 +11,8 @@ response.setContentType("text/html; charset=UTF-8");
 <f:view>
 
 <sakai:view title="#{msgs.facet_roster_list}" toolCssHref="/sakai-roster-tool/css/roster.css">
-	<%="<script src=js/roster.js></script>"%>
-		<h:form>
+	<%="<script src=\"js/roster.js\"></script>"%>
+		<h:form id="roster_form">
 			<t:aliasBean alias="#{viewBean}" value="#{overview}">
 				<%@include file="inc/nav.jspf" %>
 			</t:aliasBean>

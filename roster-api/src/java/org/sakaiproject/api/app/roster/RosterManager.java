@@ -22,10 +22,7 @@
 package org.sakaiproject.api.app.roster;
 
 import java.util.List;
-import java.util.Set;
 
-import org.sakaiproject.coursemanagement.api.EnrollmentSet;
-import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 /**
