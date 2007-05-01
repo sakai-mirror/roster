@@ -37,7 +37,7 @@
 				</h4>
 				<sakai:panel_edit>
 					<h:outputText  value="#{msgs.profile_email}"/>
-					<h:outputText value="#{profileBean.participant.profile.email} "/>
+		            <h:outputLink value="mailto:#{profileBean.participant.profile.email}"><h:outputText value="#{profileBean.participant.profile.email}"/></h:outputLink>
 					<h:outputText value="#{msgs.profile_homepage}"/>
 					<%--need to test for empty value here - and omit the outputLink if null --%>				
 					<h:outputLink target="_blank" value="#{profileBean.participant.profile.homepage}">

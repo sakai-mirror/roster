@@ -81,7 +81,7 @@ response.setContentType("text/html; charset=UTF-8");
 			                    <h:outputText value="#{msgs.facet_email}" />
 			                </t:commandSortHeader>
 			            </f:facet>
-			            <h:outputText value="#{participant.user.email}"/>
+			            <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
 			        </h:column>
 			        <h:column>
 			            <f:facet name="header">
