@@ -33,13 +33,17 @@
 
 	<h:panelGroup styleClass="instruction">
 		<t:div style="padding-left:10px;">
-			<h:outputFormat value="#{msgs.currently_displaying}">
+			<h:outputFormat value="#{msgs.currently_displaying_participants}"  rendered="#{!filter.displayingStudents}">
 				<f:param value="#{filter.participantCount}" />
 			</h:outputFormat>
 		</t:div>
-		<t:div style="padding-left:10px;">
-			<h:outputText value="#{filter.roleCountMessage}" rendered="#{filter.displayingParticipants}" />
+
+        <t:div style="padding-left:10px;">
+			<h:outputFormat value="#{msgs.currently_displaying_students}"  rendered="#{filter.displayingStudents}">
+				<f:param value="#{filter.participantCount}" />
+			</h:outputFormat>
 		</t:div>
-	</h:panelGroup>
+
+    </h:panelGroup>
 </h:panelGrid>
 

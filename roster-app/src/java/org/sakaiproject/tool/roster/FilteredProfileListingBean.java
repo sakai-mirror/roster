@@ -334,8 +334,14 @@ public class FilteredProfileListingBean implements Serializable {
 		// if we have entries in the roleCounts map, we have participants to display
 		return ! roleCounts.isEmpty();
 	}
-	
-	protected String getSiteReference() {
+
+    public boolean isDisplayingStudents() {
+		// if we have entries in the roleCounts map, we have participants to display
+       if(roleCounts.size() == 1) return true;
+       return false;
+    }
+
+    protected String getSiteReference() {
 		return "/site/" + getSiteContext();
 	}
 	protected String getSiteContext() {
