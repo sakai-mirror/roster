@@ -28,10 +28,6 @@ response.setContentType("text/html; charset=UTF-8");
 
 			<%@include file="inc/filter.jspf" %>
 
-			<t:div styleClass="instruction">
-				<h:outputText value="#{msgs.no_participants_msg}"
-					rendered="#{empty filter.participants}" />
-			</t:div>
 
 			<h:commandButton
 				actionListener="#{overview.showSections}"
@@ -90,24 +86,31 @@ response.setContentType("text/html; charset=UTF-8");
 				<t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
 		            <f:facet name="header">
 		                <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
-		                    <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-       				<h:outputText value="#{participant.sectionsMap[category].title}"/>
-				</t:columns>
+                            <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.sectionsMap[category].title}"/>
+                </t:columns>
 
-		        <h:column rendered="#{prefs.displaySectionColumns && overview.groupsInSite}">
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="group" immediate="true" arrow="true">
-		                    <h:outputText value="#{msgs.group}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-					<h:outputText value="#{participant.groupsForDisplay}" />
-		        </h:column>
+                <h:column rendered="#{prefs.displaySectionColumns && overview.groupsInSite}">
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="group" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.group}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.groupsForDisplay}" />
+                </h:column>
 		    
-		    </t:dataTable>
+            </t:dataTable>
 
-		</h:form>
+            <t:div styleClass="instruction">
+                <h:outputFormat value="#{msgs.no_participants_msg}"
+                              rendered="#{empty filter.participants}" >
+                    <f:param value="#{filter.searchFilter}"/>
+                </h:outputFormat>
+            </t:div>
+
+        </h:form>
 </sakai:view>
 
 </f:view>
