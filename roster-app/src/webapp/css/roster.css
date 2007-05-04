@@ -22,7 +22,8 @@ table.rosterPageHeader {
 
 .shortFilterLabel {
 	vertical-align:top;
-	width:6em;
+	width:7em;
+	padding-left: 1em;
 }
 
 .shortFilterLabel label {
