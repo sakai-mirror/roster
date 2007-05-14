@@ -69,6 +69,17 @@
             <property-name>profileManager</property-name>
             <value>#{Components["org.sakaiproject.api.app.profile.ProfileManager"]}</value>
         </managed-property>
+        <managed-property>
+        	<description>Due to length of page load, put a wait page in front of this,
+        				this parameter tells the page where to redirect to</description>
+        	<property-name>redirectToUrl</property-name>
+        	<value>main</value>
+        </managed-property>
+        <managed-property>
+        	<description>Used to display appropriate spinning wait icon</description>
+        	<property-name>wait_icon</property-name>
+        	<value>images/wait_sakai.gif</value>
+        </managed-property>
     </managed-bean>
     <managed-bean>
             <description>

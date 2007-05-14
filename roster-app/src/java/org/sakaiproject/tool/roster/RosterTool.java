@@ -100,9 +100,29 @@ public class RosterTool
   
   private String selectedView = RosterManager.VIEW_NO_SECT;
 
+  // stores page to redirect to for the wait page
+  private String redirectToUrl;
+  private String wait_icon;
+  
   public RosterTool()
   {
 
+  }
+
+  public String getRedirectToUrl() {
+	return redirectToUrl;
+  }
+
+  public void setRedirectToUrl(String redirectToUrl) {
+	this.redirectToUrl = redirectToUrl;
+  }
+
+  public String getWait_icon() {
+	return wait_icon;
+  }
+
+  public void setWait_icon(String wait_icon) {
+	this.wait_icon = wait_icon;
   }
 
   public String processActionToggleIdPhotos()

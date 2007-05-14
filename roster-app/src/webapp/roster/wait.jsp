@@ -14,15 +14,18 @@
 <script src="js/frameAdjust.js" type="text/javascript"></script>
 <script language="Javascript"><!--
 	/*
-	 *	To use this, call this page with a GET parameter of "url"
-	 *	with the urlencoded destination page that takes a while to load
+	 *	To use this, the backing bean of the final destination page needs to have
+	 *  2 parameters:
 	 *
+	 *  1. redirectToUrl = page name/url of final destination page
+	 *  2. wait_icon = relative path to the icon to be displayed on the page
+	 *
+	 *  Also, make these managed properties in the faces config to set their
+	 *  actual values.
 	 */
 	
 	// intervalid - id of call to progress() every 1/2 sec.
 	//				Put here so can clear on unload.
-	// loading    - switch since load() done on body load
-	//				and also within script (for Safari).
 	var intervalid, index = 0;
 	var notloading = true;
 	var images = new Array(12);
@@ -154,7 +157,7 @@
   <sakai:view>
   
   	<%-- Used to store where to redirect to so javascript can grab it. --%>
-    <h:inputHidden id="longPageLoad" value="#{msgs.longPageLoad}" />
+    <h:inputHidden id="longPageLoad" value="#{RosterTool.redirectToUrl}" />
 
 	<%-- Firefox browser needs to use AJAX to get actual page. Retrieved page then
 		 stuffed into this div --%>
@@ -166,7 +169,7 @@
 		<table cellpadding="0" cellspacing="0" width="16%">
 		<tr>
 		  <td>
-		  	<h:graphicImage id="waitImg" value="#{msgs.wait_icon}" />
+		  	<h:graphicImage id="waitImg" value="#{RosterTool.wait_icon}" />
 		  </td>
 		  <td>&nbsp;&nbsp;</td>
 		  <td align="right" width="50">
