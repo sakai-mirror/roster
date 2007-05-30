@@ -1,128 +1,116 @@
-<%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai" %>
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
+<%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
-<% response.setContentType("text/html; charset=UTF-8"); %>
-
-
+<%
+response.setContentType("text/html; charset=UTF-8");
+%>
+<jsp:useBean id="msgs" class="org.sakaiproject.util.ResourceLoader" scope="session">
+   <jsp:setProperty name="msgs" property="baseName" value="org.sakaiproject.tool.roster.bundle.Messages"/>
+</jsp:useBean>
 <f:view>
-	<sakai:view_container title="#{msgs.facet_roster_list}">
-		<sakai:view_content>
-			<h:form>	
-			<h:panelGroup rendered="#{RosterTool.renderRoster}"> 
-				<sakai:tool_bar>
-					<sakai:tool_bar_item action="#{RosterTool.processActionToggleIdPhotos}" rendered="#{RosterTool.renderOfficialId}"  value="#{RosterTool.idPhotoText}"/>
-					<sakai:tool_bar_item action="#{RosterTool.processActionToggleCustomPhotos}" value="#{RosterTool.customPhotoText}"/>
-					<h:outputLink value="#{RosterTool.printFriendlyUrl}" target="_new">
-					  <h:graphicImage url="/images/printer.png" alt="#{msgs.print_friendly}" title="#{msgs.print_friendly}" />
-					</h:outputLink>
-				 </sakai:tool_bar>
-			</h:panelGroup>
+
+<sakai:view title="#{msgs.facet_roster_list}" toolCssHref="/sakai-roster-tool/css/roster.css">
+	<%="<script src=\"js/roster.js\"></script>"%>
+		<h:form id="roster_form">
+			<t:aliasBean alias="#{viewBean}" value="#{overview}">
+				<%@include file="inc/nav.jspf" %>
+			</t:aliasBean>
+
+			<h:outputText value="#{msgs.title_msg}"
+				rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
+				style="display: block;" />
+
+			<h:outputLink rendered="#{overview.renderPrivacyMessage}"
+				value="#{msgs.title_missing_participants_link}" target="_blank">
+				<h:outputText value="#{msgs.title_missing_participants}" />
+			</h:outputLink>
+
+			<%@include file="inc/filter.jspf" %>
+
+
+			<h:commandButton
+				actionListener="#{overview.showSections}"
+				immediate="true"
+				value="#{msgs.show_sections}"
+				rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
+
+			<h:commandButton
+				actionListener="#{overview.hideSections}"
+				immediate="true"
+				value="#{msgs.hide_sections}"
+				rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
 			
-			<sakai:view_title  value="#{RosterTool.title}"/>
+		    <t:dataTable cellpadding="0" cellspacing="0"
+		        id="rosterTable"
+		        value="#{overview.participants}"
+		        var="participant"
+		        sortColumn="#{prefs.sortColumn}"
+		        sortAscending="#{prefs.sortAscending}"
+		        styleClass="listHier rosterTable">
+		        <h:column>
+		            <f:facet name="header">
+		                <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
+		                    <h:outputText value="#{msgs.facet_name}" />
+		                </t:commandSortHeader>
+		            </f:facet>
+					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
+						<f:param name="participantId" value="#{participant.user.id}" />
+					</h:commandLink>
+		        </h:column>
+		        <h:column>
+		            <f:facet name="header">
+		                <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
+		                    <h:outputText value="#{msgs.facet_userId}" />
+		                </t:commandSortHeader>
+		            </f:facet>
+		            <h:outputText value="#{participant.user.displayId}"/>
+		        </h:column>
+		        <h:column>
+		            <f:facet name="header">
+		                <t:commandSortHeader columnName="email" immediate="true" arrow="true">
+		                    <h:outputText value="#{msgs.facet_email}" />
+		                </t:commandSortHeader>
+		            </f:facet>
+		            <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
+		        </h:column>
+		        <h:column>
+		            <f:facet name="header">
+		                <t:commandSortHeader columnName="role" immediate="true" arrow="true">
+		                    <h:outputText value="#{msgs.facet_role}" />
+		                </t:commandSortHeader>
+		            </f:facet>
+		            <h:outputText value="#{participant.roleTitle}"/>
+		        </h:column>
+		        
+				<t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
+		            <f:facet name="header">
+		                <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
+                            <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.sectionsMap[category].title}"/>
+                </t:columns>
 
-			<h:outputText value="#{msgs.title_msg}" rendered="#{RosterTool.renderRosterUpdateInfo}" styleClass="instruction" style="display: block;"/>
-			 	  			
-			<h:outputText value="#{msgs.no_permission_msg}" styleClass="alertMessage" rendered="#{!RosterTool.userMayViewRoster}"/>
-			
-			<h:panelGroup rendered="#{RosterTool.userMayViewRoster}">
-	 	  
-	 	      <h:outputLink rendered="#{RosterTool.renderPrivacyMessage}" value="#{msgs.title_missing_participants_link}" target="_blank" >
-			      <h:outputText value="#{msgs.title_missing_participants}"/>
-			    </h:outputLink>
- 
-		  	  <f:verbatim><!--  commented out when wait page added <div class="navPanel" style="width: 98%; background:green;"> -->
-		  		  <div class="viewNav" style="width: 99%;"></f:verbatim>
-							<h:panelGrid columns="2" cellspacing="0" cellpadding="0" style="width: 100%" rendered="#{RosterTool.renderViewMenu || RosterTool.renderExportButton}">
-							  <h:panelGroup>
-								<h:outputLabel for="select1" rendered="#{RosterTool.renderViewMenu}">
-								  <h:outputText value="#{msgs.roster_view}"/>
-								</h:outputLabel>	
-								<h:selectOneMenu  id="select1" onchange="this.form.submit();"  valueChangeListener="#{RosterTool.processValueChangeForView}" 
-																		value="#{RosterTool.selectedView}" rendered="#{RosterTool.renderViewMenu}">  
-								  <f:selectItems value="#{RosterTool.viewMenuItems}"/>
-								</h:selectOneMenu>
-								<f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
-							      <h:commandButton id="exportButton" actionListener="#{RosterTool.exportRosterCsv}" value="#{msgs.export_for_csv}" 
-							 								 title="#{msgs.export_buttonTitle}" accesskey="e" rendered="#{RosterTool.renderExportButton}" />
-							  </h:panelGroup>
-						  	  <h:panelGroup style="text-align: right">
-						  	    <f:verbatim><div class="instruction"></f:verbatim>
-				                <h:outputText value="#{msgs.no_participants_msg}" rendered="#{!RosterTool.renderRoster}"/>
-				                <h:outputText value="#{msgs.participants_pre_msg} #{RosterTool.allUserCount} #{msgs.participants_post_msg}" rendered="#{RosterTool.renderRoster}"/>
-				                <f:verbatim><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
-				                <t:dataList id="roles" value="#{RosterTool.roleStats}" var="roleResult" layout="simple">
-		 	                      <h:outputText value="#{roleResult.key}(#{roleResult.value})" rendered="#{RosterTool.renderRoster}" />
-		 	                    </t:dataList>
-		 	                    <f:verbatim></div></f:verbatim>
-		 	                  </h:panelGroup>
-						    </h:panelGrid>
-						  <f:verbatim></div></f:verbatim>
-		 		
-			<%--********************* Roster Display *********************--%>
-				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
-					<h:column rendered="#{RosterTool.renderPhotoColumn}">	
-						<f:facet name="header">
-							<h:outputText value="#{RosterTool.facet}" />
-						</f:facet>
-						<h:graphicImage value="#{msgs.img_unavail}"  rendered="#{searchResultAll.showCustomPhotoUnavailable}"  alt="#{msgs.profile_no_picture_available}" styleClass="rosterImage"/>
-						<h:graphicImage value="#{searchResultAll.participant.profile.pictureUrl}" rendered="#{searchResultAll.showURLPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
-						<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  rendered="#{searchResultAll.showCustomIdPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
-						<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  rendered="#{RosterTool.showIdPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
-					</h:column>	
-					
-					<h:column>
-						<f:facet name="header">
-							<h:commandLink action="#{RosterTool.toggleLastNameSort}" title="#{msgs.view_profile_list_sort_name}">
-						   		<h:outputText value="#{msgs.facet_name}" />
-								<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortLastNameDescending}" alt="#{msgs.view_profile_list_sort_name} #{msgs.view_profile_list_sort_desc}"/>
-								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortLastNameAscending}" alt="#{msgs.view_profile_list_sort_name} #{msgs.view_profile_list_sort_asc}"/>
-							</h:commandLink>
-						</f:facet>			
-						<h:commandLink  action="#{RosterTool.processActionDisplayProfile}" value="#{searchResultAll.participant.lastName}, #{searchResultAll.participant.firstName}" title="#{msgs.view_profile_title} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}">
-							<f:param value="#{searchResultAll.participant.id}" name="participantId"/>
-						</h:commandLink>					
-					</h:column>
-					
-					<h:column>
-						<f:facet name="header">
-							<h:commandLink action="#{RosterTool.toggleUserIdSort}" title="#{msgs.view_profile_list_sort_id}">
-								<h:outputText value="#{msgs.facet_userId}" />
-								<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortUserIdDescending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_desc}"/>
-								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortUserIdAscending}" alt="#{msgs.view_profile_list_sort_id} #{msgs.view_profile_list_sort_asc}" />
-						   	</h:commandLink>
-						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.displayId}" />						
-					</h:column>
-					
-					<h:column>
-						<f:facet name="header">
-							<h:commandLink action="#{RosterTool.toggleRoleSort}" title="#{msgs.view_profile_list_sort_role}">
-								<h:outputText value="#{msgs.facet_role}" />
-								<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortRoleDescending}" alt="#{msgs.view_profile_list_sort_role} #{msgs.view_profile_list_sort_desc}"/>
-								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortRoleAscending}" alt="#{msgs.view_profile_list_sort_role} #{msgs.view_profile_list_sort_asc}" />
-						   	</h:commandLink>
-						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.roleTitle}" /> 						
-					</h:column>
-					
-					<h:column rendered="#{RosterTool.renderSectionsColumn}">
-						<f:facet name="header">
-							<h:commandLink action="#{RosterTool.toggleSectionsSort}" title="#{msgs.view_profile_list_sort_sections}">
-								<h:outputText value="#{msgs.facet_sections}" />
-								<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortSectionsDescending}" alt="#{msgs.view_profile_list_sort_sections} #{msgs.view_profile_list_sort_desc}"/>
-								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortSectionsAscending}" alt="#{msgs.view_profile_list_sort_sections} #{msgs.view_profile_list_sort_asc}" />
-						   	</h:commandLink>
-						</f:facet>								
-						<h:outputText value="#{searchResultAll.participant.sectionsForDisplay}" /> 						
-				    </h:column>
-				</h:dataTable> 
-				 
-			</h:panelGroup>
+                <h:column rendered="#{prefs.displaySectionColumns && overview.groupsInSite}">
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="group" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.group}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.groupsForDisplay}" />
+                </h:column>
+		    
+            </t:dataTable>
 
-			<f:verbatim><!-- commented out when wait page added </div> --></f:verbatim>
+            <t:div styleClass="instruction">
+                <h:outputFormat value="#{msgs.no_participants_msg}"
+                              rendered="#{empty filter.participants}" >
+                    <f:param value="#{filter.searchFilter}"/>
+                </h:outputFormat>
+            </t:div>
 
-	 </h:form>
-  </sakai:view_content>	
-</sakai:view_container>
-</f:view> 
+        </h:form>
+</sakai:view>
+
+</f:view>

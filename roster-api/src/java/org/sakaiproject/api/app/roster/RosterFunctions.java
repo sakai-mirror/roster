@@ -27,6 +27,5 @@ public interface RosterFunctions {
    public static final String ROSTER_FUNCTION_VIEWALL = ROSTER_FUNCTION_PREFIX + "viewall";
    public static final String ROSTER_FUNCTION_VIEWOFFICIALID = ROSTER_FUNCTION_PREFIX + "viewofficialid";
    public static final String ROSTER_FUNCTION_VIEWHIDDEN = ROSTER_FUNCTION_PREFIX + "viewhidden";
-   public static final String ROSTER_FUNCTION_VIEWSECTION = ROSTER_FUNCTION_PREFIX + "viewsection";
    public static final String ROSTER_FUNCTION_EXPORT = ROSTER_FUNCTION_PREFIX + "export";
 }

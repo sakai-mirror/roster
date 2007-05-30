@@ -1,28 +1,54 @@
-/* CSS file for roster tool use*/
-
-.rosterGroupByRoleColumns_1{
-  width: 8%;
-  align:left;
-  
- }
-
-.rosterGroupByRoleColumns_2{
-  width: 5%;
-  text-align:align:left;
-  valign-text:vlaign:middle; 
-
+table.rosterPageHeader {
+	width:100%;
 }
-/*
-.rosterGroupByRoleColumns_3{
-  width: 10%;
-   text-align:align:left;
-   valign-text:vlaign:middle;
- }
- 
-.rosterGroupByRoleColumns_4{
-  width: 80%;
-   text-align:align:left;
-  valign-text:vlaign:middle;
- }
- 
- */
+
+.rosterPageHeaderLeft  {
+	vertical-align:top;
+    text-align:left;
+}
+
+.rosterPageHeaderRight  {
+	vertical-align:top;
+    text-align:right;
+}
+
+.filterLabel {
+	vertical-align:top;
+}
+
+.filterLabel label {
+	font-weight:bold;
+}
+
+.shortFilterLabel {
+	vertical-align:top;
+	width:7em;
+	padding-left: 1em;
+}
+
+.shortFilterLabel label {
+	font-weight:bold;
+}
+
+.filterElement {
+}
+
+table.searchFilter {
+	margin-left: 5em;
+	margin-top:1em;
+}
+
+table.rosterPicturesFilter {
+	width:45em;
+}
+
+table.rosterPictures {
+	width:45em;
+}
+
+
+table.rosterPictures td {
+	width:9em;
+	height:10em;
+	vertical-align:top;
+}

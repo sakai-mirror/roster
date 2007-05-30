@@ -5,7 +5,7 @@
 <f:view>
 	<sakai:view_container title="#{msgs.not_found_roster_profile}">
 		<sakai:view_content>
-			<h:form>
+			<h:form id="roster_form">
 				<sakai:view_title value="#{msgs.profile_user_profile}"/>
 				<h:graphicImage id="image" alt="#{msgs.profile_no_picture_available}" url="#{msgs.img_unavail}" styleClass="rosterImage"/>
 				<h4>
@@ -21,7 +21,7 @@
 					<jsp:include page="personalInfoUnavailable.jsp"/>
 				</p>
 				<p class="act">
-					<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="#{RosterTool.processCancel}"/>
+					<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="overview"/>
 				</p>
 			</h:form>
 		</sakai:view_content>

@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../master/pom.xml</relativePath>
   </parent>
-  <name>Sakai Roster Components Shared</name>
+  <name>sakai-roster-impl</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-roster-component-shared</artifactId>
+  <artifactId>sakai-roster-impl</artifactId>
   <organization>
     <name>Sakai Project</name>
     <url>http://sakaiproject.org/</url>
@@ -90,6 +90,14 @@
       <version>1.0.4</version>
       <scope>provided</scope>
     </dependency>
+
+	<dependency>
+		<groupId>commons-lang</groupId>
+		<artifactId>commons-lang</artifactId>
+		<version>${sakai.commons.lang.version}</version>
+		<scope>provided</scope>
+	</dependency>
+
     <dependency>
       
       <groupId>org.sakaiproject</groupId>
@@ -118,6 +126,21 @@
       <version>${sakai.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-sections-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-coursemanagement-api</artifactId>
+      <version>${sakai.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
   <build>
     

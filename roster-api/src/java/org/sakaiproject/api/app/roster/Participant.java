@@ -21,8 +21,12 @@
 
 package org.sakaiproject.api.app.roster;
 
-import org.sakaiproject.api.app.profile.Profile;
 import java.util.List;
+import java.util.Map;
+
+import org.sakaiproject.api.app.profile.Profile;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.user.api.User;
 
 
 /**
@@ -31,92 +35,24 @@ import java.util.List;
  */
 public interface Participant 
 {
-  String SORT_BY_LAST_NAME = "lastName";
-  String SORT_BY_FIRST_NAME = "firstName";
-  String SORT_BY_ID = "id";
-  String SORT_BY_ROLE = "role";
-  String SORT_BY_SECTIONS = "sections";
+  public static final String SORT_BY_ID = "displayId";
+  public static final String SORT_BY_NAME = "sortName";
+  public static final String SORT_BY_EMAIL = "email";
+  public static final String SORT_BY_ROLE = "role";
+  public static final String SORT_BY_GROUP = "group";
+
   
-  /**
-   * @return FirstName 
-   */
-  public  String getFirstName();
-
-  /**
-   * @param firstName
-   */
-  public  void setFirstName(String firstName);
-
-  /**
-   * @return
-   */
-  public  String getId();
-
-  /**
-   * @param id
-   */
-  public  void setId(String id);
-
-  public String getDisplayId();
-  public void setDisplayId(String displayId);
-  
-  /**
-   * @return
-   */
-  public  String getEid();
-
-  /**
-   * @param eid
-   */
-  public  void setEid(String eid);
-
-  /**
-   * @return
-   */
-  public  String getLastName();
-
-  /**
-   * @param lastName
-   */
-  public  void setLastName(String lastName);
-
-  /**
-   * @return
-   */
   public Profile getProfile();
-  
-  /**
-   * @param profile
-   */
-  public void setProfile(Profile profile);
-  /**
-   * @return
-   */
   public String getRoleTitle();
+  public User getUser();
   
   /**
-   * 
-   * @param roleTitle
-   */
-  public void setRoleTitle(String roleTitle);
-  
-  /**
-   * 
-   * @return List of groups/sections Participant is a member of
-   */
-  public List getSections();
-  
-  /**
-   * 
-   * @param sections 
-   * List of groups/sections Participant is a member of
-   */
-  public void setSections(List sections);
-  
-  /**
-   * Display version of section membership
+   * Gets a map of CourseSection categories to this Participant's enrolled CourseSections.
    * @return
    */
-  public String getSectionsForDisplay();
+  public Map<String, CourseSection> getSectionsMap();
   
+  public List<CourseSection> getGroups();
+  public String getGroupsForDisplay();
+
 }

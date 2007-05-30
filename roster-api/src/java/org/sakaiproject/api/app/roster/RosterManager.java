@@ -23,16 +23,17 @@ package org.sakaiproject.api.app.roster;
 
 import java.util.List;
 
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
+
 /**
  * @author rshastri 
  */
 public interface RosterManager
 {
   // Roster filters
-  public static final String VIEW_ALL_SECT = "all";
-  public static final String VIEW_MY_SECT = "my";
-  public static final String VIEW_NO_SECT = "no";
-	  
+  public static final String VIEW_ALL_SECT = "roster_all_sections";
+  public static final String VIEW_SECT_CATEGORY_PREFIX = "roster_category_";
+
   public void init();
 
   public void destroy();
@@ -50,12 +51,6 @@ public interface RosterManager
   public boolean currentUserHasViewAllPerm();
   
   /**
-   * Check for view section permission (roster.viewsection)
-   * @return
-   */
-  public boolean currentUserHasViewSectionPerm();
-  
-  /**
    * Check for view hidden permission (roster.viewhidden)
    * @return
    */
@@ -68,10 +63,10 @@ public interface RosterManager
   public boolean currentUserHasViewOfficialIdPerm();
   
   /**
-   * Check for site update permission (site.upd) 
+   * Can the current user view section memberships?
    * @return
    */
-  public boolean currentUserHasSiteUpdatePerm();
+  public boolean currentUserHasViewSectionMembershipsPerm();
   
   /**
    * Check to see if the site has any sections/groups
@@ -83,13 +78,20 @@ public interface RosterManager
    *  Get the sections viewable by current user
    * @return
    */
-  public List getViewableSectionsForCurrentUser();
+  public List<CourseSection> getViewableSectionsForCurrentUser();
 
   /**
-   * @return List of all the participants in the site viewable to current user
+   * @return An unfiltered List of viewable (to current user) Participants in the site.
    */
-  public List getRoster(String filter);
+  public List<Participant> getRoster();
 
+  /**
+  * Check for site update permission (site.upd) 
+  * @return
+  */
+ public boolean currentUserHasSiteUpdatePerm();
+ 
+ /**
   
   /**
    * Returns a participant by the id
@@ -97,14 +99,5 @@ public interface RosterManager
    * @return
    */
   public Participant getParticipantById(String participantId);
-  
-  /**
-   * Sort the participants ascendingly or decendingly
-   * by various available columns
-   * @param participants
-   * @param sortByColumn
-   * @param ascending
-   */
-  public void sortParticipants(List participants, String sortByColumn, boolean ascending); 
   
 }
