@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+
 	<bean id="org.sakaiproject.api.app.roster.RosterManager"
 		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager">
@@ -27,4 +28,16 @@
 			</bean>
 		</property>
 	</bean>
+
+	<!--
+		The out-of-the-box provider of roster photos is the profile service.
+		Installations can override the default provider by registering a bean named 
+		"org.sakaiproject.api.app.roster.PhotoService".
+	-->
+	<bean id="org.sakaiproject.component.app.roster.ProfilePhotoService"
+		class="org.sakaiproject.component.app.roster.ProfilePhotoService"
+		lazy-init="true">
+		<property name="profileManager" ref="org.sakaiproject.api.app.profile.ProfileManager" />
+	</bean>
+	
 </beans>
