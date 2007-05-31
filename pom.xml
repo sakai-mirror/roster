@@ -14,8 +14,9 @@
   <modules>
     <module>components</module>
     <module>roster-api</module>
+    <module>roster-impl</module>
+    <module>roster-model</module>
     <module>roster-app</module>
     <module>roster-help</module>
-    <module>roster-component-shared</module>
   </modules>
 </project>
