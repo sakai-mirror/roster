@@ -47,42 +47,44 @@ response.setContentType("text/html; charset=UTF-8");
 	        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
 	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{enrollmentStatusFilter.search}"/>
 	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{enrollmentStatusFilter.clearSearch}"/>
-					</h:panelGroup>
+                    </h:panelGroup>
 	        		    
-	        		    <h:outputText value="#{enrollmentStatusFilter.currentlyDisplayingMessage}" styleClass="instruction" />
-				</h:panelGrid>
+                    <h:outputText value="#{enrollmentStatusFilter.currentlyDisplayingMessage}" styleClass="instruction" />
+                </h:panelGrid>
 
-			    <t:dataTable cellpadding="0" cellspacing="0"
-			        id="rosterTable"
-			        value="#{status.participants}"
-			        var="participant"
-			        sortColumn="#{enrollmentStatusPrefs.sortColumn}"
-			        sortAscending="#{enrollmentStatusPrefs.sortAscending}"
-			        styleClass="listHier rosterTable">
-			        <h:column>
-			            <f:facet name="header">
-			                <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
-			                    <h:outputText value="#{msgs.facet_name}" />
-			                </t:commandSortHeader>
-			            </f:facet>
-						<h:outputText value="#{participant.user.sortName}"/>
-			        </h:column>
-			        <h:column>
-			            <f:facet name="header">
-			                <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
-			                    <h:outputText value="#{msgs.facet_userId}" />
-			                </t:commandSortHeader>
-			            </f:facet>
-			            <h:outputText value="#{participant.user.displayId}"/>
-			        </h:column>
-			        <h:column>
-			            <f:facet name="header">
-			                <t:commandSortHeader columnName="email" immediate="true" arrow="true">
-			                    <h:outputText value="#{msgs.facet_email}" />
-			                </t:commandSortHeader>
-			            </f:facet>
-			            <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
-			        </h:column>
+                <t:dataTable cellpadding="0" cellspacing="0"
+                             id="rosterTable"
+                             value="#{status.participants}"
+                             var="participant"
+                             sortColumn="#{enrollmentStatusPrefs.sortColumn}"
+                             sortAscending="#{enrollmentStatusPrefs.sortAscending}"
+                             styleClass="listHier rosterTable">
+                    <h:column>
+                        <f:facet name="header">
+                            <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
+                                <h:outputText value="#{msgs.facet_name}" />
+                            </t:commandSortHeader>
+                        </f:facet>
+                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
+                            <f:param name="participantId" value="#{participant.user.id}" />
+                        </h:commandLink>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
+                                <h:outputText value="#{msgs.facet_userId}" />
+                            </t:commandSortHeader>
+                        </f:facet>
+                        <h:outputText value="#{participant.user.displayId}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <t:commandSortHeader columnName="email" immediate="true" arrow="true">
+                                <h:outputText value="#{msgs.facet_email}" />
+                            </t:commandSortHeader>
+                        </f:facet>
+                        <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
+                    </h:column>
 			        <h:column>
 			            <f:facet name="header">
 			                <t:commandSortHeader columnName="status" immediate="true" arrow="true">
