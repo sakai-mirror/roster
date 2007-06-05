@@ -316,7 +316,7 @@ public class FilteredProfileListingBean implements Serializable {
 			int count = entry.getValue();
 			sb.append(count);
 			sb.append(" ");
-			sb.append(entry.getKey());
+			sb.append(entry.getKey().toLowerCase());
 			// Make the role plural if necessary.  This is a hack, but there is currently
 			// no good option for displaying a role as a plural.
 			if(count != 1) {
