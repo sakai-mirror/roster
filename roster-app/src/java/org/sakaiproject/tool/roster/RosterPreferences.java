@@ -23,7 +23,7 @@ package org.sakaiproject.tool.roster;
 public class RosterPreferences {
 	public static final String DISLAY_NAME_COLUMN = "displayName";
 	public static final String DISLAY_ID_COLUMN = "displayId";
-	public static final String ROLE_COLUMN = "roleId";
+	public static final String ROLE_COLUMN = "role";
 	public static final String EMAIL_COLUMN = "email";
 
 	protected String sortColumn;
