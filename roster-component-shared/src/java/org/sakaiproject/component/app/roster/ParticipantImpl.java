@@ -47,12 +47,14 @@ public class ParticipantImpl implements Participant
   private Profile profile;
   private String roleTitle;
   private List sections;
+  private String email; // oncourse
   private String sectionsForDisplay;
   public static Comparator LastNameComparator;
   public static Comparator FirstNameComparator;
   public static Comparator UserIdComparator;
   public static Comparator RoleComparator;
   public static Comparator SectionsComparator;
+  public static Comparator EmailComparator; // oncourse
   
   Collator collator = Collator.getInstance();
 
@@ -63,7 +65,7 @@ public class ParticipantImpl implements Participant
    * @param lname
    * @param profile TODO
    */
-  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections)
+  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections, String email)
   {
     if (Log.isDebugEnabled())
     {
@@ -78,6 +80,7 @@ public class ParticipantImpl implements Participant
     setProfile(profile);
     setRoleTitle(roleTitle);
     setSections(sections);
+    setEmail(email); // oncourse
   }
   
   /* (non-Javadoc)
@@ -152,7 +155,6 @@ public class ParticipantImpl implements Participant
     }
     this.lastName = lastName;
   }
- 
 
   public boolean equals(Object o)
   {
@@ -385,6 +387,25 @@ public class ParticipantImpl implements Participant
 	    	return Collator.getInstance().compare(firstName1, firstName2);
       }
     };
+    
+    // oncourse
+    EmailComparator = new Comparator()
+    {
+      public int compare(Object participant, Object otherParticipant)
+      {
+        if (Log.isDebugEnabled())
+        {
+          Log.debug("compare(Object " + participant + ", Object "
+              + otherParticipant + ")");
+        }
+        String email1 = ((Participant) participant).getEmail();
+        String email2 = ((Participant) otherParticipant).getEmail();
+
+		return Collator.getInstance().compare(email1, email2);
+
+      }
+    };
+    // email oncourse
   }
 
   public Profile getProfile()
@@ -420,6 +441,18 @@ public class ParticipantImpl implements Participant
   {
 	  return roleTitle;
   }
+  
+  // oncourse
+  public void setEmail(String email)
+  {
+	  this.email = email;
+  }
+  
+  public String getEmail()
+  {
+	  return email;
+  }
+  // end oncourse
   
   public void setSections(List sections)
   {
