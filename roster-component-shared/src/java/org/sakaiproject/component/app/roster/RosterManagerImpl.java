@@ -135,7 +135,7 @@ public class RosterManagerImpl implements RosterManager
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
     return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
-        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user), user.getEmail());
+        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user));
   }
 
   /* (non-Javadoc)
@@ -415,12 +415,6 @@ public class RosterManagerImpl implements RosterManager
     {
       comparator = ParticipantImpl.UserIdComparator;
     }
-    // oncourse
-    else if (Participant.SORT_BY_EMAIL.equals(sortByColumn))
-    {
-      comparator = ParticipantImpl.EmailComparator;
-    }
-    // end oncourse
     else
     {
     	comparator = ParticipantImpl.RoleComparator;
