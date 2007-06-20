@@ -275,7 +275,16 @@ public class FilteredProfileListingBean implements Serializable {
 		return sectionFilter;
 	}
 
-	public void setSectionFilter(String sectionFilter) {
+    public String getSectionFilterTitle(){
+        List<CourseSection> sections = requestCache().viewableSections;
+        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection section = iter.next();
+            if(section.getUuid().equals(getSectionFilter())) return section.getTitle();
+		}
+        return null;
+    }
+
+    public void setSectionFilter(String sectionFilter) {
 		// Don't allow this value to be set to the separater line
 		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line")

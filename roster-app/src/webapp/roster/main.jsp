@@ -108,9 +108,12 @@ response.setContentType("text/html; charset=UTF-8");
             </t:dataTable>
 
             <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}"
-                              rendered="#{empty filter.participants}" >
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && empty filter.sectionFilter}" >
                     <f:param value="#{filter.searchFilter}"/>
+                </h:outputFormat>
+                <h:outputFormat value="#{msgs.no_partcipants_in_section}" rendered="#{empty filter.participants && not empty filter.sectionFilter}" >
+                    <f:param value="#{filter.searchFilter}"/>
+                    <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
             </t:div>
 
