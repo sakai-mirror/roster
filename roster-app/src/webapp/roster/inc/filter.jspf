@@ -42,10 +42,13 @@
         </t:div>
 
         <t:div style="padding-left:10px;">
-			<h:outputFormat value="#{msgs.currently_displaying_students}"  rendered="#{filter.displayingStudents}">
+			<h:outputFormat value="#{msgs.currently_displaying_students}"  rendered="#{filter.displayingStudents && filter.participantCount > 1 }">
 				<f:param value="#{filter.participantCount}" />
 			</h:outputFormat>
-		</t:div>
+            <h:outputFormat value="#{msgs.currently_displaying_student}"  rendered="#{filter.participantCount eq 1}">
+				<f:param value="#{filter.participantCount}" />
+			</h:outputFormat>
+        </t:div>
 
     </h:panelGroup>
 </h:panelGrid>
