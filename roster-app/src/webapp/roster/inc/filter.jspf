@@ -45,7 +45,7 @@
 			<h:outputFormat value="#{msgs.currently_displaying_students}"  rendered="#{filter.displayingStudents && filter.participantCount > 1 }">
 				<f:param value="#{filter.participantCount}" />
 			</h:outputFormat>
-            <h:outputFormat value="#{msgs.currently_displaying_student}"  rendered="#{filter.participantCount eq 1}">
+            <h:outputFormat value="#{msgs.currently_displaying_student}"  rendered="#{filter.displayingStudents && filter.participantCount eq 1 }">
 				<f:param value="#{filter.participantCount}" />
 			</h:outputFormat>
         </t:div>
