@@ -171,7 +171,7 @@ public class RosterOverview implements RosterPageBean {
 	}
 	
 	public boolean isRenderModifyMembersInstructions() {
-		return filter.services.rosterManager.currentUserHasSiteUpdatePerm();
+		return filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
 	}
 
 	/**
