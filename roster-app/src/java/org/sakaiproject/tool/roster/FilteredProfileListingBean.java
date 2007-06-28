@@ -377,5 +377,14 @@ public class FilteredProfileListingBean implements Serializable {
 		return facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, managedBeanId);
 	}
 
+    public boolean isStudentView(){
+       if(VIEW_STUDENTS.equals(viewFilter)) return true;
+       return false;
+    }
+
+    public boolean isParticipantView(){
+      if(VIEW_ALL.equals(viewFilter)) return true;
+      return false;
+    }
 
 }
