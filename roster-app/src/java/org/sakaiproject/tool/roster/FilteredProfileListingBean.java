@@ -78,7 +78,7 @@ public class FilteredProfileListingBean implements Serializable {
 		this.participants = findParticipants();
 		this.participantCount = this.participants.size();
 		this.roleCounts = findRoleCounts(this.participants);
-				
+
 		if(viewFilter == null) {
 			viewFilter = VIEW_ALL;
 		}
@@ -198,11 +198,35 @@ public class FilteredProfileListingBean implements Serializable {
 		String sepLine = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line");
 		String all = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all");
 		String my = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all_my");
-		if(isSiteInstructor()) {
-			list.add(new SelectItem("", all));
-		} else {
-			list.add(new SelectItem("", my));
-		}
+        String all_sections = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_only");
+        String all_groups = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_only");
+        String my_sections = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all_only");
+        String my_groups = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_all_only");
+
+        boolean hasSections = isSections();
+        boolean hasGroups = isGroups();
+
+        if(isSiteInstructor()) {
+            if(hasSections && hasGroups){
+            list.add(new SelectItem("", all));
+            }
+            if(hasSections && !(hasGroups)){
+            list.add(new SelectItem("", all_sections));
+            }
+            if(!(hasSections) && hasGroups){
+            list.add(new SelectItem("", all_groups));
+            }
+        } else {
+            if(hasSections && hasGroups){
+            list.add(new SelectItem("", my));
+            }
+            if(hasSections && !(hasGroups)){
+            list.add(new SelectItem("", my_sections));
+            }
+            if(!(hasSections) && hasGroups){
+            list.add(new SelectItem("", my_groups));
+            }
+        }
 		list.add(new SelectItem(sepLine, sepLine));
 
 		// Get the available sections
@@ -383,8 +407,27 @@ public class FilteredProfileListingBean implements Serializable {
     }
 
     public boolean isParticipantView(){
-      if(VIEW_ALL.equals(viewFilter)) return true;
-      return false;
+        if(VIEW_ALL.equals(viewFilter)) return true;
+        return false;
+    }
+
+
+    public boolean isGroups(){
+        List<CourseSection> sections = requestCache().viewableSections;
+        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+            CourseSection section = iter.next();
+            if(section.getCategory()== null) return true;
+        }
+        return false;
+    }
+
+    public boolean isSections(){
+        List<CourseSection> sections = requestCache().viewableSections;
+        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+            CourseSection section = iter.next();
+            if(section.getCategory()!= null) return true;
+        }
+        return false;
     }
 
 }

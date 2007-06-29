@@ -22,74 +22,95 @@ response.setContentType("text/html; charset=UTF-8");
 				style="display: block;" />
 
             <h:outputText value="#{msgs.title_msg_ta}"
-				rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
-				style="display: block;" />
+                          rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
+                          style="display: block;" />
 
             <h:outputLink rendered="#{overview.renderPrivacyMessage}"
-				value="#{msgs.title_missing_participants_link}" target="_blank">
-				<h:outputText value="#{msgs.title_missing_participants}" />
-			</h:outputLink>
+                          value="#{msgs.title_missing_participants_link}" target="_blank">
+                <h:outputText value="#{msgs.title_missing_participants}" />
+            </h:outputLink>
 
-			<%@include file="inc/filter.jspf" %>
+            <%@include file="inc/filter.jspf" %>
 
 
-			<h:commandButton
-				actionListener="#{overview.showSections}"
-				immediate="true"
-				value="#{msgs.show_sections}"
-				rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
+            <h:commandButton
+                    actionListener="#{overview.showSections}"
+                    immediate="true"
+                    value="#{msgs.show_sections}"
+                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && filter.groups}"/>
 
-			<h:commandButton
-				actionListener="#{overview.hideSections}"
-				immediate="true"
-				value="#{msgs.hide_sections}"
-				rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable}"/>
+            <h:commandButton
+                    actionListener="#{overview.showSections}"
+                    immediate="true"
+                    value="#{msgs.show_sections_only}"
+                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && !(filter.groups)}"/>
+            <h:commandButton
+                    actionListener="#{overview.showSections}"
+                    immediate="true"
+                    value="#{msgs.show_groups_only}"
+                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && !(filter.sections) && filter.groups}"/>
+            <h:commandButton
+                    actionListener="#{overview.hideSections}"
+                    immediate="true"
+                    value="#{msgs.hide_sections}"
+                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && filter.groups}" />
+            <h:commandButton
+                    actionListener="#{overview.hideSections}"
+                    immediate="true"
+                    value="#{msgs.hide_sections_only}"
+                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && !(filter.groups)}" />
+            <h:commandButton
+                    actionListener="#{overview.hideSections}"
+                    immediate="true"
+                    value="#{msgs.hide_groups_only}"
+                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && !(filter.sections) && filter.groups}" />
+
 			
-		    <t:dataTable cellpadding="0" cellspacing="0"
-		        id="rosterTable"
-		        value="#{overview.participants}"
-		        var="participant"
-		        sortColumn="#{prefs.sortColumn}"
-		        sortAscending="#{prefs.sortAscending}"
-		        styleClass="listHier rosterTable">
-		        <h:column>
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
-		                    <h:outputText value="#{msgs.facet_name}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-					<h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
-						<f:param name="participantId" value="#{participant.user.id}" />
-					</h:commandLink>
-		        </h:column>
-		        <h:column>
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
-		                    <h:outputText value="#{msgs.facet_userId}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-		            <h:outputText value="#{participant.user.displayId}"/>
-		        </h:column>
-		        <h:column>
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="email" immediate="true" arrow="true">
-		                    <h:outputText value="#{msgs.facet_email}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-		            <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
-		        </h:column>
-		        <h:column>
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="role" immediate="true" arrow="true">
-		                    <h:outputText value="#{msgs.facet_role}" />
-		                </t:commandSortHeader>
-		            </f:facet>
-		            <h:outputText value="#{participant.roleTitle}"/>
-		        </h:column>
+            <t:dataTable cellpadding="0" cellspacing="0"
+                         id="rosterTable"
+                         value="#{overview.participants}"
+                         var="participant"
+                         sortColumn="#{prefs.sortColumn}"
+                         sortAscending="#{prefs.sortAscending}"
+                         styleClass="listHier rosterTable">
+                <h:column>
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.facet_name}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
+                        <f:param name="participantId" value="#{participant.user.id}" />
+                    </h:commandLink>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="displayId" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.facet_userId}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.user.displayId}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="email" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.facet_email}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputLink value="mailto:#{participant.user.email}"><h:outputText value="#{participant.user.email}"/></h:outputLink>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="role" immediate="true" arrow="true">
+                            <h:outputText value="#{msgs.facet_role}" />
+                        </t:commandSortHeader>
+                    </f:facet>
+                    <h:outputText value="#{participant.roleTitle}"/>
+                </h:column>
 		        
-				<t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
-		            <f:facet name="header">
-		                <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
+                <t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
+                    <f:facet name="header">
+                        <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
                             <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
                         </t:commandSortHeader>
                     </f:facet>
