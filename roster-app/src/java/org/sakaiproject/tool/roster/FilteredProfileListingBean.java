@@ -175,7 +175,7 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	protected boolean sectionMatches(String sectionUuid, Participant participant) {
-		Map<String, CourseSection> sectionsMap = participant.getSectionsMap();
+		List<CourseSection> sections = participant.getSections();
 		List<CourseSection> groups = participant.getGroups();
 		List<String> groupIds = new ArrayList<String>();
 		for(Iterator<CourseSection> iter = groups.iterator(); iter.hasNext();) {
@@ -183,9 +183,8 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		if(groupIds.contains(sectionUuid)) return true;
 		
-		for(Iterator<Entry<String, CourseSection>> iter = sectionsMap.entrySet().iterator(); iter.hasNext();) {
-			Entry<String, CourseSection> entry = iter.next();
-			CourseSection section = entry.getValue();
+		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection section = iter.next();
 			if(section.getUuid().equals(sectionUuid)) return true;
 		}
 		return false;

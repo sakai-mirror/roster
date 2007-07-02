@@ -46,6 +46,8 @@ public interface Participant
   public String getRoleTitle();
   public User getUser();
   
+  public List<CourseSection> getSections();
+	
   /**
    * Gets a map of CourseSection categories to this Participant's enrolled CourseSections.
    * @return

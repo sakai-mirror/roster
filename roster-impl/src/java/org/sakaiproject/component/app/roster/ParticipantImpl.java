@@ -138,6 +138,10 @@ public class ParticipantImpl implements Participant, Serializable {
 		return sectionsMap;
 	}
 
+	public List<CourseSection> getSections() {
+		return sections;
+	}
+
 	public void setSections(List<CourseSection> sections) {
 		this.sections = sections;
 	}

@@ -91,4 +91,7 @@ public class EnrolledParticipant implements Participant {
 	public List<CourseSection> getGroups() {
 		return participant.getGroups();
 	}
+	public List<CourseSection> getSections() {
+		return participant.getSections();
+	}
 }
