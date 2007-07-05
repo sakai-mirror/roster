@@ -12,7 +12,7 @@
 				<%-- TODO: should the image sizes be predetermine for this view? --%>
 				<h:graphicImage value="#{msgs.img_unavail}"  rendered="#{profileBean.showCustomPhotoUnavailableForSelectedProfile}" title="#{msgs.profile_no_picture_available}" styleClass="rosterImage"/>
 				<h:graphicImage value="#{profileBean.participant.profile.pictureUrl}"  rendered="#{profileBean.showURLPhotoForSelectedProfile}" title="#{msgs.profile_picture_alt} #{profileBean.participant.profile.firstName} #{profileBean.participant.profile.lastName}" styleClass="rosterImage"/>
-				<h:graphicImage value="ParticipantImageServlet.prf?photo=#{profileBean.participant.id}"  rendered="#{profileBean.showCustomIdPhotoForSelectedProfile}" title="#{msgs.profile_picture_alt} #{profileBean.participant.profile.firstName} #{profileBean.participant.profile.lastName}" styleClass="rosterImage"/>
+				<h:graphicImage value="ParticipantImageServlet.prf?photo=#{profileBean.participant.user.id}"  rendered="#{profileBean.showCustomIdPhotoForSelectedProfile}" title="#{msgs.profile_picture_alt} #{profileBean.participant.profile.firstName} #{profileBean.participant.profile.lastName}" styleClass="rosterImage"/>
 				<h4>
 					<h:outputText value="#{msgs.profile_public_information}"/>
 				</h4>
