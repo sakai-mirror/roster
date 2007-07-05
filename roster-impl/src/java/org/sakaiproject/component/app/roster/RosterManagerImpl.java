@@ -437,12 +437,15 @@ public abstract class RosterManagerImpl implements RosterManager {
 	public List<CourseSection> getViewableSectionsForCurrentUser() {
 		User user = userDirectoryService().getCurrentUser();
 		List<CourseSection> allSections = sectionService().getSections(getSiteId());
+		if(sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
+			return allSections;
+		}
+		
 		List<CourseSection> usersSections = new ArrayList<CourseSection>();
 		for(Iterator<CourseSection> iter = allSections.iterator(); iter.hasNext();)
 		{
 			CourseSection section = iter.next();
-			if(sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
-					|| sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.TA))
+			if(sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.TA))
 			{
 				usersSections.add(section);
 			}
