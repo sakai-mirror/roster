@@ -7,6 +7,7 @@
 		<sakai:view_content>
 		 <h:form id="roster_form">
 		    <sakai:view_title  value="#{msgs.profile_user_profile}"/>
+
 			<h:panelGrid columns="1" border="0" >
 			<%-- TODO: should the image sizes be predetermine for this view? --%>
 				<h:graphicImage alt="#{msgs.profile_no_picture_available}"  value="#{msgs.img_unavail}" styleClass="rosterImage"/>					
@@ -34,7 +35,7 @@
 		  		<jsp:include page="personalInfoUnavailable.jsp"/>
 	 		 
 		 	 <h:panelGrid>
-			 	<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="overview" />
+			 	<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="#{prefs.getReturnPage}" />
 			 </h:panelGrid>	
 		   </h:form>
   		</sakai:view_content>

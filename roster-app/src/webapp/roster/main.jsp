@@ -81,6 +81,7 @@ response.setContentType("text/html; charset=UTF-8");
                     </f:facet>
                     <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
                         <f:param name="participantId" value="#{participant.user.id}" />
+                        <f:param name="returnPage" value="overview" />
                     </h:commandLink>
                 </h:column>
                 <h:column>

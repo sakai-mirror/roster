@@ -51,7 +51,7 @@
 					<roster:roster_display_HTML value="#{profileBean.participant.profile.otherInformation}"/>
 				</sakai:panel_edit>
 				<p class="act">
-				 	<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="overview" />
+				 	<h:commandButton styleClass="active" accesskey="x" id="submit" value="#{msgs.back}" immediate="true" action="#{prefs.getReturnPage}" />
 				</p>
 			</h:form>
 		</sakai:view_content>

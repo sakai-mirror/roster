@@ -67,6 +67,7 @@ response.setContentType("text/html; charset=UTF-8");
                     <t:div rendered="#{prefs.displayNames}">
                      <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
 						<f:param name="participantId" value="#{participant.user.id}" />
+                        <f:param name="returnPage" value="pictures" />
 					</h:commandLink>                        
                     </t:div>
                     <t:div>
