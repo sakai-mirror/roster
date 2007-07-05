@@ -21,8 +21,8 @@
 package org.sakaiproject.tool.roster;
 
 public class RosterPreferences {
-	public static final String DISLAY_NAME_COLUMN = "displayName";
-	public static final String DISLAY_ID_COLUMN = "displayId";
+	public static final String DISPLAY_NAME_COLUMN = "sortName";
+	public static final String DISPLAY_ID_COLUMN = "displayId";
 	public static final String ROLE_COLUMN = "role";
 	public static final String EMAIL_COLUMN = "email";
 
@@ -36,7 +36,7 @@ public class RosterPreferences {
 	protected String returnPage;
 	
 	public RosterPreferences() {
-		sortColumn = ROLE_COLUMN;
+		sortColumn = DISPLAY_NAME_COLUMN;
 		sortAscending = true;
 		displayNames = true;
 	}
