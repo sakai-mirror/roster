@@ -65,13 +65,23 @@ response.setContentType("text/html; charset=UTF-8");
 							
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
-                     <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
-						<f:param name="participantId" value="#{participant.user.id}" />
-                        <f:param name="returnPage" value="pictures" />
-					</h:commandLink>                        
+                        <t:div>
+                            <h:outputFormat value="#{participant.user.firstName}">
+                                <f:converter converterId="textTruncateConverter"/>
+                            </h:outputFormat>
+                        </t:div>
+                        <t:div>
+                            <h:outputFormat value="#{participant.user.lastName}">
+                                <f:converter converterId="textTruncateConverter"/>
+                            </h:outputFormat>
+                        </t:div>
                     </t:div>
+
                     <t:div>
-                        <h:outputFormat value="#{participant.user.displayId}"/>
+                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayId}" title="#{msgs.show_profile}">
+                            <f:param name="participantId" value="#{participant.user.id}" />
+                            <f:param name="returnPage" value="pictures" />
+                        </h:commandLink>
                     </t:div>
                 </h:column>
             </t:dataTable>

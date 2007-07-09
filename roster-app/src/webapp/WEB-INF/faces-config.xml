@@ -213,4 +213,10 @@
 
     </render-kit>
 
+
+    <converter>
+        <converter-id>textTruncateConverter</converter-id>
+        <converter-class>org.sakaiproject.jsf.roster.TextTruncateConverter</converter-class>
+    </converter>
+
 </faces-config>
