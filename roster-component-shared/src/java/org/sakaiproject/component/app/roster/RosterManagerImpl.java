@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -135,7 +136,7 @@ public class RosterManagerImpl implements RosterManager
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
     return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
-        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user));
+        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user), user.getEmail());
   }
 
   /* (non-Javadoc)
@@ -415,6 +416,12 @@ public class RosterManagerImpl implements RosterManager
     {
       comparator = ParticipantImpl.UserIdComparator;
     }
+    // oncourse
+    else if (Participant.SORT_BY_EMAIL.equals(sortByColumn))
+    {
+      comparator = ParticipantImpl.EmailComparator;
+    }
+    // end oncourse
     else
     {
     	comparator = ParticipantImpl.RoleComparator;
@@ -497,6 +504,36 @@ public class RosterManagerImpl implements RosterManager
 		  return getUserSections(UserDirectoryService.getCurrentUser());
 	  }
 	  
+	  return null;
+  }
+  
+  public List getPrivacyStatus()
+  {
+	  if (currentUserHasViewHiddenPerm())
+	  {
+		  Set roster = getUsersInAllSections();
+		  Map privacyMap = new HashMap();
+
+		  Iterator iter = roster.iterator();
+		  while (iter.hasNext())
+		  {
+			  try
+			  {
+				  User user = UserDirectoryService.getUser((String) iter.next());
+				  if(user != null)
+				  {
+					  boolean privacyCheck = privacyManager.isViewable(getContextSiteId(), user.getId());
+					  privacyMap.put(user.getId(), privacyCheck);
+				  }
+			  }
+			  catch (UserNotDefinedException e)
+	          {	
+	            LOG.info("getRoster: " + e.getMessage(), e);
+	          }
+		  }
+		  List privacyList = new ArrayList(privacyMap.entrySet());
+		  return privacyList;
+	  }
 	  return null;
   }
   

@@ -36,6 +36,7 @@ public interface Participant
   String SORT_BY_ID = "id";
   String SORT_BY_ROLE = "role";
   String SORT_BY_SECTIONS = "sections";
+  String SORT_BY_EMAIL = "email"; // oncourse
   
   /**
    * @return FirstName 
@@ -99,6 +100,17 @@ public interface Participant
    * @param roleTitle
    */
   public void setRoleTitle(String roleTitle);
+  
+  /**
+   * @return
+   */
+  public String getEmail(); // oncourse
+  
+  /**
+   * 
+   * @param roleEmail
+   */
+  public void setEmail(String email); // oncourse
   
   /**
    * 

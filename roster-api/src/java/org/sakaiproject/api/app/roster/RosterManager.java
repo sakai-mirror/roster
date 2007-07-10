@@ -89,6 +89,11 @@ public interface RosterManager
    * @return List of all the participants in the site viewable to current user
    */
   public List getRoster(String filter);
+  
+  /**
+   * @return List of user ids and boolean value of their privacy status
+   */
+  public List getPrivacyStatus();
 
   
   /**

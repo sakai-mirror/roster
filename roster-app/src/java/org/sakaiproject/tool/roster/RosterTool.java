@@ -82,6 +82,7 @@ public class RosterTool
   private List rosterList = null;
   private List menuItems = null;
   private List roleStats = null;
+  private List privacyList = null; // oncourse
   private boolean rosterProcessed = false;
 
   // sort column
@@ -89,10 +90,12 @@ public class RosterTool
   private boolean sortUserIdDescending = false;
   private boolean sortRoleDescending = false;
   private boolean sortSectionsDescending = false;
+  private boolean sortEmailDescending = false; // oncourse
   private boolean sortLastNameAscending = false;
   private boolean sortUserIdAscending = false;
   private boolean sortRoleAscending = true;  // default to sort by role
   private boolean sortSectionsAscending = false;
+  private boolean sortEmailAscending = false; // oncourse
   
   public static final String CSV_DELIM = ",";
   public static final String SORT_ASC = "ascending";
@@ -191,6 +194,22 @@ public class RosterTool
     return "main";
   }
   
+  // oncourse
+  public String toggleEmailSort()
+  {
+    Log.debug("toggleEmailSort()");
+    if (sortEmailAscending)
+    {
+      setSort(SORT_DESC, Participant.SORT_BY_EMAIL);
+    }
+    else
+    {
+      setSort(SORT_ASC, Participant.SORT_BY_EMAIL);
+    }
+    return "main";
+  }
+  // end oncourse
+  
   private void sortRoster()
   {
 	  if (sortRoleDescending)
@@ -209,6 +228,12 @@ public class RosterTool
 		  setSort(SORT_DESC, Participant.SORT_BY_SECTIONS);
 	  else if (sortSectionsAscending)
 		  setSort(SORT_ASC, Participant.SORT_BY_SECTIONS);
+	  // oncourse
+	  else if (sortEmailDescending)
+		  setSort(SORT_DESC, Participant.SORT_BY_EMAIL);
+	  else if (sortEmailAscending)
+		  setSort(SORT_ASC, Participant.SORT_BY_EMAIL);
+	  // end oncourse
   }
   
   private void setSort(String sortOrder, String sortBy)
@@ -217,10 +242,12 @@ public class RosterTool
     sortUserIdDescending = false;
     sortRoleDescending = false;
     sortSectionsDescending = false;
+    sortEmailDescending = false; // oncourse
     sortLastNameAscending = false;
     sortUserIdAscending = false;
     sortRoleAscending = false;
     sortSectionsAscending = false;
+    sortEmailAscending = false; // oncourse
     
     if (sortOrder.equals(SORT_ASC))
     {
@@ -252,6 +279,15 @@ public class RosterTool
           this.decoRoster = getRoster(rosterList);
           return;
       }
+      // oncourse
+      if (sortBy.equals(Participant.SORT_BY_EMAIL))
+      {
+    	  sortEmailAscending = true;
+    	  rosterManager.sortParticipants(rosterList, Participant.SORT_BY_EMAIL, true);
+          this.decoRoster = getRoster(rosterList);
+          return;
+      }
+      // end oncourse
     }
     else
 
@@ -284,6 +320,15 @@ public class RosterTool
         this.decoRoster = getRoster(rosterList);
         return;
       }
+      // oncourse
+      if (sortBy.equals(Participant.SORT_BY_EMAIL))
+      {
+        sortEmailDescending = true;
+        rosterManager.sortParticipants(rosterList, Participant.SORT_BY_EMAIL, false);
+        this.decoRoster = getRoster(rosterList);
+        return;
+      }
+      // end oncourse
     }
   }
 
@@ -334,6 +379,20 @@ public class RosterTool
     Log.debug("isSortSectionsDescending()");
     return sortSectionsDescending;
   }
+  
+  // oncourse
+  public boolean isSortEmailAscending()
+  {
+    Log.debug("isSortEmailAscending()");
+    return sortEmailAscending;
+  }
+
+  public boolean isSortEmailDescending()
+  {
+    Log.debug("isSortSectionsDescending()");
+    return sortEmailDescending;
+  }
+  // end oncourse
 
   public String processValueChangeForView(ValueChangeEvent vce)
   {
@@ -499,6 +558,13 @@ public class RosterTool
 	  return rosterManager.currentUserHasSiteUpdatePerm();
   }
   
+  // oncourse
+  public boolean isRenderHidden()
+  {
+	  return rosterManager.currentUserHasViewHiddenPerm();
+  }
+  // end oncourse
+  
   public boolean isUserMayViewRoster()
   {
 	  return rosterManager.currentUserHasViewAllPerm() || rosterManager.currentUserHasViewSectionPerm();
@@ -526,7 +592,7 @@ public class RosterTool
     Map roleMap = new HashMap();
     if (list == null || list.size() < 1)
     {
-      return null;
+    	return null;
     }
     
     this.allUserCount = list.size();
@@ -534,15 +600,14 @@ public class RosterTool
 
     while (iter.hasNext())
     {
-      DecoratedParticipant dp = new DecoratedParticipant((Participant) iter.next());
+    	DecoratedParticipant dp = new DecoratedParticipant((Participant) iter.next());
       
-      String dpTitle = dp.getParticipant().getRoleTitle();
+    	String dpTitle = dp.getParticipant().getRoleTitle();
       
-      Long roleCount = (Long)roleMap.get(dpTitle)==null ? 0 : (Long)roleMap.get(dpTitle);
-      roleMap.put(dpTitle, ++roleCount);
+    	Long roleCount = (Long)roleMap.get(dpTitle)==null ? 0 : (Long)roleMap.get(dpTitle);
+    	roleMap.put(dpTitle, ++roleCount);
       
-      decoRoster.add(dp);
-      
+    	decoRoster.add(dp);
     }
     this.roleStats = new ArrayList(roleMap.entrySet());
     
@@ -559,6 +624,14 @@ public class RosterTool
     Log.debug("getAllUserCount()");
     return allUserCount;
   }
+  
+  // oncourse
+  public List getPrivacyStatus()
+  {
+	privacyList = rosterManager.getPrivacyStatus();
+	return privacyList;
+  }
+  // end oncourse
   
   public void setViewMenuItems(List menuItems)
   {
@@ -915,6 +988,11 @@ public class RosterTool
 	  sb.append(CSV_DELIM);
 	  sb.append(msgs.getString("export_userId"));
 	  sb.append(CSV_DELIM);
+	  if (isRenderHidden())
+	  {
+		  sb.append(msgs.getString("export_email"));
+		  sb.append(CSV_DELIM);
+	  }
 	  sb.append(msgs.getString("export_role"));
 	  sb.append(CSV_DELIM);
 	  if (showSectionsCol)
@@ -931,6 +1009,11 @@ public class RosterTool
 		  sb.append(CSV_DELIM);
 		  sb.append(participant.getEid());
 		  sb.append(CSV_DELIM);
+		  if (isRenderHidden())
+		  {
+			  sb.append(participant.getEmail());
+			  sb.append(CSV_DELIM);
+		  }
 		  sb.append(participant.getRoleTitle());
 		  sb.append(CSV_DELIM);
 		  if (showSectionsCol)

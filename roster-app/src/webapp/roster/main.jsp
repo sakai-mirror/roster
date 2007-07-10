@@ -61,6 +61,17 @@
 		 		
 			<%--********************* Roster Display *********************--%>
 				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
+				    <%--********************* Oncourse *********************--%>
+				    <h:column rendered="#{RosterTool.renderHidden}">
+						<f:facet name="header">
+				   		  <h:outputText value="#{msgs.facet_visible}" />
+				   		</f:facet>
+						<t:dataList id="privacyStatus" var="priv" value="#{RosterTool.privacyStatus}" layout="simple">
+						  <h:graphicImage value="#{(priv.value == true) ? 'images/user_visible.png' : 'images/user_invisible.png'}" rendered="#{priv.key == searchResultAll.participant.id}" alt="#{(priv.value == true) ? 'Visible' : 'Invisible'}" />
+						</t:dataList>
+					</h:column>
+					<%--********************* End Oncourse *********************--%>
+				    
 					<h:column rendered="#{RosterTool.renderPhotoColumn}">	
 						<f:facet name="header">
 							<h:outputText value="#{RosterTool.facet}" />
@@ -94,6 +105,19 @@
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.displayId}" />						
 					</h:column>
+					
+					<%--********************* Oncourse *********************--%>
+					<h:column rendered="#{RosterTool.renderHidden}">
+		            	<f:facet name="header">
+		                	<h:commandLink action="#{RosterTool.toggleEmailSort}" title="#{msgs.view_profile_list_sort_email}">
+		                    	<h:outputText value="#{msgs.facet_email}" />
+								<h:graphicImage value="/images/sortdescending.gif" rendered="#{RosterTool.sortEmailDescending}" alt="#{msgs.view_profile_list_sort_email} #{msgs.view_profile_list_sort_desc}"/>
+								<h:graphicImage value="/images/sortascending.gif" rendered="#{RosterTool.sortEmailAscending}" alt="#{msgs.view_profile_list_sort_email} #{msgs.view_profile_list_sort_asc}" />
+			                </h:commandLink>
+			            </f:facet>
+   			            <h:outputLink value="mailto:#{searchResultAll.participant.email}"><h:outputText value="#{searchResultAll.participant.email}"/></h:outputLink>
+		    	    </h:column>
+		    	    <%--********************* End Oncourse *********************--%>
 					
 					<h:column>
 						<f:facet name="header">
