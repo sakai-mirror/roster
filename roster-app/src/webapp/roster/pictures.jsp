@@ -66,12 +66,12 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
                         <t:div>
-                            <h:outputFormat value="#{participant.user.firstName}">
+                            <h:outputFormat value="#{participant.user.firstName}" title="#{participant.user.firstName}">
                                 <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>
                         <t:div>
-                            <h:outputFormat value="#{participant.user.lastName}">
+                            <h:outputFormat value="#{participant.user.lastName}" title="#{participant.user.lastName}">
                                 <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>
