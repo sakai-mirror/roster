@@ -21,12 +21,8 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.util.*;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -326,12 +322,17 @@ public class RosterOverview implements RosterPageBean {
 				// Group column
 				if(isGroupsInSite()) {
 					row.add(participant.getGroupsForDisplay());
-				}
-			}
-			spreadsheetData.add(row);
-		}
-		SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, "roster", new SpreadsheetDataFileWriterCsv());
-	}
+                }
+            }
+            spreadsheetData.add(row);
+        }
+
+        String spreadsheetCourse = filter.getCourseFilterTitle();
+        String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
+        String spreadsheetName = spreadsheetCourse.replaceAll(" ","_")+ "_"+dateString;
+        
+        SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
+    }
 	
 	public boolean isRenderStatus() {
 		return ! filter.getViewableEnrollableSections().isEmpty();
@@ -346,4 +347,6 @@ public class RosterOverview implements RosterPageBean {
 			return true;
 		return false;
 	}
+
+
 }

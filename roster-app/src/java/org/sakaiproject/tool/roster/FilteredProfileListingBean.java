@@ -46,6 +46,7 @@ import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.section.api.coursemanagement.Course;
 import org.sakaiproject.user.api.User;
 
 public class FilteredProfileListingBean implements Serializable {
@@ -303,6 +304,16 @@ public class FilteredProfileListingBean implements Serializable {
         for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
             if(section.getUuid().equals(getSectionFilter())) return section.getTitle();
+		}
+        return null;
+    }
+
+     public String getCourseFilterTitle(){
+        List<CourseSection> sections = requestCache().viewableSections;
+        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection section = iter.next();
+            Course course = section.getCourse();
+            return course.getTitle();
 		}
         return null;
     }
