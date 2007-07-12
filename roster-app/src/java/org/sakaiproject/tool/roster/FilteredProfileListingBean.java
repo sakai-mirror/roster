@@ -4,17 +4,17 @@
  ***********************************************************************************
  *
  * Copyright (c) 2007 The Sakai Foundation.
- * 
- * Licensed under the Educational Community License, Version 1.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
+ *
+ * Licensed under the Educational Community License, Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.opensource.org/licenses/ecl1.php
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  *
  **********************************************************************************/
@@ -63,14 +63,14 @@ public class FilteredProfileListingBean implements Serializable {
 	protected String viewFilter;
 	protected String searchFilter = getDefaultSearchText();
 	protected String sectionFilter;
-	
+
 
 	// Cache the participants list so we don't have to fetch it twice (once for the list,
 	// and again for its size)
 	protected List<Participant> participants;
 	protected Integer participantCount;
 	protected SortedMap<String, Integer> roleCounts;
-	
+
 	/**
 	 * Initialize this bean once, so we can call our access method as often as we like
 	 * without invoking unnecessary service calls.
@@ -93,13 +93,13 @@ public class FilteredProfileListingBean implements Serializable {
 		init();
 		return null;
 	}
-	
+
 	// UI Actions
-	
+
 	public void search(ActionEvent ae) {
 		// Nothing needs to be done to search
 	}
-	
+
 	public void clearSearch(ActionEvent ae) {
 		searchFilter = getDefaultSearchText();
 	}
@@ -110,18 +110,18 @@ public class FilteredProfileListingBean implements Serializable {
 		Set<String> studentRoles = getStudentRoles();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
-			
+
 			if( ! participantMatchesViewFilter(participant, studentRoles)) {
 				iter.remove();
 				continue;
 			}
-			
+
 			// Remove this participant if they don't  pass the search filter
 			if(searchFilter != null && ! searchFilter.equals(defaultText) && ! searchMatches(searchFilter, participant.getUser())) {
 				iter.remove();
 				continue;
 			}
-			
+
 			// Remove this participant if they don't  pass the section filter
 			if(sectionFilter != null && isDisplaySectionsFilter() && ! sectionMatches(sectionFilter, participant)) {
 				iter.remove();
@@ -130,7 +130,7 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		return participants;
 	}
-	
+
 	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
 		if(VIEW_STUDENTS.equals(viewFilter)) {
 			// We are filtering on the collection of all student roles
@@ -140,7 +140,7 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		return true;
 	}
-	
+
 	protected Set<String> getStudentRoles() {
 		AuthzGroup azg = null;
 		try {
@@ -152,7 +152,7 @@ public class FilteredProfileListingBean implements Serializable {
 		Set<String> roles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
 		return roles;
 	}
-	
+
 	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
@@ -167,7 +167,7 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		return roleCountMap;
 	}
-	
+
 	protected boolean searchMatches(String search, User user) {
 		return user.getDisplayName().toLowerCase().startsWith(search.toLowerCase()) ||
 				   user.getSortName().toLowerCase().startsWith(search.toLowerCase()) ||
@@ -183,14 +183,14 @@ public class FilteredProfileListingBean implements Serializable {
 			groupIds.add(iter.next().getUuid());
 		}
 		if(groupIds.contains(sectionUuid)) return true;
-		
+
 		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
 			if(section.getUuid().equals(sectionUuid)) return true;
 		}
 		return false;
 	}
-	
+
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 
@@ -237,7 +237,7 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		return list;
 	}
-	
+
 	protected List<CourseSection> getViewableEnrollableSections() {
 		List<CourseSection> enrollableSections = new ArrayList<CourseSection>();
 		for(Iterator<CourseSection> iter = requestCache().viewableSections.iterator(); iter.hasNext();) {
@@ -257,7 +257,7 @@ public class FilteredProfileListingBean implements Serializable {
 	public List<SelectItem> getStatusSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		Map<String, String> map = services.cmService.getEnrollmentStatusDescriptions(LocaleUtil.getLocale(FacesContext.getCurrentInstance()));
-		
+
 		// The UI doesn't care about status IDs... just labels
 		List<String> statusLabels = new ArrayList<String>();
 		for(Iterator<Entry<String, String>> iter = map.entrySet().iterator(); iter.hasNext();) {
@@ -272,11 +272,11 @@ public class FilteredProfileListingBean implements Serializable {
 		}
 		return list;
 	}
-	
+
 	public boolean isDisplaySectionsFilter() {
 		return requestCache().viewableSections.size() > 1;
 	}
-	
+
 	public boolean isSiteInstructor() {
 		return services.authzService.isAllowed(services.userDirectoryService.getCurrentUser().getId(), SectionAwareness.INSTRUCTOR_MARKER, getSiteReference());
 	}
@@ -436,6 +436,18 @@ public class FilteredProfileListingBean implements Serializable {
         for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
             CourseSection section = iter.next();
             if(section.getCategory()!= null) return true;
+        }
+        return false;
+    }
+
+    public boolean isProjectSite(){
+        SortedMap<String, Integer> siteRoleCounts;
+        siteRoleCounts  = findRoleCounts(services.rosterManager.getRoster());
+        if(roleCounts.size() >0){
+            for(Iterator<Entry<String, Integer>> iter = siteRoleCounts.entrySet().iterator(); iter.hasNext();) {
+                Entry<String, Integer> entry = iter.next();
+                if(entry.getKey().equals("maintain") || entry.getKey().equals("access") || entry.getKey().equals("")) return true;
+            }
         }
         return false;
     }
