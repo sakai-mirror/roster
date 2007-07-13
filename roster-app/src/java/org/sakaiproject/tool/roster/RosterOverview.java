@@ -274,7 +274,7 @@ public class RosterOverview implements RosterPageBean {
 	}
 	
 	public boolean isExportablePage() {
-		return true;
+		return filter.services.rosterManager.currentUserHasExportPerm();
 	}
 	public void export(ActionEvent event) {
 		List<List<Object>> spreadsheetData = new ArrayList<List<Object>>();

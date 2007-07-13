@@ -141,7 +141,7 @@ public class RosterStatus implements RosterPageBean {
 				ServicesBean.MESSAGE_BUNDLE, "title_status");
 	}
 	public boolean isExportablePage() {
-		return true;
+		return filter.services.rosterManager.currentUserHasExportPerm();
 	}
 	
 	public void export(ActionEvent event) {

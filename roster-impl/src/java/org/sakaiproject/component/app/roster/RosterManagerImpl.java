@@ -430,14 +430,16 @@ public abstract class RosterManagerImpl implements RosterManager {
 
 	public boolean currentUserHasViewSectionMembershipsPerm() {
 		User user = userDirectoryService().getCurrentUser();
-		return (sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
+		return (userHasPermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWALL) ||
+				sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
 				|| sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.TA));
 	}
 
 	public List<CourseSection> getViewableSectionsForCurrentUser() {
 		User user = userDirectoryService().getCurrentUser();
 		List<CourseSection> allSections = sectionService().getSections(getSiteId());
-		if(sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
+		if(sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR) ||
+				authzGroupService().isAllowed(user.getId(), RosterFunctions.ROSTER_FUNCTION_VIEWALL, getSiteReference())) {
 			return allSections;
 		}
 		
