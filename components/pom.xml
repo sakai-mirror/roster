@@ -25,6 +25,16 @@
       <artifactId>sakai-roster-impl</artifactId>
       <version>${sakai.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-roster-model</artifactId>
+      <version>${sakai.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-util</artifactId>
+      <version>${sakai.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
