@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>master</artifactId>
+    <artifactId>roster-base</artifactId>
     <groupId>org.sakaiproject</groupId>
     <version>M2</version>
-    <relativePath>../../master/pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Roster Components</name>
   <groupId>org.sakaiproject</groupId>
@@ -21,95 +21,12 @@
   </properties>
   <dependencies>
     <dependency>
-      
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-roster-api</artifactId>
-      <version>${sakai.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-impl</artifactId>
       <version>${sakai.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-roster-model</artifactId>
-      <version>${sakai.version}</version>
-    </dependency>
-
-    <dependency>      
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>cglib</groupId>
-      <artifactId>cglib-full</artifactId>
-      <version>2.0.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>jta</groupId>
-      <artifactId>jta</artifactId>
-      <version>h2.1.8</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>odmg</groupId>
-      <artifactId>odmg</artifactId>
-      <version>3.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      
-      <groupId>${sakai.hibernate.groupId}</groupId>
-      <artifactId>${sakai.hibernate.artifactId}</artifactId>
-      <version>${sakai.hibernate.version}</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <build>
-    
-    
-    
-    
-    
-    
     <resources>
       <resource>
         <directory>${basedir}/src/bundle</directory>
@@ -127,6 +44,5 @@
         </excludes>
       </resource>
     </resources>
-    
   </build>
 </project>
