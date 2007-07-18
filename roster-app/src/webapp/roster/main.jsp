@@ -62,14 +62,14 @@
 			<%--********************* Roster Display *********************--%>
 				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
 				    <%--********************* Oncourse *********************--%>
-				    <h:column rendered="#{RosterTool.renderHidden}">
+				    <t:column rendered="#{RosterTool.renderHidden}">
 						<f:facet name="header">
 				   		  <h:outputText value="#{msgs.facet_visible}" />
 				   		</f:facet>
 						<t:dataList id="privacyStatus" var="priv" value="#{RosterTool.privacyStatus}" layout="simple">
-						  <h:graphicImage value="#{(priv.value == true) ? 'images/user_visible.png' : 'images/user_invisible.png'}" rendered="#{priv.key == searchResultAll.participant.id}" alt="#{(priv.value == true) ? 'Visible' : 'Invisible'}" />
+						  <h:graphicImage value="#{(priv.value == true) ? '/images/bullet_visible.png' : '/images/bullet_invisible.png'}" rendered="#{priv.key == searchResultAll.participant.id}" alt="#{(priv.value == true) ? 'Visible' : 'Invisible'}" />
 						</t:dataList>
-					</h:column>
+					</t:column>
 					<%--********************* End Oncourse *********************--%>
 				    
 					<h:column rendered="#{RosterTool.renderPhotoColumn}">	
@@ -140,10 +140,8 @@
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.sectionsForDisplay}" /> 						
 				    </h:column>
-				</h:dataTable> 
-				 
+				</h:dataTable>
 			</h:panelGroup>
-
 			<f:verbatim><!-- commented out when wait page added </div> --></f:verbatim>
 
 	 </h:form>
