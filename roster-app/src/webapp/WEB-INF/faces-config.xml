@@ -78,6 +78,14 @@
             <value>#{org_sakaiproject_authz_api_AuthzGroupService}</value>
         </managed-property>
         <managed-property>
+            <property-name>securityService</property-name>
+            <value>#{org_sakaiproject_authz_api_SecurityService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>siteService</property-name>
+            <value>#{org_sakaiproject_site_api_SiteService}</value>
+        </managed-property>
+        <managed-property>
             <property-name>toolManager</property-name>
             <value>#{org_sakaiproject_tool_api_ToolManager}</value>
         </managed-property>
@@ -88,6 +96,10 @@
         <managed-property>
             <property-name>profileManager</property-name>
             <value>#{org_sakaiproject_api_app_profile_ProfileManager}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>photoService</property-name>
+            <value>#{org_sakaiproject_api_app_roster_PhotoService}</value>
         </managed-property>
     </managed-bean>
 

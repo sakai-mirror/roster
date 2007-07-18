@@ -21,13 +21,12 @@
 package org.sakaiproject.tool.roster;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -40,8 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.authz.api.AuthzGroup;
-import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
@@ -105,52 +102,24 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	protected List<Participant> findParticipants() {
-		List<Participant> participants = services.rosterManager.getRoster();
+		// Only get the participants we need
+		List<Participant> participants;
+		if(sectionFilter != null && isDisplaySectionsFilter()) {
+			participants = services.rosterManager.getRoster(sectionFilter);
+		} else {
+			participants = services.rosterManager.getRoster();
+		}
 		String defaultText = getDefaultSearchText();
-		Set<String> studentRoles = getStudentRoles();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
-
-			if( ! participantMatchesViewFilter(participant, studentRoles)) {
-				iter.remove();
-				continue;
-			}
 
 			// Remove this participant if they don't  pass the search filter
 			if(searchFilter != null && ! searchFilter.equals(defaultText) && ! searchMatches(searchFilter, participant.getUser())) {
 				iter.remove();
 				continue;
 			}
-
-			// Remove this participant if they don't  pass the section filter
-			if(sectionFilter != null && isDisplaySectionsFilter() && ! sectionMatches(sectionFilter, participant)) {
-				iter.remove();
-				continue;
-			}
 		}
 		return participants;
-	}
-
-	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
-		if(VIEW_STUDENTS.equals(viewFilter)) {
-			// We are filtering on the collection of all student roles
-			if( ! studentRoles.contains(participant.getRoleTitle())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	protected Set<String> getStudentRoles() {
-		AuthzGroup azg = null;
-		try {
-			azg = services.authzService.getAuthzGroup(getSiteReference());
-		} catch (GroupNotDefinedException gnde) {
-			log.error("Unable to find site " + getSiteReference());
-			return new HashSet<String>();
-		}
-		Set<String> roles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
-		return roles;
 	}
 
 	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
@@ -175,59 +144,16 @@ public class FilteredProfileListingBean implements Serializable {
 				   user.getEmail().toLowerCase().startsWith(search.toLowerCase());
 	}
 
-	protected boolean sectionMatches(String sectionUuid, Participant participant) {
-		List<CourseSection> sections = participant.getSections();
-		List<CourseSection> groups = participant.getGroups();
-		List<String> groupIds = new ArrayList<String>();
-		for(Iterator<CourseSection> iter = groups.iterator(); iter.hasNext();) {
-			groupIds.add(iter.next().getUuid());
-		}
-		if(groupIds.contains(sectionUuid)) return true;
-
-		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-			CourseSection section = iter.next();
-			if(section.getUuid().equals(sectionUuid)) return true;
-		}
-		return false;
-	}
-
 	public List<SelectItem> getSectionSelectItems() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		String sepLine = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line");
-		String all = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all");
-		String my = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all_my");
-        String all_sections = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_only");
-        String all_groups = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_only");
-        String my_sections = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all_only");
-        String my_groups = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_all_only");
+        String all_sections = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_sections_all");
 
-        boolean hasSections = isSections();
-        boolean hasGroups = isGroups();
-
-        if(isSiteInstructor()) {
-            if(hasSections && hasGroups){
-            list.add(new SelectItem("", all));
-            }
-            if(hasSections && !(hasGroups)){
-            list.add(new SelectItem("", all_sections));
-            }
-            if(!(hasSections) && hasGroups){
-            list.add(new SelectItem("", all_groups));
-            }
-        } else {
-            if(hasSections && hasGroups){
-            list.add(new SelectItem("", my));
-            }
-            if(hasSections && !(hasGroups)){
-            list.add(new SelectItem("", my_sections));
-            }
-            if(!(hasSections) && hasGroups){
-            list.add(new SelectItem("", my_groups));
-            }
-        }
-		list.add(new SelectItem(sepLine, sepLine));
+        // Add the "all" select option and a separator line
+        list.add(new SelectItem("", all_sections));
+        list.add(new SelectItem(sepLine, sepLine));
 
 		// Get the available sections
 		List<CourseSection> sections = requestCache().viewableSections;
@@ -351,20 +277,13 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	public String getRoleCountMessage() {
-		if(roleCounts.size() == 0) return "";
+        if(roleCounts.size() == 0) return "";
 		StringBuffer sb = new StringBuffer();
 		sb.append("(");
 		for(Iterator<Entry<String, Integer>> iter = roleCounts.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Integer> entry = iter.next();
-			int count = entry.getValue();
-			sb.append(count);
-			sb.append(" ");
-			sb.append(entry.getKey().toLowerCase());
-			// Make the role plural if necessary.  This is a hack, but there is currently
-			// no good option for displaying a role as a plural.
-			if(count != 1) {
-				sb.append("s");
-			}
+			String[] params = new String[] {entry.getValue().toString(), entry.getKey()};			
+			sb.append(getFormattedMessage("role_breakdown_fragment", params));
 			if (iter.hasNext()) {
 				sb.append(", ");
 			}
@@ -373,16 +292,16 @@ public class FilteredProfileListingBean implements Serializable {
 		return sb.toString();
 	}
 
+	private String getFormattedMessage(String key, String[] params) {
+		String rawString = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), ServicesBean.MESSAGE_BUNDLE, key);
+        MessageFormat format = new MessageFormat(rawString);
+        return format.format(params);
+	}
+	
 	public boolean isDisplayingParticipants() {
 		// if we have entries in the roleCounts map, we have participants to display
 		return ! roleCounts.isEmpty();
 	}
-
-    public boolean isDisplayingStudents() {
-		// if we have entries in the roleCounts map, we have participants to display
-       if(roleCounts.size() == 1) return true;
-       return false;
-    }
 
     protected String getSiteReference() {
 		return "/site/" + getSiteContext();
@@ -410,46 +329,5 @@ public class FilteredProfileListingBean implements Serializable {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		return facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, managedBeanId);
 	}
-
-    public boolean isStudentView(){
-       if(VIEW_STUDENTS.equals(viewFilter)) return true;
-       return false;
-    }
-
-    public boolean isParticipantView(){
-        if(VIEW_ALL.equals(viewFilter)) return true;
-        return false;
-    }
-
-
-    public boolean isGroups(){
-        List<CourseSection> sections = requestCache().viewableSections;
-        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-            CourseSection section = iter.next();
-            if(section.getCategory()== null) return true;
-        }
-        return false;
-    }
-
-    public boolean isSections(){
-        List<CourseSection> sections = requestCache().viewableSections;
-        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-            CourseSection section = iter.next();
-            if(section.getCategory()!= null) return true;
-        }
-        return false;
-    }
-
-    public boolean isProjectSite(){
-        SortedMap<String, Integer> siteRoleCounts;
-        siteRoleCounts  = findRoleCounts(services.rosterManager.getRoster());
-        if(roleCounts.size() >0){
-            for(Iterator<Entry<String, Integer>> iter = siteRoleCounts.entrySet().iterator(); iter.hasNext();) {
-                Entry<String, Integer> entry = iter.next();
-                if(entry.getKey().equals("maintain") || entry.getKey().equals("access") || entry.getKey().equals("")) return true;
-            }
-        }
-        return false;
-    }
 
 }

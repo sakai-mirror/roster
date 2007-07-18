@@ -1,25 +1,8 @@
 <%-- Initialize the filter --%>
 <h:outputText value="#{filter.init}" />
 
-<h:panelGrid columns="4" columnClasses="filterLabel,filterElement,shortFilterLabel,filterElement">
-	<h:outputLabel for="viewFilter" value="#{msgs.status_filter}" rendered="#{!filter.projectSite}"/>
-
-    <h:panelGroup rendered="#{!filter.projectSite}">
-		<%-- Don't use tables to display the radio buttons --%>
-		<t:selectOneRadio id="viewFilter" value="#{filter.viewFilter}" onchange="this.form.submit()" immediate="true" layout="spread">
-			<f:selectItem itemLabel="#{msgs.roster_view_all}" itemValue="roster_view_all" />
-			<f:selectItem itemLabel="#{msgs.roster_view_students}" itemValue="roster_view_students" />
-		</t:selectOneRadio>
-		<t:div>
-			<t:radio for="viewFilter" index="0"/>	
-		</t:div>
-		<t:div>
-            <t:radio for="viewFilter" index="1"/>
-        </t:div>
-    </h:panelGroup>
-	
-    <h:outputLabel for="section_filter" value="#{msgs.section_filter}" rendered="#{filter.displaySectionsFilter && !filter.projectSite}" />
-    <h:outputLabel for="section_filter" value="#{msgs.status_filter_projects}" rendered="#{filter.displaySectionsFilter && filter.projectSite}"/>
+<h:panelGrid columns="2" columnClasses="filterLabel,filterElement,shortFilterLabel,filterElement">
+    <h:outputLabel for="section_filter" value="#{msgs.section_filter}" rendered="#{filter.displaySectionsFilter}" />
     <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true" rendered="#{filter.displaySectionsFilter}">
         <f:selectItems value="#{filter.sectionSelectItems}" />
     </h:selectOneMenu>
@@ -33,31 +16,18 @@
     </t:div>
 
     <h:panelGroup styleClass="instruction">
-        <t:div style="padding-left:10px;">
-            <h:outputFormat value="#{msgs.currently_displaying_participants}"  rendered="#{!filter.displayingStudents && filter.participantView}" >
+        <t:div style="padding-left:10px;" rendered="#{filter.participantCount > 0}">
+            <h:outputFormat value="#{msgs.currently_displaying_participants}" rendered="#{filter.participantCount > 1}">
                 <f:param value="#{filter.participantCount}" />
             </h:outputFormat>
-            <t:div style="padding-left:10px;">
-                <h:outputText value="#{filter.roleCountMessage}"  rendered="#{!filter.displayingStudents && filter.participantCount > 1 }" />
-            </t:div>
-            <h:outputFormat value="#{msgs.currently_displaying_participant}"  rendered="#{filter.participantView && filter.participantCount eq 1 }">
+            <h:outputFormat value="#{msgs.currently_displaying_participant}"  rendered="#{filter.participantCount == 1}">
                 <f:param value="#{filter.participantCount}" />
             </h:outputFormat>
         </t:div>
 
-
-        <t:div style="padding-left:10px;">
-            <h:outputFormat value="#{msgs.currently_displaying_students}"  rendered="#{filter.displayingStudents && filter.participantCount > 1 }">
-                <f:param value="#{filter.participantCount}" />
-            </h:outputFormat>
-            <h:outputFormat value="#{msgs.currently_displaying_student}"  rendered="#{filter.studentView  && filter.participantCount eq 1 }">
-                <f:param value="#{filter.participantCount}" />
-            </h:outputFormat>
-            <h:outputFormat value="#{msgs.currently_displaying_student}"  rendered="#{filter.studentView  && filter.participantCount eq 0 }">
-                <f:param value="#{filter.participantCount}" />
-            </h:outputFormat>
+        <t:div style="padding-left:10px;" rendered="#{filter.participantCount > 1 }">
+            <h:outputText value="#{filter.roleCountMessage}" />
         </t:div>
-
     </h:panelGroup>
 </h:panelGrid>
 

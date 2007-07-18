@@ -31,6 +31,7 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
 public class RosterPictures implements RosterPageBean {
@@ -69,7 +70,7 @@ public class RosterPictures implements RosterPageBean {
 		return false;
 	}
 	public void export(ActionEvent event) {
-		// Do nothing
+		log.warn("Can not export roster photos");
 	}
 	
 	public void hideNames(ActionEvent event) {
@@ -84,6 +85,11 @@ public class RosterPictures implements RosterPageBean {
 		return ! filter.getViewableEnrollableSections().isEmpty();
 	}
 
+	public boolean isOfficialPhotosAvailableToCurrentUser() {
+		return filter.services.securityService.unlock(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO,
+				filter.services.siteService.siteReference(filter.services.toolManager.getCurrentPlacement().getContext()));
+	}
+	
 	/**
 	 * JSF (at least myfaces) doesn't translate strings to boolean values for radio
 	 * buttons properly.  As a workaround, we build the select items manually.

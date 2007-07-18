@@ -28,7 +28,6 @@ public class RosterPreferences {
 
 	protected String sortColumn;
 	protected boolean sortAscending;
-	protected boolean displaySectionColumns;
 	protected boolean displayNames;
 	protected boolean displayProfilePhotos;
 	
@@ -60,12 +59,6 @@ public class RosterPreferences {
 	}
 	public void setSortColumn(String sortColumn) {
 		this.sortColumn = sortColumn;
-	}
-	public boolean isDisplaySectionColumns() {
-		return displaySectionColumns;
-	}
-	public void setDisplaySectionColumns(boolean displaySectionColumns) {
-		this.displaySectionColumns = displaySectionColumns;
 	}
 
 	public boolean isDisplayNames() {

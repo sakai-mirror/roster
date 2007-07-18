@@ -77,21 +77,19 @@ public class EnrolledParticipant implements Participant {
 	public String getRoleTitle() {
 		return participant.getRoleTitle();
 	}
-	public Map<String, CourseSection> getSectionsMap() {
-		return participant.getSectionsMap();
-	}
 	public User getUser() {
 		return participant.getUser();
 	}
 
-	public String getGroupsForDisplay() {
-		return participant.getGroupsForDisplay();
+	public boolean isOfficialPhotoPublicAndPreferred() {
+		return participant.isOfficialPhotoPublicAndPreferred();
 	}
 
-	public List<CourseSection> getGroups() {
-		return participant.getGroups();
+	public boolean isProfilePhotoPublic() {
+		return participant.isProfilePhotoPublic();
 	}
-	public List<CourseSection> getSections() {
-		return participant.getSections();
+
+	public boolean isOfficialPhotoPreferred() {
+		return participant.isOfficialPhotoPreferred();
 	}
 }

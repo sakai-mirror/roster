@@ -45,9 +45,12 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
@@ -84,8 +87,8 @@ public abstract class RosterManagerImpl implements RosterManager {
 			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
 		}
 
-		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID)) {
-			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
 		}
 	}
 
@@ -98,9 +101,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 		userIds.add(user.getId());
 
 		String roleTitle = getUserRoleTitle(user);
-		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userIds);
-		List<CourseSection> sections = sectionsMap.get(user.getId());
-		return new ParticipantImpl(user, profile, roleTitle, sections);
+		return new ParticipantImpl(user, profile, roleTitle);
 	}
 
 	
@@ -153,84 +154,136 @@ public abstract class RosterManagerImpl implements RosterManager {
 		List<Participant> participants;
 
 		User currentUser = userDirectoryService().getCurrentUser();
-		boolean userHasViewAllPerm = userHasPermission(currentUser,
+		boolean viewAllInSite = userHasSitePermission(currentUser,
 				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 
-		// Instructors and users with "viewall" see everybody
-		if (userHasViewAllPerm
-				|| sectionService().isSiteMemberInRole(
-						getSiteId(),
-						currentUser.getId(),
-						org.sakaiproject.section.api.facade.Role.INSTRUCTOR)) {
-			participants = getAllParticipants();
-		} else if (sectionService().isSiteMemberInRole(
-				getSiteId(),
-				currentUser.getId(),
-				org.sakaiproject.section.api.facade.Role.TA)) {
-			participants = getSectionLeaderParticipants(currentUser);
+		Map<Group, Set<String>> groupMembers = getGroupMembers();
+
+		// Users with "viewall" see everybody
+		if (viewAllInSite) {
+			participants = getParticipantsInSite();
 		} else {
-			participants = getPublicParticipants(currentUser);
+			participants = getParticipantsInGroups(currentUser, groupMembers);
 		}
-		
+
+		filterHiddenUsers(currentUser, participants, groupMembers);
 		return participants;
 	}
 
-	private List<Participant> getAllParticipants() {
-		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
-		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
-		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
-		return buildParticipantList(userMap, sectionsMap, profiles);
+	public List<Participant> getRoster(String groupReference) {
+		User currentUser = userDirectoryService().getCurrentUser();
+		Map<Group, Set<String>> groupMembers = getGroupMembers(groupReference);
+		List<Participant> participants = getParticipantsInGroups(currentUser, groupMembers);
+		filterHiddenUsers(currentUser, participants, groupMembers);
+		return participants;
 	}
-	
-	private List<Participant> getSectionLeaderParticipants(User currentUser) {
-		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
-		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
 
-		// Build a list of the sections that this user leads
+	/**
+	 * Gets a Map of the groups in this site (key) to the user IDs for the members in the group (value)
+	 * @return
+	 */
+	private Map<Group, Set<String>> getGroupMembers() {
+		Map<Group, Set<String>> groupMembers = new HashMap<Group, Set<String>>();
+		Site site;
+		try {
+			site = siteService().getSite(getSiteId());
+		} catch (IdUnusedException ide) {
+			log.warn(ide);
+			return groupMembers;
+		}
+		Collection groups = site.getGroups();
+		for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();) {
+			Group group = groupIter.next();
+			Set<String> userIds = new HashSet<String>();
+			Set<Member> members = group.getMembers();
+			for(Iterator<Member> memberIter = members.iterator(); memberIter.hasNext();) {
+				Member member = memberIter.next();
+				userIds.add(member.getUserId());
+			}
+			groupMembers.put(group, userIds);
+		}
+		return groupMembers;
+	}
 
-		Map<String, List<CourseSection>> filteredSectionsMap = new HashMap<String, List<CourseSection>>();
-		
-		// Filter out any sections from the sections map that are not led by this user
-		for(Iterator<Entry<String, List<CourseSection>>> iter = sectionsMap.entrySet().iterator(); iter.hasNext();)
-		{
-			Entry<String, List<CourseSection>> entry = iter.next();
-			List entrySections = entry.getValue();
-			// If the list of sections that the user leads contains any of the entry's sections, add it to our filtered list
-			for(Iterator<CourseSection> ledSectionsIter = getViewableSectionsForCurrentUser().iterator(); ledSectionsIter.hasNext();)
-			{
-				if(entrySections.contains(ledSectionsIter.next()))
-				{
-					filteredSectionsMap.put(entry.getKey(), entry.getValue());
-					break;
-				}
+	/**
+	 * Gets a Map of a group to the user IDs for the members in the group
+	 * @return
+	 */
+	private Map<Group, Set<String>> getGroupMembers(String groupReference) {
+		Map<Group, Set<String>> groupMembers = new HashMap<Group, Set<String>>();
+		Group group = siteService().findGroup(groupReference);
+		if(group == null) {
+			log.warn("Group " + groupReference + " not found");
+			return groupMembers;
+		}
+		// 
+		Set<String> userIds = new HashSet<String>();
+		Set<Member> members = group.getMembers();
+		for(Iterator<Member> memberIter = members.iterator(); memberIter.hasNext();) {
+			Member member = memberIter.next();
+			userIds.add(member.getUserId());
+		}
+		groupMembers.put(group, userIds);
+		return groupMembers;
+	}
+
+	private void filterHiddenUsers(User currentUser, List<Participant> participants, Map<Group, Set<String>> groupMembers) {
+		// If the user has view hidden in the site, don't filter anyone out
+		if(userHasSitePermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
+			return;
+		}
+
+		// Keep track of the users for which the current user has the group-scoped view hidden permission
+		Set<String> visibleMembersForCurrentUser = new HashSet<String>();
+		for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
+			Group group = iter.next();
+			if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, group.getReference())) {
+				visibleMembersForCurrentUser.addAll(groupMembers.get(group));
 			}
 		}
 		
-		// Build the list of participants from the filteredSectionsMap
-		Map<String, Profile> profilesMap = profileManager().getProfiles(filteredSectionsMap.keySet());
-		return buildParticipantList(userMap, sectionsMap, profilesMap);
-	}
-
-	private List<Participant> getPublicParticipants(User currentUser) {
-		// The view hidden permission only applies to non view-all or ta users
-		if(userHasPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN))
-		{
-			return getAllParticipants();
+		// Iterate through the participants, removing the hidden ones that are not in visibleMembersForCurrentUser
+		Set<String> userIds = new HashSet<String>();
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
+			Participant participant = iter.next();
+			userIds.add(participant.getUser().getId());
 		}
-		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
 		
-		// Only retain the viewable users
-		Set<String> viewableUsers = privacyManager().findViewable(getSiteId(), userMap.keySet());
-		userMap.keySet().retainAll(viewableUsers);
+		Set<String> hiddenUsers = privacyManager().findHidden(getSiteId(), userIds);
 
-		Map<String, List<CourseSection>> sectionsMap = getSectionsMap(userMap.keySet());
-		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
-
-		return buildParticipantList(userMap, sectionsMap, profiles);
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
+			Participant participant = iter.next();
+			String userId = participant.getUser().getId();
+			if(hiddenUsers.contains(userId) && ! visibleMembersForCurrentUser.contains(userId)) {
+				iter.remove();
+			}
+		}
 	}
 
+	private List<Participant> getParticipantsInSite() {
+		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
+		Map<String, Profile> profiles = profileManager().getProfiles(userMap.keySet());
+		return buildParticipantList(userMap, profiles);
+	}
+	
+	private List<Participant> getParticipantsInGroups(User currentUser, Map<Group, Set<String>> groupMembers) {
+		Set<String> viewableUsers = new HashSet<String>();
+		for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
+			Group group = iter.next();
+			if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL, group.getReference())) {
+				viewableUsers.addAll(groupMembers.get(group));
+			}
+		}
+		
+		// Build the list of participants
+		
+		// Use the site reference because we need to display the site role, not the group role
+		Map<String, UserRole> userMap = getUserRoleMap(getSiteReference());
+		Map<String, Profile> profilesMap = profileManager().getProfiles(viewableUsers);
+		return buildParticipantList(userMap, profilesMap);
+	}
 
-	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, List<CourseSection>> sectionsMap, Map<String, Profile> profilesMap) {
+	private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, Profile> profilesMap) {
 		List<Participant> participants = new ArrayList<Participant>();
 		for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Profile> entry = iter.next();
@@ -238,8 +291,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 			UserRole userRole = userMap.get(userId);
 			Profile profile = entry.getValue();
 
-			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role,
-					sectionsMap.get(userId)));
+			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
 		}
 		return participants;
 	}
@@ -341,47 +393,8 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasExportPerm()
 	 */
 	public boolean currentUserHasExportPerm() {
-		return userHasPermission(userDirectoryService().getCurrentUser(),
+		return userHasSitePermission(userDirectoryService().getCurrentUser(),
 				RosterFunctions.ROSTER_FUNCTION_EXPORT);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewOfficialIdPerm()
-	 */
-	public boolean currentUserHasViewOfficialIdPerm() {
-		return userHasPermission(userDirectoryService().getCurrentUser(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALID);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewHiddenPerm()
-	 */
-	public boolean currentUserHasViewHiddenPerm() {
-		return userHasPermission(userDirectoryService().getCurrentUser(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
-	}
-
-	  /*
-	   * (non-Javadoc)
-	   * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasSiteUpdatePerm()
-	   */
-	  public boolean currentUserHasSiteUpdatePerm()
-	  {
-		  return userHasPermission(userDirectoryService().getCurrentUser(), "site.upd");
-	  }
-	  
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.api.app.roster.RosterManager#currentUserHasViewAllPerm()
-	 */
-	public boolean currentUserHasViewAllPerm() {
-		return userHasPermission(userDirectoryService().getCurrentUser(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 	}
 
 	/**
@@ -391,12 +404,14 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @param permissionName
 	 * @return boolean
 	 */
-	private boolean userHasPermission(User user, String permissionName) {
-		if (user != null)
-			return securityService().unlock(user, permissionName,
-					getSiteReference());
-		else
-			return false;
+	private boolean userHasSitePermission(User user, String permissionName) {
+		if (user == null || permissionName == null) return false;
+		return securityService().unlock(user, permissionName, getSiteReference());
+	}
+
+	private boolean userHasGroupPermission(User user, String permissionName, String groupReference) {
+		if (user == null || permissionName == null || groupReference == null) return false;
+		return securityService().unlock(user, permissionName, groupReference);
 	}
 
 	/**
@@ -428,30 +443,20 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return ! sectionService().getSections(getSiteId()).isEmpty();
 	}
 
-	public boolean currentUserHasViewSectionMembershipsPerm() {
-		User user = userDirectoryService().getCurrentUser();
-		return (userHasPermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWALL) ||
-				sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR)
-				|| sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.TA));
-	}
-
 	public List<CourseSection> getViewableSectionsForCurrentUser() {
 		User user = userDirectoryService().getCurrentUser();
-		List<CourseSection> allSections = sectionService().getSections(getSiteId());
-		if(sectionService().isSiteMemberInRole(getSiteId(), user.getId(), org.sakaiproject.section.api.facade.Role.INSTRUCTOR) ||
-				authzGroupService().isAllowed(user.getId(), RosterFunctions.ROSTER_FUNCTION_VIEWALL, getSiteReference())) {
-			return allSections;
+		List<CourseSection> sections = sectionService().getSections(getSiteId());
+		// If the user can view all groups in the site, return them all
+		if(userHasSitePermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+			return sections;
 		}
 		
-		List<CourseSection> usersSections = new ArrayList<CourseSection>();
-		for(Iterator<CourseSection> iter = allSections.iterator(); iter.hasNext();)
-		{
+		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
 			CourseSection section = iter.next();
-			if(sectionService().isSectionMemberInRole(section.getUuid(), user.getId(), org.sakaiproject.section.api.facade.Role.TA))
-			{
-				usersSections.add(section);
+			if( ! userHasGroupPermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, section.getUuid())) {
+				iter.remove();
 			}
 		}
-		return usersSections;
+		return sections;
 	}
 }

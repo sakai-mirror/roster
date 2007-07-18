@@ -35,8 +35,8 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
-import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.site.api.SiteService;
 
 public class RosterOverview implements RosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterOverview.class);
@@ -66,7 +66,6 @@ public class RosterOverview implements RosterPageBean {
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
-	public static final Comparator<Participant> groupsComparator;
 
 	static {
 		sortNameComparator = new Comparator<Participant>() {
@@ -115,59 +114,15 @@ public class RosterOverview implements RosterPageBean {
 			}
 		};
 
-		groupsComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				String groups1 = one.getGroupsForDisplay();
-				String groups2 = another.getGroupsForDisplay();
-
-				if(groups1 != null && groups2 == null) {
-					return 1;
-				}
-				if(groups1 == null && groups2 != null) {
-					return -1;
-				}
-				if(groups1 == null && groups2 == null) {
-					return sortNameComparator.compare(one, another);
-				}
-
-				int comparison = one.getGroupsForDisplay().compareTo(another.getGroupsForDisplay());
-				return comparison == 0 ? sortNameComparator.compare(one, another) : comparison;
-			}
-		};
-	}
-
-	protected static final Comparator<Participant> getCategoryComparator(final String sectionCategory) {
-		return new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				CourseSection secOne = one.getSectionsMap().get(sectionCategory);
-				CourseSection secAnother = another.getSectionsMap().get(sectionCategory);
-				if(secOne == null && secAnother == null) {
-					return sortNameComparator.compare(one, another);
-				}
-				if(secOne != null && secAnother == null) {
-					return 1;
-				}
-				if(secOne == null && secAnother != null) {
-					return -1;
-				}
-				int comparison = secOne.getTitle().compareTo(secAnother.getTitle());
-				return  comparison == 0 ? sortNameComparator.compare(one, another) : comparison;
-			}
-		};
 	}
 	
 	// UI method calls
 	
-	public void showSections(ActionEvent event) {
-		prefs.setDisplaySectionColumns(true);
-	}
-
-	public void hideSections(ActionEvent event) {
-		prefs.setDisplaySectionColumns(false);
-	}
-	
 	public boolean isRenderModifyMembersInstructions() {
-		return filter.services.rosterManager.currentUserHasViewSectionMembershipsPerm();
+		String userId = filter.services.userDirectoryService.getCurrentUser().getId();
+		String siteRef = getSiteReference();
+		return filter.services.authzService.isAllowed(userId, SiteService.SECURE_UPDATE_SITE, siteRef) ||
+				filter.services.authzService.isAllowed(userId, SiteService.SECURE_UPDATE_SITE_MEMBERSHIP, siteRef);
 	}
 
 	/**
@@ -179,8 +134,7 @@ public class RosterOverview implements RosterPageBean {
 	 */
 	public boolean isRenderPrivacyMessage() {
 		String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
-		if (msgEnabled != null && msgEnabled.equalsIgnoreCase("true")
-				&& ! filter.services.rosterManager.currentUserHasViewHiddenPerm()) {
+		if (msgEnabled != null && msgEnabled.equalsIgnoreCase("true")) {
 			return true;
 		} else {
 			return false;
@@ -205,16 +159,13 @@ public class RosterOverview implements RosterPageBean {
 
 		if (Participant.SORT_BY_ID.equals(sortColumn)) {
 			comparator = displayIdComparator;
-		} else if (Participant.SORT_BY_NAME.equals(sortColumn)) {
-			comparator = sortNameComparator;
 		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
 			comparator = emailComparator;
-		} else if(Participant.SORT_BY_GROUP.equals(sortColumn)) {
-			comparator = groupsComparator;
 		} else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
 			comparator = roleComparator;
 		} else {
-			comparator = getCategoryComparator(sortColumn);
+			// Default to the sort name
+			comparator = sortNameComparator;
 		}
 		return comparator;
 	}
@@ -260,8 +211,9 @@ public class RosterOverview implements RosterPageBean {
 	}
 
 	protected String getSiteReference() {
-		return "/site/" + getSiteContext();
+		return filter.services.siteService.siteReference(getSiteContext());
 	}
+	
 	protected String getSiteContext() {
 		return filter.services.toolManager.getCurrentPlacement().getContext();
 	}
@@ -287,18 +239,6 @@ public class RosterOverview implements RosterPageBean {
 		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_userId"));
 		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_email"));
 		header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "facet_role"));
-		if(prefs.isDisplaySectionColumns()) {
-			// Sections
-			Map<String, String> catMap = filter.getSectionCategoryMap();
-			for(Iterator<String> catIter = getUsedCategories().iterator(); catIter.hasNext();) {
-				String cat = catIter.next();
-				header.add(catMap.get(cat));
-			}
-			// Group column
-			if(isGroupsInSite()) {
-				header.add(LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "group"));
-			}
-		}
 		
 		spreadsheetData.add(header);
 		for(Iterator<Participant> participantIter = getParticipants().iterator(); participantIter.hasNext();) {
@@ -308,22 +248,6 @@ public class RosterOverview implements RosterPageBean {
 			row.add(participant.getUser().getDisplayId());
 			row.add(participant.getUser().getEmail());
 			row.add(participant.getRoleTitle());
-			if(prefs.isDisplaySectionColumns()) {
-				// Sections
-				for(Iterator<String> catIter = getUsedCategories().iterator(); catIter.hasNext();) {
-					String cat = catIter.next();
-					CourseSection section = participant.getSectionsMap().get(cat);
-					if(section == null) {
-						row.add("");
-					} else {
-						row.add(section.getTitle());
-					}
-				}
-				// Group column
-				if(isGroupsInSite()) {
-					row.add(participant.getGroupsForDisplay());
-                }
-            }
             spreadsheetData.add(row);
         }
 
@@ -337,16 +261,5 @@ public class RosterOverview implements RosterPageBean {
 	public boolean isRenderStatus() {
 		return ! filter.getViewableEnrollableSections().isEmpty();
 	}
-
-	public boolean isSectionColumnsViewable() {
-		// Don't show sections to students
-		String currentUserId = filter.services.userDirectoryService.getCurrentUser().getId();
-		if(filter.services.authzService.isAllowed(currentUserId, SectionAwareness.INSTRUCTOR_MARKER, getSiteReference()))
-			return true;
-		if(filter.services.authzService.isAllowed(currentUserId, SectionAwareness.TA_MARKER, getSiteReference()))
-			return true;
-		return false;
-	}
-
 
 }

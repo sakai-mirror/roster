@@ -21,10 +21,13 @@
 package org.sakaiproject.tool.roster;
 
 import org.sakaiproject.api.app.profile.ProfileManager;
+import org.sakaiproject.api.app.roster.PhotoService;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.authz.api.AuthzGroupService;
+import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
+import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.UserDirectoryService;
 
@@ -37,9 +40,12 @@ public class ServicesBean {
 	protected SectionAwareness sectionAwareness;
 	protected CourseManagementService cmService;
 	protected AuthzGroupService authzService;
+	protected SecurityService securityService;
+	protected SiteService siteService;
 	protected ToolManager toolManager;
 	protected UserDirectoryService userDirectoryService;
 	protected ProfileManager profileManager;
+	protected PhotoService photoService;
 	
 	// Service injection
 	public void setRosterManager(RosterManager rosterManager) {
@@ -54,6 +60,12 @@ public class ServicesBean {
 	public void setAuthzService(AuthzGroupService authzService) {
 		this.authzService = authzService;
 	}
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
 	public void setToolManager(ToolManager toolManager) {
 		this.toolManager = toolManager;
 	}
@@ -62,6 +74,9 @@ public class ServicesBean {
 	}
 	public void setProfileManager(ProfileManager profileManager) {
 		this.profileManager = profileManager;
+	}
+	public void setPhotoService(PhotoService photoService) {
+		this.photoService = photoService;
 	}
 
 }

@@ -31,40 +31,6 @@ response.setContentType("text/html; charset=UTF-8");
             </h:outputLink>
 
             <%@include file="inc/filter.jspf" %>
-
-
-            <h:commandButton
-                    actionListener="#{overview.showSections}"
-                    immediate="true"
-                    value="#{msgs.show_sections}"
-                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && filter.groups}"/>
-
-            <h:commandButton
-                    actionListener="#{overview.showSections}"
-                    immediate="true"
-                    value="#{msgs.show_sections_only}"
-                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && !(filter.groups)}"/>
-            <h:commandButton
-                    actionListener="#{overview.showSections}"
-                    immediate="true"
-                    value="#{msgs.show_groups_only}"
-                    rendered="#{ ! prefs.displaySectionColumns && overview.sectionColumnsViewable && !(filter.sections) && filter.groups}"/>
-            <h:commandButton
-                    actionListener="#{overview.hideSections}"
-                    immediate="true"
-                    value="#{msgs.hide_sections}"
-                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && filter.groups}" />
-            <h:commandButton
-                    actionListener="#{overview.hideSections}"
-                    immediate="true"
-                    value="#{msgs.hide_sections_only}"
-                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && filter.sections && !(filter.groups)}" />
-            <h:commandButton
-                    actionListener="#{overview.hideSections}"
-                    immediate="true"
-                    value="#{msgs.hide_groups_only}"
-                    rendered="#{prefs.displaySectionColumns && overview.sectionColumnsViewable && !(filter.sections) && filter.groups}" />
-
 			
             <t:dataTable cellpadding="0" cellspacing="0"
                          id="rosterTable"
@@ -109,24 +75,6 @@ response.setContentType("text/html; charset=UTF-8");
                     <h:outputText value="#{participant.roleTitle}"/>
                 </h:column>
 		        
-                <t:columns value="#{overview.usedCategories}" var="category" rendered="#{prefs.displaySectionColumns}">
-                    <f:facet name="header">
-                        <t:commandSortHeader columnName="#{category}" immediate="true" arrow="true">
-                            <h:outputText value="#{filter.sectionCategoryMap[category]}" rendered="#{not empty category}" />
-                        </t:commandSortHeader>
-                    </f:facet>
-                    <h:outputText value="#{participant.sectionsMap[category].title}"/>
-                </t:columns>
-
-                <h:column rendered="#{prefs.displaySectionColumns && overview.groupsInSite}">
-                    <f:facet name="header">
-                        <t:commandSortHeader columnName="group" immediate="true" arrow="true">
-                            <h:outputText value="#{msgs.group}" />
-                        </t:commandSortHeader>
-                    </f:facet>
-                    <h:outputText value="#{participant.groupsForDisplay}" />
-                </h:column>
-		    
             </t:dataTable>
 
       <t:div styleClass="instruction">
