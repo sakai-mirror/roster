@@ -91,12 +91,6 @@ public interface RosterManager
   public List getRoster(String filter);
   
   /**
-   * @return List of user ids and boolean value of their privacy status
-   */
-  public List getPrivacyStatus();
-
-  
-  /**
    * Returns a participant by the id
    * @param participantId
    * @return

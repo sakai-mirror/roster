@@ -113,6 +113,17 @@ public interface Participant
   public void setEmail(String email); // oncourse
   
   /**
+   * @return
+   */
+  public boolean getPrivacy(); // oncourse
+  
+  /**
+   * 
+   * @param rolePrivacy
+   */
+  public void setPrivacy(boolean privacy); // oncourse
+  
+  /**
    * 
    * @return List of groups/sections Participant is a member of
    */

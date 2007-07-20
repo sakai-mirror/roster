@@ -82,7 +82,6 @@ public class RosterTool
   private List rosterList = null;
   private List menuItems = null;
   private List roleStats = null;
-  private List privacyList = null; // oncourse
   private boolean rosterProcessed = false;
 
   // sort column
@@ -624,14 +623,6 @@ public class RosterTool
     Log.debug("getAllUserCount()");
     return allUserCount;
   }
-  
-  // oncourse
-  public List getPrivacyStatus()
-  {
-	privacyList = rosterManager.getPrivacyStatus();
-	return privacyList;
-  }
-  // end oncourse
   
   public void setViewMenuItems(List menuItems)
   {

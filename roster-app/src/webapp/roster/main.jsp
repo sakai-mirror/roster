@@ -66,9 +66,7 @@
 						<f:facet name="header">
 				   		  <h:outputText value="#{msgs.facet_visible}" />
 				   		</f:facet>
-						<t:dataList id="privacyStatus" var="priv" value="#{RosterTool.privacyStatus}" layout="simple">
-						  <h:graphicImage value="#{(priv.value == true) ? '/images/bullet_visible.png' : '/images/bullet_invisible.png'}" rendered="#{priv.key == searchResultAll.participant.id}" alt="#{(priv.value == true) ? 'Visible' : 'Invisible'}" />
-						</t:dataList>
+						<h:graphicImage value="#{(searchResultAll.participant.privacy == true) ? '/images/bullet_visible.png' : '/images/bullet_invisible.png'}" alt="#{(searchResultAll.participant.privacy == true) ? 'Visible' : 'Invisible'}" />
 					</h:column>
 					<%--********************* End Oncourse *********************--%>
 				    

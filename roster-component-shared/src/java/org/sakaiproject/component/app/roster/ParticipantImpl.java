@@ -48,6 +48,7 @@ public class ParticipantImpl implements Participant
   private String roleTitle;
   private List sections;
   private String email; // oncourse
+  private boolean privacy; //oncourse
   private String sectionsForDisplay;
   public static Comparator LastNameComparator;
   public static Comparator FirstNameComparator;
@@ -65,7 +66,7 @@ public class ParticipantImpl implements Participant
    * @param lname
    * @param profile TODO
    */
-  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections, String email)
+  public ParticipantImpl(String id, String displayId, String eid, String fname, String lname, Profile profile, String roleTitle, List sections, String email, boolean privacy)
   {
     if (Log.isDebugEnabled())
     {
@@ -81,6 +82,7 @@ public class ParticipantImpl implements Participant
     setRoleTitle(roleTitle);
     setSections(sections);
     setEmail(email); // oncourse
+    setPrivacy(privacy); // oncourse
   }
   
   /* (non-Javadoc)
@@ -451,6 +453,16 @@ public class ParticipantImpl implements Participant
   public String getEmail()
   {
 	  return email;
+  }
+  
+  public void setPrivacy(boolean privacy)
+  {
+	  this.privacy = privacy;
+  }
+  
+  public boolean getPrivacy()
+  {
+	  return privacy;
   }
   // end oncourse
   

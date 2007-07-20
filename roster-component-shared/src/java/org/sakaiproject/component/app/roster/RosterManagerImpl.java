@@ -136,7 +136,7 @@ public class RosterManagerImpl implements RosterManager
       LOG.debug("createParticipantByUser(User " + user + ")");
     }
     return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
-        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user), user.getEmail());
+        .getLastName(), profile, getUserRoleTitle(user), getUserSections(user), user.getEmail(), getUserPrivacy(user));
   }
 
   /* (non-Javadoc)
@@ -475,6 +475,11 @@ public class RosterManagerImpl implements RosterManager
 	  }
 	  return "";
   }
+  
+  private boolean getUserPrivacy(User user) {
+	  boolean privacyCheck = privacyManager.isViewable(getContextSiteId(), user.getId());
+	  return privacyCheck;
+  }
  
   /**
    * Determine if sectioning exists in this site
@@ -504,36 +509,6 @@ public class RosterManagerImpl implements RosterManager
 		  return getUserSections(UserDirectoryService.getCurrentUser());
 	  }
 	  
-	  return null;
-  }
-  
-  public List getPrivacyStatus()
-  {
-	  if (currentUserHasViewHiddenPerm())
-	  {
-		  Set roster = getUsersInAllSections();
-		  Map privacyMap = new HashMap();
-
-		  Iterator iter = roster.iterator();
-		  while (iter.hasNext())
-		  {
-			  try
-			  {
-				  User user = UserDirectoryService.getUser((String) iter.next());
-				  if(user != null)
-				  {
-					  boolean privacyCheck = privacyManager.isViewable(getContextSiteId(), user.getId());
-					  privacyMap.put(user.getId(), privacyCheck);
-				  }
-			  }
-			  catch (UserNotDefinedException e)
-	          {	
-	            LOG.info("getRoster: " + e.getMessage(), e);
-	          }
-		  }
-		  List privacyList = new ArrayList(privacyMap.entrySet());
-		  return privacyList;
-	  }
 	  return null;
   }
   
