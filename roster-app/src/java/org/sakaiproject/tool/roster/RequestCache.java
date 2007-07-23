@@ -20,8 +20,11 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
 /**
@@ -44,7 +47,7 @@ public class RequestCache {
 	}
 	
 	protected void init(ServicesBean services) {
-		this.viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();
+		this.viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();		
 		this.init = true;
 	}
 }

@@ -58,7 +58,8 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	protected String viewFilter;
-	protected String searchFilter = getDefaultSearchText();
+	protected String defaultSearchText;
+	protected String searchFilter;
 	protected String sectionFilter;
 
 
@@ -80,6 +81,10 @@ public class FilteredProfileListingBean implements Serializable {
 		if(viewFilter == null) {
 			viewFilter = VIEW_ALL;
 		}
+		
+		defaultSearchText = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				ServicesBean.MESSAGE_BUNDLE, "roster_search_text");
+		searchFilter = defaultSearchText;
 	}
 
 	/**
@@ -98,7 +103,7 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	public void clearSearch(ActionEvent ae) {
-		searchFilter = getDefaultSearchText();
+		searchFilter = defaultSearchText;
 	}
 
 	protected List<Participant> findParticipants() {
@@ -109,19 +114,21 @@ public class FilteredProfileListingBean implements Serializable {
 		} else {
 			participants = services.rosterManager.getRoster();
 		}
-		String defaultText = getDefaultSearchText();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
-
-			// Remove this participant if they don't  pass the search filter
-			if(searchFilter != null && ! searchFilter.equals(defaultText) && ! searchMatches(searchFilter, participant.getUser())) {
-				iter.remove();
-				continue;
-			}
+			if(filterParticipant(participant)) iter.remove();
 		}
+
 		return participants;
 	}
 
+	/**
+	 * Remove this participant if they don't  pass the search filter
+	 */
+	protected boolean filterParticipant(Participant participant) {
+		return searchFilter != null && ! searchFilter.equals(defaultSearchText) && ! searchMatches(searchFilter, participant.getUser());
+	}
+	
 	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
@@ -165,18 +172,7 @@ public class FilteredProfileListingBean implements Serializable {
 	}
 
 	protected List<CourseSection> getViewableEnrollableSections() {
-		List<CourseSection> enrollableSections = new ArrayList<CourseSection>();
-		for(Iterator<CourseSection> iter = requestCache().viewableSections.iterator(); iter.hasNext();) {
-			CourseSection sakaiSection = iter.next();
-			if(sakaiSection.getEid() != null) {
-				// This is an official section.  Does it have an enrollment set?
-				Section cmSection = services.cmService.getSection(sakaiSection.getEid());
-				if(cmSection.getEnrollmentSet() != null) {
-					enrollableSections.add(sakaiSection);
-				}
-			}
-		}
-		return enrollableSections;
+		return services.rosterManager.getViewableEnrollmentStatusSectionsForCurrentUser();
 	}
 
 
@@ -213,9 +209,8 @@ public class FilteredProfileListingBean implements Serializable {
 
 	public void setSearchFilter(String searchFilter) {
 		String trimmedArg = StringUtils.trimToNull(searchFilter);
-		String defaultText = getDefaultSearchText();
 		if(trimmedArg == null) {
-			this.searchFilter = defaultText;
+			this.searchFilter = defaultSearchText;
 		} else {
 			this.searchFilter = trimmedArg;
 		}
@@ -261,11 +256,6 @@ public class FilteredProfileListingBean implements Serializable {
 
 	public void setViewFilter(String statusFilter) {
 		this.viewFilter = StringUtils.trimToNull(statusFilter);
-	}
-
-	public String getDefaultSearchText() {
-		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
-				ServicesBean.MESSAGE_BUNDLE, "roster_search_text");
 	}
 
 	public Integer getParticipantCount() {

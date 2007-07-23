@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -37,10 +38,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.authz.api.AuthzGroup;
+import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
+import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -51,12 +55,25 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	private static final long serialVersionUID = 1L;
 
 	protected String statusFilter;
+	protected Set<String> studentRoles; // TODO Is it OK to store this in the session?
 	
 	public void init() {
-		super.init();
+		// Get the student roles before any filtering occurs
+		try {
+			AuthzGroup azg = services.authzService.getAuthzGroup(getSiteReference());
+			studentRoles = azg.getRolesIsAllowed(SectionAwareness.STUDENT_MARKER);
+		} catch (GroupNotDefinedException gnde) {
+			log.error("Unable to find site " + getSiteReference());
+			studentRoles = new HashSet<String>();
+		}
+
+		// Set the filter status before any filtering occurs
 		if(this.statusFilter == null) {
 			this.statusFilter = ALL_STATUS;
 		}
+
+		// Proceed with the filtering
+		super.init();
 	}
 	
 	protected List<Participant> findParticipants() {
@@ -130,14 +147,14 @@ public class FilteredStatusListingBean extends FilteredProfileListingBean implem
 	}
 
 	/**
-	 * Overrides the behavior in FilteredParticipantListingBean.  Here, if the status filter
-	 * matches the participant's enrollment status, the participant is a match.
+	 * Filter this participant?
 	 */
-	protected boolean participantMatchesViewFilter(Participant participant, Set<String> studentRoles) {
-		// We are always filtering on student here
-		return studentRoles.contains(participant.getRoleTitle());
+	protected boolean filterParticipant(Participant participant) {
+		if(super.filterParticipant(participant)) return true;
+		return ! studentRoles.contains(participant.getRoleTitle()); 
 	}
 
+	
 	public List<SelectItem> getSectionSelectItems() {
 		return statusRequestCache().getSectionSelectItems();
 	}

@@ -45,6 +45,7 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -471,4 +472,31 @@ public abstract class RosterManagerImpl implements RosterManager {
 		}
 		return sections;
 	}
+
+	public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser() {
+		User user = userDirectoryService().getCurrentUser();
+		List sections = getViewableSectionsForCurrentUser();
+
+		// If the user can view enrollment statuses at the site level, return all of the sections
+		boolean siteScopedEnrollmentPermission = userHasSitePermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS);
+
+		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
+			CourseSection section = iter.next();
+			if(section.getEid() != null) {
+				// This is an official section.  Does it have an enrollment set?
+				Section cmSection = cmService().getSection(section.getEid());
+				if(cmSection.getEnrollmentSet() == null) {
+					iter.remove();
+				} else {
+					// Does the current user have access to view enrollments for this section?
+					if( ! siteScopedEnrollmentPermission && ! userHasGroupPermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, section.getUuid())) {
+						iter.remove();
+					}
+				}
+			}
+
+		}
+		return sections;
+	}
+
 }

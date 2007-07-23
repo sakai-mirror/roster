@@ -51,6 +51,13 @@ public interface RosterManager
   public List<CourseSection> getViewableSectionsForCurrentUser();
 
   /**
+   *  Get the sections which are viewable by current user and for which the current
+   *  user has roster.viewenrollmentstatus
+   * @return
+   */
+  public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser();
+
+  /**
    * @return An unfiltered List of viewable (to current user) Participants in the site.
    */
   public List<Participant> getRoster();
