@@ -27,7 +27,6 @@ import java.util.*;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
@@ -169,42 +168,7 @@ public class RosterOverview implements RosterPageBean {
 		}
 		return comparator;
 	}
-	
-	/**
-	 * Gets the categories (including the null category for groups) that are currently
-	 * being used in this site context.
-	 * 
-	 * @param categories
-	 * @param siteSections
-	 * @return
-	 */
-	public List<String> getUsedCategories() {
-		List<String> used = new ArrayList<String>();
-		List<CourseSection> sections = getSiteSections();
-		for(Iterator iter = sections.iterator(); iter.hasNext();) {
-			CourseSection section = (CourseSection)iter.next();
-			String catId = StringUtils.trimToNull(section.getCategory());
-			if(catId != null && ! used.contains(catId)) used.add(catId);
-		}
-		Collections.sort(used);
-		return used;
-	}
-	
-	public boolean isGroupsInSite() {
-		if(groupsInSite == null) {
-			groupsInSite = false;
-			List<CourseSection> sections = getSiteSections();
-			for(Iterator iter = sections.iterator(); iter.hasNext();) {
-				CourseSection section = (CourseSection)iter.next();
-				if(StringUtils.trimToNull(section.getCategory()) == null) {
-					groupsInSite = true;
-					break;
-				}
-			}
-		}
-		return groupsInSite;
-	}
-	
+		
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_overview");

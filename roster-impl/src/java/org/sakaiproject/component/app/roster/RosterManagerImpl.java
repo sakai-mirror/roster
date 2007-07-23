@@ -90,6 +90,13 @@ public abstract class RosterManagerImpl implements RosterManager {
 		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO)) {
 			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
 		}
+		
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP);
+		}
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS);
+		}
 	}
 
 	public void destroy() {
@@ -410,15 +417,20 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 
 	private boolean userHasGroupPermission(User user, String permissionName, String groupReference) {
-		if (user == null || permissionName == null || groupReference == null) return false;
-		return securityService().unlock(user, permissionName, groupReference);
+		if (user == null || permissionName == null || groupReference == null) {
+			if(log.isDebugEnabled()) log.debug("userHasgroupPermission passed a null");
+			return false;
+		}
+		boolean result =  authzGroupService().isAllowed(user.getId(), permissionName, groupReference);
+		if(log.isDebugEnabled()) log.debug("user " + user.getEid() + ", permission " + permissionName + ", group " + groupReference + " has permission? " + result);
+		return result;
 	}
 
 	/**
 	 * @return siteId
 	 */
 	private String getSiteReference() {
-		return ("/site/" + getSiteId());
+		return siteService().siteReference(getSiteId());
 	}
 	
 	private String getSiteId() {

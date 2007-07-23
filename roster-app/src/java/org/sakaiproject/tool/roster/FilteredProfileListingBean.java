@@ -310,10 +310,6 @@ public class FilteredProfileListingBean implements Serializable {
 		return services.toolManager.getCurrentPlacement().getContext();
 	}
 
-	public Map<String, String> getSectionCategoryMap() {
-		return requestCache().sectionCategoryMap;
-	}
-
 	// We use this request-scoped bean to hold a reference to the sections in this site.
 	// DO NOT cache the RequestCache itself.  Always obtain a reference using
 	// requestCache().
