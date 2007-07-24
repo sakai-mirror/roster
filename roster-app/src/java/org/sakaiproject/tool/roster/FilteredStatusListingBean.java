@@ -48,7 +48,7 @@ import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.util.ResourceLoader;
 
-public class FilteredStatusListingBean extends FilteredProfileListingBean implements Serializable {
+public class FilteredStatusListingBean extends FilteredParticipantListingBean implements Serializable {
 
 	private static final String ALL_STATUS="ALL_STATUS";
 	private static final Log log = LogFactory.getLog(FilteredStatusListingBean.class);

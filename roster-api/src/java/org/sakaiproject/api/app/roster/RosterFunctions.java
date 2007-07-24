@@ -30,4 +30,5 @@ public interface RosterFunctions {
    public static final String ROSTER_FUNCTION_EXPORT = ROSTER_FUNCTION_PREFIX + "export";
    public static final String ROSTER_FUNCTION_VIEWGROUP = ROSTER_FUNCTION_PREFIX + "viewgroup";
    public static final String ROSTER_FUNCTION_VIEWENROLLMENTSTATUS = ROSTER_FUNCTION_PREFIX + "viewenrollmentstatus";
+   public static final String ROSTER_FUNCTION_VIEWPROFILE = ROSTER_FUNCTION_PREFIX + "viewprofile";
 }

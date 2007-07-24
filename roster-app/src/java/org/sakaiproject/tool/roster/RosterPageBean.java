@@ -26,7 +26,9 @@ public interface RosterPageBean {
 	public String getPageTitle();
 
 	public boolean isExportablePage();
-	public boolean isRenderStatus();
+	public boolean isRenderStatusLink();
+	public boolean isRenderPicturesLink();
+	public boolean isRenderProfileLinks();
 	
 	public void export(ActionEvent event);
 

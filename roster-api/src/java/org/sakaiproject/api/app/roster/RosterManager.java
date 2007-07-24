@@ -74,5 +74,18 @@ public interface RosterManager
    * @return
    */
   public Participant getParticipantById(String participantId);
-  
+
+  /**
+   * Are user profiles viewable for the current user in this site?
+   * 
+   * @return
+   */
+  public boolean isProfilesViewable();
+
+  /**
+   * Are users official photos viewable for the current user in this site?
+   * @return
+   */
+  public boolean isOfficialPhotosViewable();
+
 }

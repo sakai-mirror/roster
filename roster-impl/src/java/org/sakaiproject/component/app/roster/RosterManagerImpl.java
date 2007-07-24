@@ -95,9 +95,15 @@ public abstract class RosterManagerImpl implements RosterManager {
 		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
 			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP);
 		}
+
 		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
 			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS);
 		}
+		
+		if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWPROFILE)) {
+			functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWPROFILE);
+		}
+
 	}
 
 	public void destroy() {
@@ -413,13 +419,20 @@ public abstract class RosterManagerImpl implements RosterManager {
 	 * @return boolean
 	 */
 	private boolean userHasSitePermission(User user, String permissionName) {
-		if (user == null || permissionName == null) return false;
-		return securityService().unlock(user, permissionName, getSiteReference());
+		if (user == null || permissionName == null) {
+			if(log.isDebugEnabled()) log.debug("userHasSitePermission passed a null");
+			return false;
+		}
+		String siteReference = getSiteReference();
+		boolean result = securityService().unlock(user, permissionName, siteReference);
+		if(log.isDebugEnabled()) log.debug("user " + user.getEid() + ", permission " + permissionName + ", site " + siteReference + " has permission? " + result);
+		return result;
+
 	}
 
 	private boolean userHasGroupPermission(User user, String permissionName, String groupReference) {
 		if (user == null || permissionName == null || groupReference == null) {
-			if(log.isDebugEnabled()) log.debug("userHasgroupPermission passed a null");
+			if(log.isDebugEnabled()) log.debug("userHasGroupPermission passed a null");
 			return false;
 		}
 		boolean result =  authzGroupService().isAllowed(user.getId(), permissionName, groupReference);
@@ -499,4 +512,13 @@ public abstract class RosterManagerImpl implements RosterManager {
 		return sections;
 	}
 
+	public boolean isProfilesViewable() {
+		return userHasSitePermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWPROFILE);
+	}
+	
+	public boolean isOfficialPhotosViewable() {
+		return userHasSitePermission(userDirectoryService().getCurrentUser(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
+	}
 }

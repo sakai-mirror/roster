@@ -45,10 +45,11 @@ response.setContentType("text/html; charset=UTF-8");
                             <h:outputText value="#{msgs.facet_name}" />
                         </t:commandSortHeader>
                     </f:facet>
-                    <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}">
+                    <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.sortName}" title="#{msgs.show_profile}" rendered="#{overview.renderProfileLinks}">
                         <f:param name="participantId" value="#{participant.user.id}" />
                         <f:param name="returnPage" value="overview" />
                     </h:commandLink>
+                    <h:outputText value="#{participant.user.sortName}" rendered="#{ ! overview.renderProfileLinks}" />
                 </h:column>
                 <h:column>
                     <f:facet name="header">

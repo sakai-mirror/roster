@@ -20,9 +20,13 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import java.text.Collator;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -34,89 +38,14 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.site.api.SiteService;
 
-public class RosterOverview implements RosterPageBean {
+public class RosterOverview extends BaseRosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterOverview.class);
 
 	private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
-//	private static final String SECTION_COLUMN_PREFIX = "roster_section_cat_";
-	
-	protected Boolean groupsInSite = null;
-	protected List<CourseSection> siteSections;
-	
-	// Service & Bean References
-	protected FilteredProfileListingBean filter;
-	public FilteredProfileListingBean getFilter() {
-		return filter;
-	}
-	public void setFilter(FilteredProfileListingBean filter) {
-		this.filter = filter;
-	}
 
-	protected RosterPreferences prefs;
-	public void setPrefs(RosterPreferences prefs) {
-		this.prefs = prefs;
-	}
-
-	
-	public static final Comparator<Participant> sortNameComparator;
-	public static final Comparator<Participant> displayIdComparator;
-	public static final Comparator<Participant> emailComparator;
-	public static final Comparator<Participant> roleComparator;
-
-	static {
-		sortNameComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				int comparison = Collator.getInstance().compare(
-						one.getUser().getSortName(),
-						another.getUser().getSortName());
-				return comparison == 0 ? displayIdComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-		displayIdComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				return Collator.getInstance().compare(one.getUser().getDisplayId(),
-						another.getUser().getDisplayId());
-			}
-		};
-
-		emailComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				String email1 = one.getUser().getEmail();
-				String email2 = another.getUser().getEmail();
-				if(email1 != null && email2 == null) {
-					return 1;
-				}
-				if(email1 == null && email2 != null) {
-					return -1;
-				}
-				if(email1 == null && email2 == null) {
-					return sortNameComparator.compare(one, another);
-				}
-				int comparison = Collator.getInstance().compare(one.getUser().getEmail(),
-						another.getUser().getEmail());
-				return comparison == 0 ? sortNameComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-		roleComparator = new Comparator<Participant>() {
-			public int compare(Participant one, Participant another) {
-				int comparison = Collator.getInstance().compare(one.getRoleTitle(),
-						another.getRoleTitle());
-				return comparison == 0 ? sortNameComparator.compare(one,
-						another) : comparison;
-			}
-		};
-
-	}
-	
 	// UI method calls
-	
 	public boolean isRenderModifyMembersInstructions() {
 		String userId = filter.services.userDirectoryService.getCurrentUser().getId();
 		String siteRef = getSiteReference();
@@ -139,56 +68,12 @@ public class RosterOverview implements RosterPageBean {
 			return false;
 		}
 	}
-	
-	public List<Participant> getParticipants() {
-		List<Participant> participants = filter.getParticipants();
-		if (participants != null && participants.size() >= 1) {
-			Collections.sort(participants, getComparator());
-			if(!prefs.sortAscending) {
-				Collections.reverse(participants);
-			}
-		}
-		return participants;
-	}
-	
-	protected Comparator<Participant> getComparator() {
-		String sortColumn = prefs.sortColumn;
-
-		Comparator<Participant> comparator;
-
-		if (Participant.SORT_BY_ID.equals(sortColumn)) {
-			comparator = displayIdComparator;
-		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
-			comparator = emailComparator;
-		} else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
-			comparator = roleComparator;
-		} else {
-			// Default to the sort name
-			comparator = sortNameComparator;
-		}
-		return comparator;
-	}
-		
+			
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_overview");
 	}
 
-	protected String getSiteReference() {
-		return filter.services.siteService.siteReference(getSiteContext());
-	}
-	
-	protected String getSiteContext() {
-		return filter.services.toolManager.getCurrentPlacement().getContext();
-	}
-	
-	protected List<CourseSection> getSiteSections() {
-		if(siteSections == null) {
-			siteSections = filter.services.sectionAwareness.getSections(getSiteContext());
-		}
-		return siteSections;
-	}
-	
 	public boolean isExportablePage() {
 		return filter.services.rosterManager.currentUserHasExportPerm();
 	}
@@ -221,9 +106,4 @@ public class RosterOverview implements RosterPageBean {
         
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
     }
-	
-	public boolean isRenderStatus() {
-		return ! filter.getViewableEnrollableSections().isEmpty();
-	}
-
 }

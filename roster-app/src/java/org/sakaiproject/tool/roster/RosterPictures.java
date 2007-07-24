@@ -21,7 +21,7 @@
 package org.sakaiproject.tool.roster;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -31,37 +31,18 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
-public class RosterPictures implements RosterPageBean {
+public class RosterPictures extends BaseRosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterPictures.class);
 
-	protected FilteredProfileListingBean filter;
-	public FilteredProfileListingBean getFilter() {
-		return filter;
-	}
-	public void setFilter(FilteredProfileListingBean filter) {
-		this.filter = filter;
-	}
-
-
-	protected RosterPreferences prefs;
-	public void setPrefs(RosterPreferences prefs) {
-		this.prefs = prefs;
+	/**
+	 * Always sort by users' sort names on this page.
+	 */
+	protected Comparator<Participant> getComparator() {
+		return BaseRosterPageBean.sortNameComparator;
 	}
 
-	public List<Participant> getParticipants() {
-		List<Participant> participants = filter.getParticipants();
-		if (participants != null && participants.size() >= 1) {
-			Collections.sort(participants, RosterOverview.sortNameComparator);
-			if(!prefs.sortAscending) {
-				Collections.reverse(participants);
-			}
-		}
-		return participants;
-	}
-		
 	public String getPageTitle() {
 		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_pictures");
@@ -80,15 +61,6 @@ public class RosterPictures implements RosterPageBean {
 	public void showNames(ActionEvent event) {
 		prefs.setDisplayNames(true);
 	}
-
-	public boolean isRenderStatus() {
-		return ! filter.getViewableEnrollableSections().isEmpty();
-	}
-
-	public boolean isOfficialPhotosAvailableToCurrentUser() {
-		return filter.services.securityService.unlock(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO,
-				filter.services.siteService.siteReference(filter.services.toolManager.getCurrentPlacement().getContext()));
-	}
 	
 	/**
 	 * JSF (at least myfaces) doesn't translate strings to boolean values for radio
@@ -104,4 +76,12 @@ public class RosterPictures implements RosterPageBean {
 				FacesContext.getCurrentInstance(), ServicesBean.MESSAGE_BUNDLE, "roster_profile_photos")));
 		return items;
 	}
+
+	/**
+	 * Override the permission check... since we're already here, display the pictures link
+	 */
+	public boolean isRenderPicturesLink() {
+		return true;
+	}
+
 }

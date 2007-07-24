@@ -121,10 +121,11 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
 
                     <t:div>
-                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayId}" title="#{msgs.show_profile}">
+                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayId}" title="#{msgs.show_profile}" rendered="#{pictures.renderProfileLinks}">
                             <f:param name="participantId" value="#{participant.user.id}" />
                             <f:param name="returnPage" value="pictures" />
                         </h:commandLink>
+                        <h:outputText value="#{participant.user.displayId}" rendered="#{ ! pictures.renderProfileLinks}" />
                     </t:div>
                 </h:column>
             </t:dataTable>

@@ -39,17 +39,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
-import org.sakaiproject.section.api.SectionAwareness;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.section.api.coursemanagement.Course;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
-public class FilteredProfileListingBean implements Serializable {
+public class FilteredParticipantListingBean implements Serializable {
 	private static final String VIEW_ALL = "roster_view_all";
 	private static final String VIEW_STUDENTS = "roster_view_students";
-	private static final Log log = LogFactory.getLog(FilteredProfileListingBean.class);
+	private static final Log log = LogFactory.getLog(FilteredParticipantListingBean.class);
 	private static final long serialVersionUID = 1L;
 
 	protected ServicesBean services;
@@ -199,10 +197,6 @@ public class FilteredProfileListingBean implements Serializable {
 		return requestCache().viewableSections.size() > 1;
 	}
 
-	public boolean isSiteInstructor() {
-		return services.authzService.isAllowed(services.userDirectoryService.getCurrentUser().getId(), SectionAwareness.INSTRUCTOR_MARKER, getSiteReference());
-	}
-
 	public String getSearchFilter() {
 		return searchFilter;
 	}
@@ -314,6 +308,10 @@ public class FilteredProfileListingBean implements Serializable {
 	protected Object resolveManagedBean(String managedBeanId) {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		return facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, managedBeanId);
+	}
+	
+	public String getDefaultSearchText() {
+		return defaultSearchText;
 	}
 
 }

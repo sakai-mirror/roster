@@ -123,7 +123,7 @@
 
     <managed-bean>
         <managed-bean-name>filter</managed-bean-name>
-        <managed-bean-class>org.sakaiproject.tool.roster.FilteredProfileListingBean</managed-bean-class>
+        <managed-bean-class>org.sakaiproject.tool.roster.FilteredParticipantListingBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
         <managed-property>
             <property-name>services</property-name>

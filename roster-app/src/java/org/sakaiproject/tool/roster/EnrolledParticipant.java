@@ -20,12 +20,8 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import java.util.List;
-import java.util.Map;
-
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
 /**

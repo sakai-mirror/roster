@@ -22,7 +22,11 @@ package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -34,14 +38,8 @@ import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
-public class RosterStatus implements RosterPageBean {
+public class RosterStatus extends BaseRosterPageBean {
 	private static final Log log = LogFactory.getLog(RosterStatus.class);
-
-
-	protected RosterPreferences prefs;
-	public void setPrefs(RosterPreferences prefs) {
-		this.prefs = prefs;
-	}
 
 	public static final Comparator<Participant> enrollmentStatusComparator;
 	public static final Comparator<Participant> enrollmentCreditsComparator;
@@ -60,11 +58,11 @@ public class RosterStatus implements RosterPageBean {
 					return -1;
 				}
 				if(status1 == null && status2 == null) {
-					return RosterOverview.sortNameComparator.compare(one, another);
+					return BaseRosterPageBean.sortNameComparator.compare(one, another);
 				}
 				int comparison = Collator.getInstance().compare(p1.getEnrollmentStatus(),
 						p2.getEnrollmentStatus());
-				return comparison == 0 ? RosterOverview.sortNameComparator.compare(one,
+				return comparison == 0 ? BaseRosterPageBean.sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
@@ -83,36 +81,15 @@ public class RosterStatus implements RosterPageBean {
 					return -1;
 				}
 				if(credits1 == null && credits2 == null) {
-					return RosterOverview.sortNameComparator.compare(one, another);
+					return BaseRosterPageBean.sortNameComparator.compare(one, another);
 				}
 				int comparison = Collator.getInstance().compare(p1.getEnrollmentCredits(),
 						p2.getEnrollmentCredits());
-				return comparison == 0 ? RosterOverview.sortNameComparator.compare(one,
+				return comparison == 0 ? BaseRosterPageBean.sortNameComparator.compare(one,
 						another) : comparison;
 			}
 		};
 
-	}
-	// Service & Bean References
-	protected FilteredStatusListingBean filter;
-
-	// Service & Bean Setters & Getters
-	public FilteredStatusListingBean getFilter() {
-		return filter;
-	}
-	public void setFilter(FilteredStatusListingBean filter) {
-		this.filter = filter;
-	}
-	
-	public List<Participant> getParticipants() {
-		List<Participant> participants = filter.getParticipants();
-		if (participants != null && participants.size() >= 1) {
-			Collections.sort(participants, getComparator());
-			if(!prefs.sortAscending) {
-				Collections.reverse(participants);
-			}
-		}
-		return participants;
 	}
 	
 	protected Comparator<Participant> getComparator() {
@@ -121,17 +98,17 @@ public class RosterStatus implements RosterPageBean {
 		Comparator<Participant> comparator;
 
 		if (EnrolledParticipant.SORT_BY_ID.equals(sortColumn)) {
-			comparator = RosterOverview.displayIdComparator;
+			comparator = BaseRosterPageBean.displayIdComparator;
 		} else if (EnrolledParticipant.SORT_BY_NAME.equals(sortColumn)) {
-			comparator = RosterOverview.sortNameComparator;
+			comparator = BaseRosterPageBean.sortNameComparator;
 		} else if (EnrolledParticipant.SORT_BY_EMAIL.equals(sortColumn)) {
-			comparator = RosterOverview.emailComparator;
+			comparator = BaseRosterPageBean.emailComparator;
 		} else if (EnrolledParticipant.SORT_BY_STATUS.equals(sortColumn)) {
 			comparator = enrollmentStatusComparator;
 		} else if (EnrolledParticipant.SORT_BY_CREDITS.equals(sortColumn)) {
 			comparator = enrollmentCreditsComparator;
 		} else {
-			comparator = RosterOverview.sortNameComparator;
+			comparator = BaseRosterPageBean.sortNameComparator;
 		}
 		return comparator;
 	}
@@ -169,14 +146,17 @@ public class RosterStatus implements RosterPageBean {
 			spreadsheetData.add(row);
 		}
 
-        String spreadsheetRoster = filter.getFirstSectionTitle();
+        String spreadsheetRoster = ((FilteredStatusListingBean)filter).getFirstSectionTitle();
         String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
         String spreadsheetName = spreadsheetRoster.replaceAll(" ","_")+ "_"+dateString;
 
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData,spreadsheetName, new SpreadsheetDataFileWriterCsv());
 	}
-	
-	public boolean isRenderStatus() {
+
+	/**
+	 * Since we're already here, skip the permission check and just display the status link
+	 */
+	public boolean isRenderStatusLink() {
 		return true;
 	}
 }
