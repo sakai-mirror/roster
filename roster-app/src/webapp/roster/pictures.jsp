@@ -19,13 +19,13 @@ response.setContentType("text/html; charset=UTF-8");
             <%@include file="inc/filter.jspf" %>
 
             <h:panelGrid columns="2" styleClass="rosterPicturesFilter" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
-                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true" rendered="#{pictures.officialPhotosAvailableToCurrentUser}">
+                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true" rendered="#{pictures.renderPicturesOptions}">
                     <f:selectItems value="#{pictures.photoSelectItems}" />
                 </t:selectOneRadio>
 				
 				<%-- Render something to keep the panel grid happy with two rendered components --%>
-				<h:outputText value="" rendered="#{ ! pictures.officialPhotosAvailableToCurrentUser}"/>
-					
+				<h:outputText value="" rendered="#{ ! pictures.renderPicturesOptions}"/>
+
                 <h:commandButton value="#{msgs.roster_show_names}" actionListener="#{pictures.showNames}" rendered="#{ ! prefs.displayNames}" />
                 <h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
             </h:panelGrid>
@@ -109,12 +109,7 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
                         <t:div>
-                            <h:outputFormat value="#{participant.user.firstName}" title="#{participant.user.firstName}">
-                                <f:converter converterId="textTruncateConverter"/>
-                            </h:outputFormat>
-                        </t:div>
-                        <t:div>
-                            <h:outputFormat value="#{participant.user.lastName}" title="#{participant.user.lastName}">
+                            <h:outputFormat value="#{participant.user.displayName}" title="#{participant.user.displayName}">
                                 <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>

@@ -25,10 +25,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.faces.event.ActionEvent;
+
 import org.sakaiproject.api.app.roster.Participant;
 
-public abstract class BaseRosterPageBean implements RosterPageBean {
+public abstract class BaseRosterPageBean {
 
+	public abstract String getPageTitle();
+	public abstract boolean isExportablePage();
+	public abstract void export(ActionEvent event);
+	
 	// Static comparators
 	public static final Comparator<Participant> sortNameComparator;
 	public static final Comparator<Participant> displayIdComparator;

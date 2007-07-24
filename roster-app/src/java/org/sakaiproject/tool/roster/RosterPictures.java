@@ -84,4 +84,12 @@ public class RosterPictures extends BaseRosterPageBean {
 		return true;
 	}
 
+	/**
+	 * We render the picture options only if the user can see both official and profile pictures
+	 * @return
+	 */
+	public boolean isRenderPicturesOptions() {
+		return filter.services.rosterManager.isOfficialPhotosViewable() && filter.services.rosterManager.isProfilesViewable();
+	}
+
 }

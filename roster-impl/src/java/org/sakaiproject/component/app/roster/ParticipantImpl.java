@@ -79,26 +79,26 @@ public class ParticipantImpl implements Participant, Serializable {
 		this.user = user;
 	}
 
-	public boolean isOfficialPhotoPublicAndPreferred() {
-		if(profile == null) return false;
-		if( ! isProfilePhotoPublic()) return false;
-		return profile.isInstitutionalPictureIdPreferred();
-	}
-	
 	public boolean isProfilePhotoPublic() {
 		if(profile == null) return false;
 		boolean hidden = isTrue(profile.getHidePrivateInfo()) || isTrue(profile.getHidePublicInfo());
 		return ! hidden;
 	}
+
+	public boolean isOfficialPhotoPreferred() {
+		if(profile == null) return false;
+		return isTrue(profile.isInstitutionalPictureIdPreferred());
+	}
+
+	public boolean isOfficialPhotoPublicAndPreferred() {
+		if(profile == null) return false;
+		if( ! isProfilePhotoPublic()) return false;
+		return isOfficialPhotoPreferred();
+	}
 	
 	private boolean isTrue(Boolean bool) {
 		if(bool == null) return false;
 		return bool.booleanValue();
-	}
-
-	public boolean isOfficialPhotoPreferred() {
-		if(profile == null) return false;
-		return Boolean.TRUE.equals(profile.isInstitutionalPictureIdPreferred()); // JSF can't deal with Boolean values well
 	}
 
 }
