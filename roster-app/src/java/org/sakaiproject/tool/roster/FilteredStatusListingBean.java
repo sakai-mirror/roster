@@ -77,6 +77,7 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 	}
 	
 	protected List<Participant> findParticipants() {
+		if(log.isDebugEnabled()) log.debug("Finding participants filtered by enrollment status");
 		// Find the enrollment status descriptions for the current user's locale
 		Locale locale = new ResourceLoader().getLocale();
 		Map<String, String> statusCodes = services.cmService.getEnrollmentStatusDescriptions(locale);
@@ -85,10 +86,16 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 		if(sectionFilter == null) {
 			this.sectionFilter = (String)getSectionSelectItems().get(0).getValue();
 		}
-		Map<String, Enrollment> enrollmentMap = getEnrollmentMap(sectionFilter);
-		List<Participant> participants = super.findParticipants();
 		
-		// Decorate the participants returned by our superclass filtering
+		List<Participant> participants = services.rosterManager.getRoster(sectionFilter);
+		
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
+			Participant participant = iter.next();
+			if(filterParticipant(participant)) iter.remove();
+		}
+
+		// Decorate the participants returned by our filtering
+		Map<String, Enrollment> enrollmentMap = getEnrollmentMap(sectionFilter);
 		List<Participant> enrolledParticipants = new ArrayList<Participant>(participants.size());
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();

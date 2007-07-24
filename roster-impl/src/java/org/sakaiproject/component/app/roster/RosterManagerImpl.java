@@ -281,10 +281,12 @@ public abstract class RosterManagerImpl implements RosterManager {
 	}
 	
 	private List<Participant> getParticipantsInGroups(User currentUser, Map<Group, Set<String>> groupMembers) {
+		boolean userHasSiteViewAll = userHasSitePermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 		Set<String> viewableUsers = new HashSet<String>();
 		for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
 			Group group = iter.next();
-			if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL, group.getReference())) {
+			if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL, group.getReference())
+					|| userHasSiteViewAll) {
 				viewableUsers.addAll(groupMembers.get(group));
 			}
 		}
@@ -427,7 +429,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 		boolean result = securityService().unlock(user, permissionName, siteReference);
 		if(log.isDebugEnabled()) log.debug("user " + user.getEid() + ", permission " + permissionName + ", site " + siteReference + " has permission? " + result);
 		return result;
-
 	}
 
 	private boolean userHasGroupPermission(User user, String permissionName, String groupReference) {
