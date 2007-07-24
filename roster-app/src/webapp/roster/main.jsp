@@ -63,17 +63,17 @@
 						  <f:verbatim></div></f:verbatim>
 		 		
 			<%--********************* Roster Display *********************--%>
-				<t:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
+				<h:dataTable styleClass="listHier lines nolines" id="allUserRoster" value="#{RosterTool.roster}" var="searchResultAll" summary="#{msgs.view_profile_list_all_users}  - #{msgs.roster_list_summary}" rendered="#{RosterTool.renderRoster}">
 				    <%--********************* Oncourse *********************--%>
-				    <t:column rendered="#{RosterTool.renderHidden}" styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+				    <h:column rendered="#{RosterTool.renderHidden}">
 						<f:facet name="header">
 				   		  <h:outputText value="#{msgs.facet_visible}" />
 				   		</f:facet>
 						<h:graphicImage value="#{(searchResultAll.participant.privacy == true) ? '/images/bullet_visible.png' : '/images/bullet_invisible.png'}" alt="#{(searchResultAll.participant.privacy == true) ? 'Visible' : 'Invisible'}" />
-					</t:column>
+					</h:column>
 					<%--********************* End Oncourse *********************--%>
 				    
-					<t:column rendered="#{RosterTool.renderPhotoColumn}" styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">	
+					<h:column rendered="#{RosterTool.renderPhotoColumn}">	
 						<f:facet name="header">
 							<h:outputText value="#{RosterTool.facet}" />
 						</f:facet>
@@ -81,9 +81,9 @@
 						<h:graphicImage value="#{searchResultAll.participant.profile.pictureUrl}" rendered="#{searchResultAll.showURLPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
 						<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  rendered="#{searchResultAll.showCustomIdPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
 						<h:graphicImage value="ParticipantImageServlet.prf?photo=#{searchResultAll.participant.id}"  rendered="#{RosterTool.showIdPhoto}" alt="#{msgs.profile_picture_alt} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}" styleClass="rosterImage"/>
-					</t:column>	
+					</h:column>	
 					
-					<t:column styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+					<h:column>
 						<f:facet name="header">
 							<h:commandLink action="#{RosterTool.toggleLastNameSort}" title="#{msgs.view_profile_list_sort_name}">
 						   		<h:outputText value="#{msgs.facet_name}" />
@@ -94,9 +94,9 @@
 						<h:commandLink  action="#{RosterTool.processActionDisplayProfile}" value="#{searchResultAll.participant.lastName}, #{searchResultAll.participant.firstName}" title="#{msgs.view_profile_title} #{searchResultAll.participant.firstName} #{searchResultAll.participant.lastName}">
 							<f:param value="#{searchResultAll.participant.id}" name="participantId"/>
 						</h:commandLink>					
-					</t:column>
+					</h:column>
 					
-					<t:column styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+					<h:column>
 						<f:facet name="header">
 							<h:commandLink action="#{RosterTool.toggleUserIdSort}" title="#{msgs.view_profile_list_sort_id}">
 								<h:outputText value="#{msgs.facet_userId}" />
@@ -105,10 +105,10 @@
 						   	</h:commandLink>
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.displayId}" />						
-					</t:column>
+					</h:column>
 					
 					<%--********************* Oncourse *********************--%>
-					<t:column rendered="#{RosterTool.renderHidden}" styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+					<h:column rendered="#{RosterTool.renderHidden}">
 		            	<f:facet name="header">
 		                	<h:commandLink action="#{RosterTool.toggleEmailSort}" title="#{msgs.view_profile_list_sort_email}">
 		                    	<h:outputText value="#{msgs.facet_email}" />
@@ -117,10 +117,10 @@
 			                </h:commandLink>
 			            </f:facet>
    			            <h:outputLink value="mailto:#{searchResultAll.participant.email}"><h:outputText value="#{searchResultAll.participant.email}"/></h:outputLink>
-		    	    </t:column>
+		    	    </h:column>
 		    	    <%--********************* End Oncourse *********************--%>
 					
-					<t:column styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+					<h:column>
 						<f:facet name="header">
 							<h:commandLink action="#{RosterTool.toggleRoleSort}" title="#{msgs.view_profile_list_sort_role}">
 								<h:outputText value="#{msgs.facet_role}" />
@@ -129,9 +129,9 @@
 						   	</h:commandLink>
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.roleTitle}" /> 						
-					</t:column>
+					</h:column>
 					
-					<t:column rendered="#{RosterTool.renderSectionsColumn}" styleClass="#{(searchResultAll.participant.privacy == true) ? '' : 'invis'}">
+					<h:column rendered="#{RosterTool.renderSectionsColumn}">
 						<f:facet name="header">
 							<h:commandLink action="#{RosterTool.toggleSectionsSort}" title="#{msgs.view_profile_list_sort_sections}">
 								<h:outputText value="#{msgs.facet_sections}" />
@@ -140,8 +140,8 @@
 						   	</h:commandLink>
 						</f:facet>								
 						<h:outputText value="#{searchResultAll.participant.sectionsForDisplay}" /> 						
-				    </t:column>
-				</t:dataTable>
+				    </h:column>
+				</h:dataTable>
 			</h:panelGroup>
 			<f:verbatim><!-- commented out when wait page added </div> --></f:verbatim>
 
