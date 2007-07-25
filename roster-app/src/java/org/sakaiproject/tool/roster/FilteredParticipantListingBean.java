@@ -45,8 +45,6 @@ import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
 public class FilteredParticipantListingBean implements Serializable {
-	private static final String VIEW_ALL = "roster_view_all";
-	private static final String VIEW_STUDENTS = "roster_view_students";
 	private static final Log log = LogFactory.getLog(FilteredParticipantListingBean.class);
 	private static final long serialVersionUID = 1L;
 
@@ -54,10 +52,13 @@ public class FilteredParticipantListingBean implements Serializable {
 	public void setServices(ServicesBean services) {
 		this.services = services;
 	}
-
+	protected SearchFilter searchFilter;
+	public void setSearchFilter(SearchFilter searchFilter) {
+		this.searchFilter = searchFilter;
+	}
+	
 	protected String viewFilter;
 	protected String defaultSearchText;
-	protected String searchFilter;
 	protected String sectionFilter;
 
 
@@ -76,13 +77,9 @@ public class FilteredParticipantListingBean implements Serializable {
 		this.participantCount = this.participants.size();
 		this.roleCounts = findRoleCounts(this.participants);
 
-		if(viewFilter == null) {
-			viewFilter = VIEW_ALL;
-		}
-		
-		defaultSearchText = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+		if(defaultSearchText == null) defaultSearchText = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "roster_search_text");
-		searchFilter = defaultSearchText;
+		if(getSearchFilterString() == null) searchFilter.setSearchFilter(defaultSearchText);
 	}
 
 	/**
@@ -101,7 +98,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	}
 
 	public void clearSearch(ActionEvent ae) {
-		searchFilter = defaultSearchText;
+		searchFilter.setSearchFilter(defaultSearchText);
 	}
 
 	protected List<Participant> findParticipants() {
@@ -124,7 +121,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	 * Remove this participant if they don't  pass the search filter
 	 */
 	protected boolean filterParticipant(Participant participant) {
-		return searchFilter != null && ! searchFilter.equals(defaultSearchText) && ! searchMatches(searchFilter, participant.getUser());
+		return getSearchFilterString() != null && ! getSearchFilterString().equals(defaultSearchText) && ! searchMatches(getSearchFilterString(), participant.getUser());
 	}
 	
 	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
@@ -197,16 +194,16 @@ public class FilteredParticipantListingBean implements Serializable {
 		return requestCache().viewableSections.size() > 1;
 	}
 
-	public String getSearchFilter() {
-		return searchFilter;
+	public String getSearchFilterString() {
+		return searchFilter.getSearchFilter();
 	}
 
-	public void setSearchFilter(String searchFilter) {
+	public void setSearchFilterString(String searchFilter) {
 		String trimmedArg = StringUtils.trimToNull(searchFilter);
 		if(trimmedArg == null) {
-			this.searchFilter = defaultSearchText;
+			this.searchFilter.setSearchFilter(defaultSearchText);
 		} else {
-			this.searchFilter = trimmedArg;
+			this.searchFilter.setSearchFilter(trimmedArg);
 		}
 	}
 

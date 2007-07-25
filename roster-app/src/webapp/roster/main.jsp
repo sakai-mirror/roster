@@ -79,15 +79,15 @@ response.setContentType("text/html; charset=UTF-8");
             </t:dataTable>
 
       <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilter eq filter.defaultSearchText}" >
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
                      <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
-                <h:outputFormat value="#{msgs.no_participants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilter != filter.defaultSearchText && filter.sectionFilterTitle!=null}" >
-                    <f:param value="#{filter.searchFilter}"/>
+                <h:outputFormat value="#{msgs.no_participants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && filter.sectionFilterTitle!=null}" >
+                    <f:param value="#{filter.searchFilterString}"/>
                     <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
-                   <h:outputFormat value="#{msgs.no_participants_in_anysections}" rendered="#{empty filter.participants &&  filter.searchFilter != filter.defaultSearchText && filter.sectionFilterTitle == null}" >
-                    <f:param value="#{filter.searchFilter}"/>                    
+                   <h:outputFormat value="#{msgs.no_participants_in_anysections}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && filter.sectionFilterTitle == null}" >
+                    <f:param value="#{filter.searchFilterString}"/>                    
                 </h:outputFormat>
             </t:div>
         </h:form>

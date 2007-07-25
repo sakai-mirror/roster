@@ -122,9 +122,19 @@
     </managed-bean>
 
     <managed-bean>
+        <managed-bean-name>searchFilter</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.SearchFilter</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
         <managed-bean-name>filter</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.FilteredParticipantListingBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>searchFilter</property-name>
+            <value>#{searchFilter}</value>
+        </managed-property>
         <managed-property>
             <property-name>services</property-name>
             <value>#{services}</value>
@@ -141,6 +151,10 @@
         <managed-bean-name>enrollmentStatusFilter</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.FilteredStatusListingBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>searchFilter</property-name>
+            <value>#{searchFilter}</value>
+        </managed-property>
         <managed-property>
             <property-name>services</property-name>
             <value>#{services}</value>

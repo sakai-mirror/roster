@@ -31,11 +31,11 @@ response.setContentType("text/html; charset=UTF-8");
             </h:panelGrid>
 
             <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilter eq filter.defaultSearchText}" >
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
                      <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
-                <h:outputFormat value="#{msgs.no_partcipants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilter != filter.defaultSearchText}" >
-                    <f:param value="#{filter.searchFilter}"/>
+                <h:outputFormat value="#{msgs.no_partcipants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText}" >
+                    <f:param value="#{filter.searchFilterString}"/>
                     <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
             </t:div>

@@ -43,7 +43,7 @@ response.setContentType("text/html; charset=UTF-8");
 
 				<h:panelGrid columns="2">
 					<h:panelGroup>
-	    		        <h:inputText id="search" value="#{enrollmentStatusFilter.searchFilter}"
+	    		        <h:inputText id="search" value="#{enrollmentStatusFilter.searchFilterString}"
 	        		        onfocus="clearIfDefaultString(this, '#{msgs.roster_search_text}')"/>
 	        		    <h:commandButton value="#{msgs.roster_search_button}" actionListener="#{enrollmentStatusFilter.search}"/>
 	        		    <h:commandButton value="#{msgs.roster_clear_button}" actionListener="#{enrollmentStatusFilter.clearSearch}"/>
