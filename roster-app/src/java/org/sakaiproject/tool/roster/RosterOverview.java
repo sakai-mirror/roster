@@ -20,17 +20,14 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
@@ -38,6 +35,7 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.site.api.SiteService;
 
 public class RosterOverview extends BaseRosterPageBean {
@@ -100,10 +98,15 @@ public class RosterOverview extends BaseRosterPageBean {
             spreadsheetData.add(row);
         }
 
-        String spreadsheetCourse = filter.getCourseFilterTitle();
-        String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
-        String spreadsheetName = spreadsheetCourse.replaceAll(" ","_")+ "_"+dateString;
+        String spreadsheetNameRaw;
+        if(StringUtils.trimToNull(filter.sectionFilter) == null) {
+        	spreadsheetNameRaw = filter.getCourseFilterTitle();
+        } else {
+        	CourseSection section = filter.services.sectionAwareness.getSection(filter.getSectionFilter());
+        	spreadsheetNameRaw = section.getTitle();
+        }
         
+        String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
     }
 }

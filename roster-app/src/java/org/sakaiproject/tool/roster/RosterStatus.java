@@ -146,10 +146,8 @@ public class RosterStatus extends BaseRosterPageBean {
 			spreadsheetData.add(row);
 		}
 
-        String spreadsheetRoster = ((FilteredStatusListingBean)filter).getFirstSectionTitle();
-        String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
-        String spreadsheetName = spreadsheetRoster.replaceAll(" ","_")+ "_"+dateString;
-
+        String spreadsheetNameRaw = ((FilteredStatusListingBean)filter).getFirstSectionTitle();
+        String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData,spreadsheetName, new SpreadsheetDataFileWriterCsv());
 	}
 

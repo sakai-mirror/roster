@@ -21,8 +21,10 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
+import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.event.ActionEvent;
@@ -170,6 +172,11 @@ public abstract class BaseRosterPageBean {
 			renderOfficialPhotos = filter.services.rosterManager.isOfficialPhotosViewable();
 		}
 		return renderOfficialPhotos.booleanValue();
+	}
+
+	protected String getDownloadFileName(String rawString) {
+        String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
+        return rawString.replaceAll("\\W","_")+ "_"+dateString;
 	}
 
 }
