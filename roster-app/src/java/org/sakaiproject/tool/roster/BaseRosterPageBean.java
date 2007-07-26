@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.api.app.roster.RosterFunctions;
 
 public abstract class BaseRosterPageBean {
 
@@ -149,7 +150,9 @@ public abstract class BaseRosterPageBean {
 
 	public boolean isRenderStatusLink() {
 		if(renderStatusLink == null) {
-			renderStatusLink = ! filter.statusRequestCache().enrollmentSets.isEmpty();
+			renderStatusLink = filter.services.securityService.unlock(
+					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, getSiteReference()) &&
+					! filter.statusRequestCache().enrollmentSets.isEmpty();
 		}
 		return renderStatusLink.booleanValue();
 	}
