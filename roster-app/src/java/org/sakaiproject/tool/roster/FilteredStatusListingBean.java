@@ -23,6 +23,7 @@ package org.sakaiproject.tool.roster;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -37,6 +39,7 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
@@ -46,6 +49,8 @@ import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.user.api.User;
+import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.ResourceLoader;
 
 public class FilteredStatusListingBean extends FilteredParticipantListingBean implements Serializable {
@@ -72,57 +77,77 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 			this.statusFilter = ALL_STATUS;
 		}
 
-		// Proceed with the filtering
-		super.init();
+		if(defaultSearchText == null) defaultSearchText = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+				ServicesBean.MESSAGE_BUNDLE, "roster_search_text");
+		if(getSearchFilterString() == null) searchFilter.setSearchFilter(defaultSearchText);
+
+		this.participants = findParticipants();
+		this.participantCount = participants.size();
 	}
-	
+
 	protected List<Participant> findParticipants() {
 		if(log.isDebugEnabled()) log.debug("Finding participants filtered by enrollment status");
+
 		// Find the enrollment status descriptions for the current user's locale
 		Locale locale = new ResourceLoader().getLocale();
 		Map<String, String> statusCodes = services.cmService.getEnrollmentStatusDescriptions(locale);
 
-		// Make sure we're looking at a section with an enrollment set
+		// Make sure we're looking at an enrollment set
 		if(sectionFilter == null) {
-			this.sectionFilter = (String)getSectionSelectItems().get(0).getValue();
+			this.sectionFilter = (String)statusRequestCache().enrollmentSets.get(0).getEid();
 		}
 		
-		List<Participant> participants = services.rosterManager.getRoster(sectionFilter);
+		// There is no reason to use the roster manager here anymore, since we only
+		// need CM and user data
+		List<Participant> participants = new ArrayList<Participant>();
+		Set<Enrollment> enrollments = services.cmService.getEnrollments(sectionFilter);
+		final String studentRole;
+		if(studentRoles.isEmpty()) {
+			studentRole = "";
+		} else {
+			// just pick one
+			studentRole = studentRoles.iterator().next();
+		}
+
+		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
+			Enrollment enr = iter.next();
+			final User user;
+			try {
+				user = services.userDirectoryService.getUserByEid(enr.getUserId());
+			} catch (UserNotDefinedException unde) {
+				log.warn("Can not find user " + enr.getUserId());
+				continue;
+			}
+			Participant p = new Participant() {
+				public Profile getProfile() {return null;}
+				public String getRoleTitle() {return studentRole;}
+				public User getUser() {return user;}
+				public boolean isOfficialPhotoPreferred() {return false;}
+				public boolean isOfficialPhotoPublicAndPreferred() {return false;}
+				public boolean isProfilePhotoPublic() {return false;}
+			};
+			EnrolledParticipant ep = new EnrolledParticipant(p, statusCodes.get(enr.getEnrollmentStatus()), enr.getCredits());
+			participants.add(ep);
+		}
 		
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
 			if(filterParticipant(participant)) iter.remove();
 		}
 
-		// Decorate the participants returned by our filtering
-		Map<String, Enrollment> enrollmentMap = getEnrollmentMap(sectionFilter);
-		List<Participant> enrolledParticipants = new ArrayList<Participant>(participants.size());
-		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
-			Participant participant = iter.next();
-			String status = null;
-			String credits = null;
-			Enrollment enr = enrollmentMap.get(participant.getUser().getEid());
-			if(enr != null) {
-				status = statusCodes.get(enr.getEnrollmentStatus());
-				credits = enr.getCredits();
-			}
-			EnrolledParticipant ep = new EnrolledParticipant(participant, status, credits);
-			enrolledParticipants.add(ep);
-		}
 		
 		if(ALL_STATUS.equals(statusFilter) || StringUtils.trimToNull(statusFilter) == null) {
 			// No need for further filtering
-			return enrolledParticipants;
+			return participants;
 		}
 		
 		// Filter the participants further, by status
-		for(Iterator<Participant> iter = enrolledParticipants.iterator(); iter.hasNext();) {
+		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			if( ! statusFilter.equals(((EnrolledParticipant)iter.next()).getEnrollmentStatus())) {
 				iter.remove();
 			}
 		}
-		
-		return enrolledParticipants;
+		return participants;
 	}
 	
 	/**
@@ -163,36 +188,25 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 
 	
 	public List<SelectItem> getSectionSelectItems() {
-		return statusRequestCache().getSectionSelectItems();
-	}
-	
-	public boolean isMultipleEnrollableSectionsDisplayed() {
-		return getSectionSelectItems().size() > 1;
-	}
-	
-	public List<SelectItem> getViewableEnrollableSectionSelectItems() {
 		List<SelectItem> selectItems = new ArrayList<SelectItem>();
-		for(Iterator<CourseSection> iter = getViewableEnrollableSections().iterator(); iter.hasNext();) {
-			CourseSection section = iter.next();
-			selectItems.add(new SelectItem(section.getUuid(), section.getTitle()));
+		for(Iterator<EnrollmentSet> iter = statusRequestCache().enrollmentSets.iterator(); iter.hasNext();) {
+			EnrollmentSet es = iter.next();
+			selectItems.add(new SelectItem(es.getEid(), es.getTitle()));
 		}
 		return selectItems;
 	}
-
 	
-	/**
-	 * Because the status filter is displayed here as a text, we need to ensure that
-	 * it's never null.
-	 * 
-	 * @return
-	 */
-	public String getViewFilter() {
-		String retValue = super.getViewFilter();
-		if(retValue == null) {
-			return "";
-		} else {
-			return retValue;
+	public boolean isMultipleEnrollmentSetsDisplayed() {
+		return statusRequestCache().enrollmentSets.size() > 1;
+	}
+	
+	public List<SelectItem> getEnrollmentSetSelectItems() {
+		List<SelectItem> selectItems = new ArrayList<SelectItem>();
+		for(Iterator<EnrollmentSet> iter = statusRequestCache().enrollmentSets.iterator(); iter.hasNext();) {
+			EnrollmentSet es = iter.next();
+			selectItems.add(new SelectItem(es.getEid(), es.getTitle()));
 		}
+		return selectItems;
 	}
 
 	public String getStatusFilter() {
@@ -221,16 +235,25 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 	public String getAllStatus() {
 		return ALL_STATUS;
 	}
-	
-	protected StatusRequestCache statusRequestCache() {
-		StatusRequestCache rc = (StatusRequestCache)resolveManagedBean("statusRequestCache");
-		// Manually initialize the cache, if necessary
-		if( ! rc.isInitizlized()) rc.init(services);
-		return rc;
+		
+	public String getFirstEnrollmentSetTitle() {
+		return statusRequestCache().enrollmentSets.get(0).getTitle();
 	}
-	
-	public String getFirstSectionTitle() {
-		return statusRequestCache().sectionSelectItems.get(0).getLabel();
+
+	public List<SelectItem> getStatusSelectItems() {
+		List<SelectItem> list = new ArrayList<SelectItem>();
+		Map<String, String> map = services.cmService.getEnrollmentStatusDescriptions(LocaleUtil.getLocale(FacesContext.getCurrentInstance()));
+
+		// The UI doesn't care about status IDs... just labels
+		List<String> statusLabels = new ArrayList<String>();
+		statusLabels.addAll(map.values());
+		Collections.sort(statusLabels);
+		for(Iterator<String> iter = statusLabels.iterator(); iter.hasNext();) {
+			String statusLabel = iter.next();
+			SelectItem item = new SelectItem(statusLabel, statusLabel);
+			list.add(item);
+		}
+		return list;
 	}
 
 }

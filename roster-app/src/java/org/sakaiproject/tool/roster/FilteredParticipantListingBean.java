@@ -57,7 +57,6 @@ public class FilteredParticipantListingBean implements Serializable {
 		this.searchFilter = searchFilter;
 	}
 	
-	protected String viewFilter;
 	protected String defaultSearchText;
 	protected String sectionFilter;
 
@@ -166,30 +165,6 @@ public class FilteredParticipantListingBean implements Serializable {
 		return list;
 	}
 
-	protected List<CourseSection> getViewableEnrollableSections() {
-		return services.rosterManager.getViewableEnrollmentStatusSectionsForCurrentUser();
-	}
-
-
-	public List<SelectItem> getStatusSelectItems() {
-		List<SelectItem> list = new ArrayList<SelectItem>();
-		Map<String, String> map = services.cmService.getEnrollmentStatusDescriptions(LocaleUtil.getLocale(FacesContext.getCurrentInstance()));
-
-		// The UI doesn't care about status IDs... just labels
-		List<String> statusLabels = new ArrayList<String>();
-		for(Iterator<Entry<String, String>> iter = map.entrySet().iterator(); iter.hasNext();) {
-			Entry<String, String> entry = iter.next();
-			statusLabels.add(entry.getValue());
-		}
-		Collections.sort(statusLabels);
-		for(Iterator<String> iter = statusLabels.iterator(); iter.hasNext();) {
-			String statusLabel = iter.next();
-			SelectItem item = new SelectItem(statusLabel, statusLabel);
-			list.add(item);
-		}
-		return list;
-	}
-
 	public boolean isDisplaySectionsFilter() {
 		return requestCache().viewableSections.size() > 1;
 	}
@@ -241,14 +216,6 @@ public class FilteredParticipantListingBean implements Serializable {
 		}
 	}
 
-	public String getViewFilter() {
-		return viewFilter;
-	}
-
-	public void setViewFilter(String statusFilter) {
-		this.viewFilter = StringUtils.trimToNull(statusFilter);
-	}
-
 	public Integer getParticipantCount() {
 		return participantCount;
 	}
@@ -290,8 +257,14 @@ public class FilteredParticipantListingBean implements Serializable {
 	protected String getSiteContext() {
 		return services.toolManager.getCurrentPlacement().getContext();
 	}
+	
+	public String getDefaultSearchText() {
+		return defaultSearchText;
+	}
 
-	// We use this request-scoped bean to hold a reference to the sections in this site.
+	// Request scoped caching
+
+	// We use these request-scoped beans to hold references to the sections in this site.
 	// DO NOT cache the RequestCache itself.  Always obtain a reference using
 	// requestCache().
 	protected RequestCache requestCache() {
@@ -301,14 +274,17 @@ public class FilteredParticipantListingBean implements Serializable {
 		return rc;
 	}
 
+	protected StatusRequestCache statusRequestCache() {
+		StatusRequestCache rc = (StatusRequestCache)resolveManagedBean("statusRequestCache");
+		// Manually initialize the cache, if necessary
+		if( ! rc.isInitialized()) rc.init(services);
+		return rc;
+	}
+
 	// This will either retrieve the existing managed bean, or generate a new one
 	protected Object resolveManagedBean(String managedBeanId) {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		return facesContext.getApplication().getVariableResolver().resolveVariable(facesContext, managedBeanId);
-	}
-	
-	public String getDefaultSearchText() {
-		return defaultSearchText;
 	}
 
 }

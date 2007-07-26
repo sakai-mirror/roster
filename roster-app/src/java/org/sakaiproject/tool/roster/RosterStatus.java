@@ -21,10 +21,8 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -146,7 +144,7 @@ public class RosterStatus extends BaseRosterPageBean {
 			spreadsheetData.add(row);
 		}
 
-        String spreadsheetNameRaw = ((FilteredStatusListingBean)filter).getFirstSectionTitle();
+        String spreadsheetNameRaw = ((FilteredStatusListingBean)filter).getFirstEnrollmentSetTitle();
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData,spreadsheetName, new SpreadsheetDataFileWriterCsv());
 	}

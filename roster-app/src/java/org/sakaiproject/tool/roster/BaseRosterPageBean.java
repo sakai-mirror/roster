@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.sakaiproject.api.app.roster.Participant;
@@ -148,7 +149,7 @@ public abstract class BaseRosterPageBean {
 
 	public boolean isRenderStatusLink() {
 		if(renderStatusLink == null) {
-			renderStatusLink = ! filter.getViewableEnrollableSections().isEmpty();
+			renderStatusLink = ! filter.statusRequestCache().enrollmentSets.isEmpty();
 		}
 		return renderStatusLink.booleanValue();
 	}
@@ -178,5 +179,4 @@ public abstract class BaseRosterPageBean {
         String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
         return rawString.replaceAll("\\W","_")+ "_"+dateString;
 	}
-
 }

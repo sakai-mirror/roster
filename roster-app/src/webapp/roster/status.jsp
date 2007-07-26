@@ -27,12 +27,12 @@ response.setContentType("text/html; charset=UTF-8");
 	        		    <h:selectOneMenu
 							id="sectionFilter"
 							value="#{enrollmentStatusFilter.sectionFilter}"
-							rendered="#{enrollmentStatusFilter.multipleEnrollableSectionsDisplayed}"
+							rendered="#{enrollmentStatusFilter.multipleEnrollmentSetsDisplayed}"
 							onchange="this.form.submit()"
 							immediate="true">
-	        		    	<f:selectItems value="#{enrollmentStatusFilter.viewableEnrollableSectionSelectItems}"/>
+	        		    	<f:selectItems value="#{enrollmentStatusFilter.enrollmentSetSelectItems}"/>
 	        		   	</h:selectOneMenu>
-	        		   	<h:outputText value="#{enrollmentStatusFilter.firstSectionTitle}" rendered="#{ ! enrollmentStatusFilter.multipleEnrollableSectionsDisplayed}" />
+	        		   	<h:outputText value="#{enrollmentStatusFilter.firstEnrollmentSetTitle}" rendered="#{ ! enrollmentStatusFilter.multipleEnrollmentSetsDisplayed}" />
 
 						<h:outputLabel for="statusFilter" value="#{msgs.enrollment_status_filter_label}"/>
 	        		    <h:selectOneMenu id="statusFilter" value="#{enrollmentStatusFilter.statusFilter}" onchange="this.form.submit()" immediate="true">
