@@ -94,6 +94,10 @@
             <value>#{org_sakaiproject_user_api_UserDirectoryService}</value>
         </managed-property>
         <managed-property>
+            <property-name>serverConfigurationService</property-name>
+            <value>#{org_sakaiproject_component_api_ServerConfigurationService}</value>
+        </managed-property>
+        <managed-property>
             <property-name>profileManager</property-name>
             <value>#{org_sakaiproject_api_app_profile_ProfileManager}</value>
         </managed-property>

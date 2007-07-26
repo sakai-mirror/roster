@@ -26,6 +26,7 @@ import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
@@ -46,8 +47,11 @@ public class ServicesBean {
 	protected SiteService siteService;
 	protected ToolManager toolManager;
 	protected UserDirectoryService userDirectoryService;
+	protected ServerConfigurationService serverConfigurationService;
 	protected ProfileManager profileManager;
 	protected PhotoService photoService;
+	
+	// The group provider may not exist, so ensure that it's accessible only via getGroupProvider()
 	private GroupProvider groupProvider;
 	
 	// Service injection
@@ -74,6 +78,10 @@ public class ServicesBean {
 	}
 	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
 		this.userDirectoryService = userDirectoryService;
+	}
+	public void setServerConfigurationService(
+			ServerConfigurationService serverConfigurationService) {
+		this.serverConfigurationService = serverConfigurationService;
 	}
 	public void setProfileManager(ProfileManager profileManager) {
 		this.profileManager = profileManager;

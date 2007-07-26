@@ -79,7 +79,7 @@ response.setContentType("text/html; charset=UTF-8");
                         </f:facet>
                         <h:outputText value="#{participant.user.displayId}"/>
                     </h:column>
-                    <h:column>
+                    <h:column rendered="#{status.emailColumnRendered}">
                         <f:facet name="header">
                             <t:commandSortHeader columnName="email" immediate="true" arrow="true">
                                 <h:outputText value="#{msgs.facet_email}" />

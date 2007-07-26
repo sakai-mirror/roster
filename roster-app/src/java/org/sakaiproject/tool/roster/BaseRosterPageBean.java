@@ -34,7 +34,8 @@ import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 
 public abstract class BaseRosterPageBean {
-
+	public static final String ROSTER_VIEW_EMAIL = "roster_view_email";
+	
 	public abstract String getPageTitle();
 	public abstract boolean isExportablePage();
 	public abstract void export(ActionEvent event);
@@ -178,6 +179,15 @@ public abstract class BaseRosterPageBean {
 		return renderOfficialPhotos.booleanValue();
 	}
 
+	/**
+	 * Some institutions use an email address as a user's displayId.  For these institutions,
+	 * we provide a way to hide the email column.
+	 */
+	public boolean isEmailColumnRendered() {
+		return Boolean.TRUE.toString().equalsIgnoreCase(
+				filter.services.serverConfigurationService.getString(ROSTER_VIEW_EMAIL, "true"));
+	}
+	
 	protected String getDownloadFileName(String rawString) {
         String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
         return rawString.replaceAll("\\W","_")+ "_"+dateString;
