@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>master</artifactId>
+    <artifactId>base</artifactId>
     <groupId>org.sakaiproject</groupId>
     <version>M2</version>
-    <relativePath>../master/pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Roster Project</name>
   <groupId>org.sakaiproject</groupId>
@@ -14,8 +14,9 @@
   <modules>
     <module>components</module>
     <module>roster-api</module>
+    <module>roster-impl</module>
+    <module>roster-model</module>
     <module>roster-app</module>
     <module>roster-help</module>
-    <module>roster-component-shared</module>
   </modules>
 </project>

@@ -43,37 +43,7 @@ public interface RosterManager
    * @return
    */
   public boolean currentUserHasExportPerm();
-  
-  /**
-   * Check for view all permission (roster.viewall)
-   * @return
-   */
-  public boolean currentUserHasViewAllPerm();
-  
-  /**
-   * Check for view hidden permission (roster.viewhidden)
-   * @return
-   */
-  public boolean currentUserHasViewHiddenPerm();
-  
-  /**
-   * Check for view official id permission (roster.viewofficialid) 
-   * @return
-   */
-  public boolean currentUserHasViewOfficialIdPerm();
-  
-  /**
-   * Can the current user view section memberships?
-   * @return
-   */
-  public boolean currentUserHasViewSectionMembershipsPerm();
-  
-  /**
-   * Check to see if the site has any sections/groups
-   * @return
-   */
-  public boolean siteHasSections();
-  
+
   /**
    *  Get the sections viewable by current user
    * @return
@@ -81,23 +51,41 @@ public interface RosterManager
   public List<CourseSection> getViewableSectionsForCurrentUser();
 
   /**
+   *  Get the sections which are viewable by current user and for which the current
+   *  user has roster.viewenrollmentstatus
+   * @return
+   */
+  public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser();
+
+  /**
    * @return An unfiltered List of viewable (to current user) Participants in the site.
    */
   public List<Participant> getRoster();
-
-  /**
-  * Check for site update permission (site.upd) 
-  * @return
-  */
- public boolean currentUserHasSiteUpdatePerm();
- 
- /**
   
+  /**
+   * @param groupReference The Reference string for the group
+   * @return An List of viewable (to current user) Participants in a single group.
+   */
+  public List<Participant> getRoster(String groupReference);
+
   /**
    * Returns a participant by the id
    * @param participantId
    * @return
    */
   public Participant getParticipantById(String participantId);
-  
+
+  /**
+   * Are user profiles viewable for the current user in this site?
+   * 
+   * @return
+   */
+  public boolean isProfilesViewable();
+
+  /**
+   * Are users official photos viewable for the current user in this site?
+   * @return
+   */
+  public boolean isOfficialPhotosViewable();
+
 }

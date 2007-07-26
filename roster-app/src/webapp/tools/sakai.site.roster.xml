@@ -2,7 +2,6 @@
 <registration>
     <tool id="sakai.site.roster" title="Roster" description="For viewing the site participants list.">
         <!--     	<configuration name="help.id" value="roster_overview" />	   -->
-        <configuration name="functions.require" value="section.role.instructor | section.role.ta" />
         <category name="course" />
 		<category name="project" />
        <category name="portfolio" />

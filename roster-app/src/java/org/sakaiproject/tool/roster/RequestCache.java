@@ -20,10 +20,7 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
@@ -41,20 +38,13 @@ public class RequestCache {
 	
 	private boolean init;
 	protected List<CourseSection> viewableSections;
-	protected Map<String, String> sectionCategoryMap;
 
 	protected boolean isInitizlized() {
 		return init;
 	}
 	
 	protected void init(ServicesBean services) {
-		this.viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();
-
-		sectionCategoryMap = new HashMap<String, String>();
-		for(Iterator<String> iter = services.cmService.getSectionCategories().iterator(); iter.hasNext();) {
-			String category = iter.next();
-			sectionCategoryMap.put(category, services.cmService.getSectionCategoryDescription(category));
-		}
+		this.viewableSections = services.rosterManager.getViewableSectionsForCurrentUser();		
 		this.init = true;
 	}
 }

@@ -19,18 +19,24 @@ response.setContentType("text/html; charset=UTF-8");
             <%@include file="inc/filter.jspf" %>
 
             <h:panelGrid columns="2" styleClass="rosterPicturesFilter" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
-                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true">
+                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true" rendered="#{pictures.renderPicturesOptions}">
                     <f:selectItems value="#{pictures.photoSelectItems}" />
                 </t:selectOneRadio>
-	
+				
+				<%-- Render something to keep the panel grid happy with two rendered components --%>
+				<h:outputText value="" rendered="#{ ! pictures.renderPicturesOptions}"/>
+
                 <h:commandButton value="#{msgs.roster_show_names}" actionListener="#{pictures.showNames}" rendered="#{ ! prefs.displayNames}" />
                 <h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
             </h:panelGrid>
 
             <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}"
-                              rendered="#{empty filter.participants}" >
-                    <f:param value="#{filter.searchFilter}"/>
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
+                     <f:param value="#{filter.sectionFilterTitle}"/>
+                </h:outputFormat>
+                <h:outputFormat value="#{msgs.no_partcipants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText}" >
+                    <f:param value="#{filter.searchFilterString}"/>
+                    <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
             </t:div>
 
@@ -45,30 +51,76 @@ response.setContentType("text/html; charset=UTF-8");
                         <h:graphicImage
                                 id="profileImage"
                                 value="#{participant.profile.pictureUrl}"
-                                rendered="#{prefs.displayProfilePhotos && not empty participant.profile.pictureUrl}"
                                 title="#{msgs.profile_picture_alt} #{participant.user.displayName}"
-                                styleClass="rosterImage"/>
-							
-                        <h:graphicImage
-                                id="profileImageNotAvailable"
-                                value="#{msgs.img_unavail}"
-                                rendered="#{prefs.displayProfilePhotos && empty participant.profile.pictureUrl}"
-                                title="#{msgs.profile_no_picture_available}"
-                                styleClass="rosterImage"/>
+                                styleClass="rosterImage"
+                                rendered="#{
+                                (
+                                ! pictures.officialPhotosAvailableToCurrentUser &&
+                                participant.profilePhotoPublic &&
+                                ! empty participant.profile.pictureUrl &&
+                                ! participant.officialPhotoPublicAndPreferred
+                                ) ||
+                                (
+                                pictures.officialPhotosAvailableToCurrentUser &&
+                                prefs.displayProfilePhotos &&
+                                ! participant.officialPhotoPreferred &&
+                                ! empty participant.profile.pictureUrl
+                                )
+                                }"
+							/>
 
                         <h:graphicImage
                                 id="rosterImage"
                                 value="ParticipantImageServlet.prf?photo=#{participant.user.id}"
-                                rendered="#{ ! prefs.displayProfilePhotos}"
                                 title="#{msgs.profile_picture_alt} #{participant.user.displayName}"
-                                styleClass="rosterImage"/>
+                                styleClass="rosterImage"
+                                rendered="#{
+                                (pictures.officialPhotosAvailableToCurrentUser && ! prefs.displayProfilePhotos) ||
+                                (pictures.officialPhotosAvailableToCurrentUser && prefs.displayProfilePhotos && participant.officialPhotoPreferred) ||
+                                ( ! pictures.officialPhotosAvailableToCurrentUser && participant.officialPhotoPublicAndPreferred)
+                                }"
+                                />
 							
+                        <h:graphicImage
+                                id="profileImageNotAvailable"
+                                value="#{msgs.img_unavail}"
+                                title="#{msgs.profile_no_picture_available}"
+                                styleClass="rosterImage"
+                                rendered="#{
+                                (
+                                pictures.officialPhotosAvailableToCurrentUser &&
+                                prefs.displayProfilePhotos &&
+                                ! participant.officialPhotoPreferred &&
+                                empty participant.profile.pictureUrl
+                                ) ||
+                                (
+                                ! pictures.officialPhotosAvailableToCurrentUser &&
+                                participant.profilePhotoPublic &&
+                                ! participant.officialPhotoPublicAndPreferred &&
+                                empty participant.profile.pictureUrl
+                                ) ||
+                                (
+								! pictures.officialPhotosAvailableToCurrentUser &&
+                                ! participant.profilePhotoPublic
+                                )
+                                }"
+                                />
+
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
-                        <h:outputFormat value="#{participant.user.sortName}"/>
+                        <t:div>
+                            <h:outputFormat value="#{participant.user.displayName}" title="#{participant.user.displayName}">
+                                <f:converter converterId="textTruncateConverter"/>
+                            </h:outputFormat>
+                        </t:div>
                     </t:div>
+
                     <t:div>
-                        <h:outputFormat value="#{participant.user.displayId}"/>
+                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayId}" title="#{msgs.show_profile}" rendered="#{pictures.renderProfileLinks}">
+                            <f:param name="participantId" value="#{participant.user.id}" />
+                            <f:param name="returnPage" value="pictures" />
+                        </h:commandLink>
+                        <h:outputText value="#{participant.user.displayId}" rendered="#{ ! pictures.renderProfileLinks}" />
                     </t:div>
                 </h:column>
             </t:dataTable>

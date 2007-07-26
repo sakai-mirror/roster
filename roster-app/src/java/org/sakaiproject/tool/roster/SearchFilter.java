@@ -20,16 +20,19 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import javax.faces.event.ActionEvent;
+/**
+ * The search string is shared among a variety of beans, so let's localize it here.
+ *
+ */
+public class SearchFilter {
+	protected String searchFilter;
 
-public interface RosterPageBean {
-	public String getPageTitle();
+	public String getSearchFilter() {
+		return searchFilter;
+	}
 
-	public boolean isExportablePage();
-	public boolean isRenderStatusLink();
-	public boolean isRenderPicturesLink();
-	public boolean isRenderProfileLinks();
-	
-	public void export(ActionEvent event);
+	public void setSearchFilter(String searchFilter) {
+		this.searchFilter = searchFilter;
+	}
 
 }

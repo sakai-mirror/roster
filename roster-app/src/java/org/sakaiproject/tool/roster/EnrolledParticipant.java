@@ -20,12 +20,8 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-import java.util.List;
-import java.util.Map;
-
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
 /**
@@ -77,18 +73,19 @@ public class EnrolledParticipant implements Participant {
 	public String getRoleTitle() {
 		return participant.getRoleTitle();
 	}
-	public Map<String, CourseSection> getSectionsMap() {
-		return participant.getSectionsMap();
-	}
 	public User getUser() {
 		return participant.getUser();
 	}
 
-	public String getGroupsForDisplay() {
-		return participant.getGroupsForDisplay();
+	public boolean isOfficialPhotoPublicAndPreferred() {
+		return participant.isOfficialPhotoPublicAndPreferred();
 	}
 
-	public List<CourseSection> getGroups() {
-		return participant.getGroups();
+	public boolean isProfilePhotoPublic() {
+		return participant.isProfilePhotoPublic();
+	}
+
+	public boolean isOfficialPhotoPreferred() {
+		return participant.isOfficialPhotoPreferred();
 	}
 }

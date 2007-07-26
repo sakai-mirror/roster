@@ -21,13 +21,22 @@
 package org.sakaiproject.tool.roster;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.authz.api.GroupProvider;
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
+import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
+import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.site.api.Site;
 
 /**
  * Some of our session-scoped beans make frequent and expensive calls to services.
@@ -39,30 +48,48 @@ import org.sakaiproject.section.api.coursemanagement.CourseSection;
  * @author <a href="mailto:jholtzman@berkeley.edu">jholtzman@berkeley.edu</a>
  *
  */
-public class StatusRequestCache extends RequestCache {
-	
+public class StatusRequestCache {
+	private static final Log log = LogFactory.getLog(StatusRequestCache.class);
+
 	protected boolean init;
-	List<SelectItem> sectionSelectItems;
+	List<EnrollmentSet> enrollmentSets;
 
 	protected void init(ServicesBean services) {
-		super.init(services);
-		sectionSelectItems = new ArrayList<SelectItem>();
-		// Get the available sections
-		List<CourseSection> sections = super.viewableSections;
-		for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-			CourseSection sakaiSection = iter.next();
-			if(sakaiSection.getEid() != null) {
-				// This is an official section.  Does it have an enrollment set?
-				Section cmSection = services.cmService.getSection(sakaiSection.getEid());
-				if(cmSection.getEnrollmentSet() != null) {
-					sectionSelectItems.add(new SelectItem(sakaiSection.getUuid(), sakaiSection.getTitle()));
+		enrollmentSets = new ArrayList<EnrollmentSet>();
+
+		// Get the site
+		String siteId = services.toolManager.getCurrentPlacement().getContext();
+		Site site = null;
+		try {
+			site = services.siteService.getSite(siteId);
+		} catch (IdUnusedException ide) {
+			log.warn("Unable to find site " + siteId);
+			throw new RuntimeException(ide);
+		}
+		String providerId = site.getProviderGroupId();
+		GroupProvider groupProvider = services.getGroupProvider();
+		if(groupProvider == null) {
+			if(log.isDebugEnabled()) log.debug("No group provider installed");
+		} else {
+			String[] sectionEids = groupProvider.unpackId(providerId);
+			for(int i=0; i<sectionEids.length; i++) {
+				Section section = null;
+				try {
+					section = services.cmService.getSection(sectionEids[i]);
+				} catch (IdNotFoundException ide) {
+					log.warn("Unable to find CM section " + sectionEids[i]);
+					continue;
+				}
+				EnrollmentSet es = section.getEnrollmentSet();
+				if(es != null) {
+					enrollmentSets.add(es);
 				}
 			}
 		}
 		init = true;
 	}
 
-	public List<SelectItem> getSectionSelectItems() {
-		return sectionSelectItems;
+	public boolean isInitialized() {
+		return init;
 	}
 }

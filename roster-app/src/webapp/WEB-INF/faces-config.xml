@@ -78,6 +78,14 @@
             <value>#{org_sakaiproject_authz_api_AuthzGroupService}</value>
         </managed-property>
         <managed-property>
+            <property-name>securityService</property-name>
+            <value>#{org_sakaiproject_authz_api_SecurityService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>siteService</property-name>
+            <value>#{org_sakaiproject_site_api_SiteService}</value>
+        </managed-property>
+        <managed-property>
             <property-name>toolManager</property-name>
             <value>#{org_sakaiproject_tool_api_ToolManager}</value>
         </managed-property>
@@ -86,8 +94,16 @@
             <value>#{org_sakaiproject_user_api_UserDirectoryService}</value>
         </managed-property>
         <managed-property>
+            <property-name>serverConfigurationService</property-name>
+            <value>#{org_sakaiproject_component_api_ServerConfigurationService}</value>
+        </managed-property>
+        <managed-property>
             <property-name>profileManager</property-name>
             <value>#{org_sakaiproject_api_app_profile_ProfileManager}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>photoService</property-name>
+            <value>#{org_sakaiproject_api_app_roster_PhotoService}</value>
         </managed-property>
     </managed-bean>
 
@@ -110,9 +126,19 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>filter</managed-bean-name>
-        <managed-bean-class>org.sakaiproject.tool.roster.FilteredProfileListingBean</managed-bean-class>
+        <managed-bean-name>searchFilter</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.SearchFilter</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>filter</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.FilteredParticipantListingBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>searchFilter</property-name>
+            <value>#{searchFilter}</value>
+        </managed-property>
         <managed-property>
             <property-name>services</property-name>
             <value>#{services}</value>
@@ -129,6 +155,10 @@
         <managed-bean-name>enrollmentStatusFilter</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.FilteredStatusListingBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>searchFilter</property-name>
+            <value>#{searchFilter}</value>
+        </managed-property>
         <managed-property>
             <property-name>services</property-name>
             <value>#{services}</value>
@@ -156,6 +186,10 @@
         <managed-property>
             <property-name>services</property-name>
             <value>#{services}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{prefs}</value>
         </managed-property>
     </managed-bean>
 
@@ -208,5 +242,11 @@
         </renderer>
 
     </render-kit>
+
+
+    <converter>
+        <converter-id>textTruncateConverter</converter-id>
+        <converter-class>org.sakaiproject.jsf.roster.TextTruncateConverter</converter-class>
+    </converter>
 
 </faces-config>

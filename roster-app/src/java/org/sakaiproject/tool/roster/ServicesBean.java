@@ -21,10 +21,16 @@
 package org.sakaiproject.tool.roster;
 
 import org.sakaiproject.api.app.profile.ProfileManager;
+import org.sakaiproject.api.app.roster.PhotoService;
 import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.authz.api.AuthzGroupService;
+import org.sakaiproject.authz.api.GroupProvider;
+import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.component.api.ServerConfigurationService;
+import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.section.api.SectionAwareness;
+import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.UserDirectoryService;
 
@@ -37,9 +43,16 @@ public class ServicesBean {
 	protected SectionAwareness sectionAwareness;
 	protected CourseManagementService cmService;
 	protected AuthzGroupService authzService;
+	protected SecurityService securityService;
+	protected SiteService siteService;
 	protected ToolManager toolManager;
 	protected UserDirectoryService userDirectoryService;
+	protected ServerConfigurationService serverConfigurationService;
 	protected ProfileManager profileManager;
+	protected PhotoService photoService;
+	
+	// The group provider may not exist, so ensure that it's accessible only via getGroupProvider()
+	private GroupProvider groupProvider;
 	
 	// Service injection
 	public void setRosterManager(RosterManager rosterManager) {
@@ -54,14 +67,32 @@ public class ServicesBean {
 	public void setAuthzService(AuthzGroupService authzService) {
 		this.authzService = authzService;
 	}
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
 	public void setToolManager(ToolManager toolManager) {
 		this.toolManager = toolManager;
 	}
 	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
 		this.userDirectoryService = userDirectoryService;
 	}
+	public void setServerConfigurationService(
+			ServerConfigurationService serverConfigurationService) {
+		this.serverConfigurationService = serverConfigurationService;
+	}
 	public void setProfileManager(ProfileManager profileManager) {
 		this.profileManager = profileManager;
+	}
+	public void setPhotoService(PhotoService photoService) {
+		this.photoService = photoService;
+	}
+	
+	// Don't inject the group provider, since it may not exist.
+	public GroupProvider getGroupProvider() {
+		return (GroupProvider)ComponentManager.get(GroupProvider.class);
 	}
 
 }

@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>master</artifactId>
+    <artifactId>roster-base</artifactId>
     <groupId>org.sakaiproject</groupId>
     <version>M2</version>
-    <relativePath>../../master/pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Roster Help</name>
   <groupId>org.sakaiproject</groupId>
@@ -20,11 +20,11 @@
     <deploy.target>shared</deploy.target>
   </properties>
   <build>
-      <sourceDirectory>src</sourceDirectory>  
-      <resources>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
       <resource>
-	<directory>src</directory>
+        <directory>src</directory>
       </resource>
-      </resources>
+    </resources>
   </build>
 </project>

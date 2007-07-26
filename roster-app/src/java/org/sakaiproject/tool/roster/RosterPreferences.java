@@ -21,23 +21,33 @@
 package org.sakaiproject.tool.roster;
 
 public class RosterPreferences {
-	public static final String DISLAY_NAME_COLUMN = "displayName";
-	public static final String DISLAY_ID_COLUMN = "displayId";
-	public static final String ROLE_COLUMN = "roleId";
+	public static final String DISPLAY_NAME_COLUMN = "sortName";
+	public static final String DISPLAY_ID_COLUMN = "displayId";
+	public static final String ROLE_COLUMN = "role";
 	public static final String EMAIL_COLUMN = "email";
 
 	protected String sortColumn;
 	protected boolean sortAscending;
-	protected boolean displaySectionColumns;
 	protected boolean displayNames;
 	protected boolean displayProfilePhotos;
 	
+	// Keep the "return page" here, since this is a session scoped bean.  Ugh, this is so nasty.
+	protected String returnPage;
+	
 	public RosterPreferences() {
-		sortColumn = ROLE_COLUMN;
+		sortColumn = DISPLAY_NAME_COLUMN;
 		sortAscending = true;
 		displayNames = true;
 	}
 	
+	public String getReturnPage() {
+		return returnPage;
+	}
+
+	public void setReturnPage(String returnPage) {
+		this.returnPage = returnPage;
+	}
+
 	public boolean isSortAscending() {
 		return sortAscending;
 	}
@@ -49,12 +59,6 @@ public class RosterPreferences {
 	}
 	public void setSortColumn(String sortColumn) {
 		this.sortColumn = sortColumn;
-	}
-	public boolean isDisplaySectionColumns() {
-		return displaySectionColumns;
-	}
-	public void setDisplaySectionColumns(boolean displaySectionColumns) {
-		this.displaySectionColumns = displaySectionColumns;
 	}
 
 	public boolean isDisplayNames() {

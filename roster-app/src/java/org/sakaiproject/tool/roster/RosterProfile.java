@@ -33,16 +33,29 @@ public class RosterProfile {
 
 	// Service & Bean References
 	protected ServicesBean services;
+	public void setPrefs(RosterPreferences prefs) {
+		this.prefs = prefs;
+	}
+
+	protected RosterPreferences prefs;
 	public void setServices(ServicesBean services) {
 		this.services = services;
 	}
 	
 	protected Participant participant;
-
+	
 	public String displayProfile() {
 		String userId = StringUtils.trimToNull((String) FacesContext
 				.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("participantId"));
+		
+		String returnPage = StringUtils.trimToNull((String) FacesContext
+				.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("returnPage"));
+		if(returnPage != null) {
+			prefs.setReturnPage(returnPage);
+		}
+
 		if (userId == null) {
 			log.debug("Can not display a profile for null");
 			return "profileNotFound";

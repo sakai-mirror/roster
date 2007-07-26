@@ -14,19 +14,6 @@ table.rosterPageHeader {
 
 .filterLabel {
 	vertical-align:top;
-}
-
-.filterLabel label {
-	font-weight:bold;
-}
-
-.shortFilterLabel {
-	vertical-align:top;
-	width:7em;
-	padding-left: 1em;
-}
-
-.shortFilterLabel label {
 	font-weight:bold;
 }
 
@@ -34,7 +21,6 @@ table.rosterPageHeader {
 }
 
 table.searchFilter {
-	margin-left: 5em;
 	margin-top:1em;
 }
 

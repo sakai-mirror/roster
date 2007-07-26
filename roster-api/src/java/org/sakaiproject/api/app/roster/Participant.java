@@ -21,11 +21,7 @@
 
 package org.sakaiproject.api.app.roster;
 
-import java.util.List;
-import java.util.Map;
-
 import org.sakaiproject.api.app.profile.Profile;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 
 
@@ -45,14 +41,7 @@ public interface Participant
   public Profile getProfile();
   public String getRoleTitle();
   public User getUser();
-  
-  /**
-   * Gets a map of CourseSection categories to this Participant's enrolled CourseSections.
-   * @return
-   */
-  public Map<String, CourseSection> getSectionsMap();
-  
-  public List<CourseSection> getGroups();
-  public String getGroupsForDisplay();
-
+  public boolean isOfficialPhotoPreferred();
+  public boolean isOfficialPhotoPublicAndPreferred();
+  public boolean isProfilePhotoPublic();
 }
