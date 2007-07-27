@@ -315,7 +315,6 @@ public abstract class RosterManagerImpl implements RosterManager {
 				continue;
 			}
 
-
 			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
 		}
 		return participants;

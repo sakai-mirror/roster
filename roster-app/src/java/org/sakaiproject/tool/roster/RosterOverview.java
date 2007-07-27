@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
@@ -45,10 +46,9 @@ public class RosterOverview extends BaseRosterPageBean {
 
 	// UI method calls
 	public boolean isRenderModifyMembersInstructions() {
-		String userId = filter.services.userDirectoryService.getCurrentUser().getId();
 		String siteRef = getSiteReference();
-		return filter.services.authzService.isAllowed(userId, SiteService.SECURE_UPDATE_SITE, siteRef) ||
-				filter.services.authzService.isAllowed(userId, SiteService.SECURE_UPDATE_SITE_MEMBERSHIP, siteRef);
+		return filter.services.securityService.unlock(SiteService.SECURE_UPDATE_SITE, siteRef) ||
+				filter.services.securityService.unlock(SiteService.SECURE_UPDATE_SITE_MEMBERSHIP, siteRef);
 	}
 
 	/**
@@ -59,11 +59,11 @@ public class RosterOverview extends BaseRosterPageBean {
 	 * @return
 	 */
 	public boolean isRenderPrivacyMessage() {
-		String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG);
-		if (msgEnabled != null && msgEnabled.equalsIgnoreCase("true")) {
-			return true;
+		String msgEnabled = ServerConfigurationService.getString(DISPLAY_ROSTER_PRIVACY_MSG, Boolean.TRUE.toString());
+		if (Boolean.TRUE.toString().equalsIgnoreCase(msgEnabled)) {
+			return ! filter.services.securityService.unlock(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, getSiteReference());
 		} else {
-			return false;
+			return ! filter.services.securityService.unlock(RosterFunctions.ROSTER_FUNCTION_VIEWALL, getSiteReference());
 		}
 	}
 			
