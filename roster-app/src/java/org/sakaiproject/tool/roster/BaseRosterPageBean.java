@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.sakaiproject.api.app.roster.Participant;
