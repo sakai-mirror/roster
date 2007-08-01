@@ -39,9 +39,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.Course;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.site.api.Site;
 import org.sakaiproject.user.api.User;
 
 public class FilteredParticipantListingBean implements Serializable {
@@ -196,13 +198,13 @@ public class FilteredParticipantListingBean implements Serializable {
     }
 
      public String getCourseFilterTitle(){
-        List<CourseSection> sections = requestCache().viewableSections;
-        for(Iterator<CourseSection> iter = sections.iterator(); iter.hasNext();) {
-			CourseSection section = iter.next();
-            Course course = section.getCourse();
-            return course.getTitle();
-		}
-        return null;
+    	 try {
+    		 Site site = services.siteService.getSite(getSiteContext());
+    		 return site.getTitle();
+    	 } catch (IdUnusedException ide) {
+    		 log.warn("Unable to find site: " + ide);
+    		 return "unknown site";
+    	 }
     }
 
     public void setSectionFilter(String sectionFilter) {
