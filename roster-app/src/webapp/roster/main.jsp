@@ -74,17 +74,28 @@ response.setContentType("text/html; charset=UTF-8");
 		        
             </t:dataTable>
 
+      <%-- Messages to display when there are no participants in the table above --%>
       <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
+
+      			<%-- No filtering --%>
+                <h:outputText value="#{msgs.no_participants}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText && empty filter.sectionFilterTitle}" />
+
+      			<%-- Filtering on section, but not user --%>
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText && not empty filter.sectionFilterTitle}" >
                      <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
-                <h:outputFormat value="#{msgs.no_participants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && filter.sectionFilterTitle!=null}" >
+
+      			<%-- Filtering on user, but not section --%>
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && empty filter.sectionFilterTitle}" >
+                    <f:param value="#{filter.searchFilterString}"/>                    
+                </h:outputFormat>
+
+      			<%-- Filtering on section and user --%>
+                <h:outputFormat value="#{msgs.no_participants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && not empty filter.sectionFilterTitle}" >
                     <f:param value="#{filter.searchFilterString}"/>
                     <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
-                   <h:outputFormat value="#{msgs.no_participants_in_anysections}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && filter.sectionFilterTitle == null}" >
-                    <f:param value="#{filter.searchFilterString}"/>                    
-                </h:outputFormat>
+
             </t:div>
         </h:form>
 </sakai:view>

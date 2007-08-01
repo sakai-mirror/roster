@@ -304,8 +304,16 @@ public abstract class RosterManagerImpl implements RosterManager {
 		for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Profile> entry = iter.next();
 			String userId = entry.getKey();
-			UserRole userRole = userMap.get(userId);
 			Profile profile = entry.getValue();
+
+			UserRole userRole = userMap.get(userId);
+
+			// Profiles may exist for users that have been removed.  If there's a profile
+			// for a missing user, skip the profile.  See SAK-10936
+			if(userRole == null || userRole.user == null) {
+				log.warn("A profile exists for non-existent user " + profile.getUserId());
+				continue;
+			}
 
 			participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
 		}
