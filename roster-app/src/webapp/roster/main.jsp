@@ -21,10 +21,6 @@ response.setContentType("text/html; charset=UTF-8");
 				rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
 				style="display: block;" />
 
-            <h:outputText value="#{msgs.title_msg_ta}"
-                          rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
-                          style="display: block;" />
-
             <h:outputLink rendered="#{overview.renderPrivacyMessage}"
                           value="#{msgs.title_missing_participants_link}" target="_blank">
                 <h:outputText value="#{msgs.title_missing_participants}" />
