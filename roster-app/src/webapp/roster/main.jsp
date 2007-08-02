@@ -21,11 +21,6 @@ response.setContentType("text/html; charset=UTF-8");
 				rendered="#{overview.renderModifyMembersInstructions}" styleClass="instruction"
 				style="display: block;" />
 
-            <h:outputLink rendered="#{overview.renderPrivacyMessage}"
-                          value="#{msgs.title_missing_participants_link}" target="_blank">
-                <h:outputText value="#{msgs.title_missing_participants}" />
-            </h:outputLink>
-
             <%@include file="inc/filter.jspf" %>
 			
             <t:dataTable cellpadding="0" cellspacing="0"
