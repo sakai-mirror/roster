@@ -105,6 +105,16 @@ response.setContentType("text/html; charset=UTF-8");
 			        </h:column>
 			    
 			    </t:dataTable>
+			    
+			    <t:div styleClass="instruction">
+
+      		
+      		
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants}" >
+                    <f:param value="#{filter.searchFilterString}"/>
+                </h:outputFormat>
+
+            </t:div>
 
 			</h:form>
 </sakai:view>
