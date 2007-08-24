@@ -106,6 +106,14 @@ response.setContentType("text/html; charset=UTF-8");
 			    
 			    </t:dataTable>
 
-			</h:form>
+
+                 <%-- Messages to display when there are no participants in the table above --%>
+            <t:div styleClass="instruction">      		      		
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants}" >
+                    <f:param value="#{filter.searchFilterString}"/>
+                </h:outputFormat>
+            </t:div>
+
+            </h:form>
 </sakai:view>
 </f:view>

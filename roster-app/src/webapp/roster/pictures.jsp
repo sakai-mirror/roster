@@ -30,6 +30,7 @@ response.setContentType("text/html; charset=UTF-8");
                 <h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
             </h:panelGrid>
 
+            <%---
             <t:div styleClass="instruction">
                 <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
                      <f:param value="#{filter.sectionFilterTitle}"/>
@@ -38,6 +39,30 @@ response.setContentType("text/html; charset=UTF-8");
                     <f:param value="#{filter.searchFilterString}"/>
                     <f:param value="#{filter.sectionFilterTitle}"/>
                 </h:outputFormat>
+            </t:div>
+            ---%>
+
+             <t:div styleClass="instruction">
+
+      			<%-- No filtering --%>
+                <h:outputText value="#{msgs.no_participants}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText && empty filter.sectionFilterTitle}" />
+
+      			<%-- Filtering on section, but not user --%>
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText && not empty filter.sectionFilterTitle}" >
+                     <f:param value="#{filter.sectionFilterTitle}"/>
+                </h:outputFormat>
+
+      			<%-- Filtering on user, but not section --%>
+                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && empty filter.sectionFilterTitle}" >
+                    <f:param value="#{filter.searchFilterString}"/>
+                </h:outputFormat>
+
+      			<%-- Filtering on section and user --%>
+                <h:outputFormat value="#{msgs.no_participants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText && not empty filter.sectionFilterTitle}" >
+                    <f:param value="#{filter.searchFilterString}"/>
+                    <f:param value="#{filter.sectionFilterTitle}"/>
+                </h:outputFormat>
+
             </t:div>
 
             <t:dataTable
