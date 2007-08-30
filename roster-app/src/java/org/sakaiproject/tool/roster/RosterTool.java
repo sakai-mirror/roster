@@ -517,14 +517,24 @@ public class RosterTool
     return (isShowIdPhoto() || isShowCustomPhoto());
   }
   
+  private Boolean renderExportButton = null;
   public boolean isRenderExportButton()
   {
-	  return rosterManager.currentUserHasExportPerm() && isRenderRoster();
+	  if (renderExportButton == null) {
+		  renderExportButton = new Boolean(rosterManager.currentUserHasExportPerm() && isRenderRoster());
+	  }
+	  
+	  return renderExportButton.booleanValue();
   }
   
+  private Boolean renderOfficialId = null;
   public boolean isRenderOfficialId()
   {
-	  return rosterManager.currentUserHasViewOfficialIdPerm();
+	  if (renderOfficialId == null) {
+	  	renderOfficialId = new Boolean(rosterManager.currentUserHasViewOfficialIdPerm());
+	  }
+	  
+	  return renderOfficialId.booleanValue();
   }
   
   public boolean isRenderSectionsColumn()
@@ -552,21 +562,36 @@ public class RosterTool
 	  return decoRoster != null && decoRoster.size() > 0;
   }
   
+  private Boolean renderRosterUpdateInfo = null;
   public boolean isRenderRosterUpdateInfo()
   {
-	  return rosterManager.currentUserHasSiteUpdatePerm();
+	  if (renderRosterUpdateInfo == null) {
+	  	renderRosterUpdateInfo = new Boolean(rosterManager.currentUserHasSiteUpdatePerm());
+	  }
+	  
+	  return renderRosterUpdateInfo.booleanValue();
   }
   
   // oncourse
+  private Boolean renderHidden = null;
   public boolean isRenderHidden()
   {
-	  return rosterManager.currentUserHasViewHiddenPerm();
+	  if (renderHidden == null) {
+	  	renderHidden = new Boolean(rosterManager.currentUserHasViewHiddenPerm());
+	  }
+	  
+	  return renderHidden.booleanValue();
   }
   // end oncourse
   
+  private Boolean userMayViewRoster = null;
   public boolean isUserMayViewRoster()
   {
-	  return rosterManager.currentUserHasViewAllPerm() || rosterManager.currentUserHasViewSectionPerm();
+	  if (userMayViewRoster == null) {
+	  	userMayViewRoster = new Boolean(rosterManager.currentUserHasViewAllPerm() || rosterManager.currentUserHasViewSectionPerm());
+	  }
+	  
+	  return userMayViewRoster.booleanValue();
   }
 
   public List getRoster()
