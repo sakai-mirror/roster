@@ -67,6 +67,13 @@
 						</f:facet>
 						<h:outputText value="#{searchResultAll.participant.eid}" />
 					</h:column>
+					
+					<h:column rendered="#{RosterTool.renderHidden}">
+						<f:facet name="header">
+							<h:outputText value="#{msgs.facet_email}" />
+						</f:facet>
+						<h:outputText value="#{searchResultAll.participant.email}" />
+					</h:column>
 
 					<h:column>
 						<f:facet name="header">
