@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -40,6 +41,7 @@ import org.sakaiproject.api.app.roster.RosterManager;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.api.privacy.PrivacyManager;
 import org.sakaiproject.authz.api.AuthzGroup;
+import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.cover.AuthzGroupService;
@@ -136,6 +138,15 @@ public class RosterManagerImpl implements RosterManager
     }
     return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
         .getLastName(), profile, getUserRoleTitle(user), getUserSections(user));
+  }
+  
+  private Participant createParticipantByUser(User user, Profile profile, String userRoleTitle, List userSections) {
+	  if (LOG.isDebugEnabled())
+	    {
+	      LOG.debug("createParticipantByUser(User " + user + ")");
+	    }
+	    return new ParticipantImpl(user.getId(), user.getDisplayId(), user.getEid(), user.getFirstName(), user
+	        .getLastName(), profile, userRoleTitle, userSections);
   }
 
   /* (non-Javadoc)
@@ -252,6 +263,9 @@ public class RosterManagerImpl implements RosterManager
       if (userIds != null && userIds.size() > 0)
       {
     	Map<String, Profile> profiles = profileManager.getProfiles(userIds);
+
+    	Map userIdSectionListMap = getMapOfUserSections(userIds);
+    	Map userIdRoleTitleMap = getMapOfUserToRoleTitle(userIds);
     	
         Iterator iter = userIds.iterator();
         while (iter.hasNext())
@@ -261,7 +275,10 @@ public class RosterManagerImpl implements RosterManager
             User user = UserDirectoryService.getUser((String) iter.next());
             if(user != null)
       	  	{
-      	  		roster.add(createParticipantByUser(user, profiles.get(user.getId())));
+            	String userId = user.getId();
+            	String roleTitle = (String) userIdRoleTitleMap.get(userId);
+            	List userSections = (ArrayList) userIdSectionListMap.get(userId);
+      	  		roster.add(createParticipantByUser(user, profiles.get(userId), roleTitle, userSections));
       	  	}
           }
           catch (UserNotDefinedException e)
@@ -467,6 +484,59 @@ public class RosterManagerImpl implements RosterManager
 		  LOG.error("Exception", e);
 	  }
 	  return "";
+  }
+  
+  private Map getMapOfUserToRoleTitle(Set userIds) {
+	  Map userRoleTitleMap = new HashMap();
+	  try {
+		  userRoleTitleMap = AuthzGroupService.getUsersRole(userIds, getContextSiteId());
+	  } catch(Exception e) {
+		  LOG.error("Exception", e);
+	  }
+	  
+	  return userRoleTitleMap;
+  }
+  
+  private Map getMapOfUserSections(Set userIds) {
+	  Map userIdSectionListMap = new HashMap();
+	  if (userIds == null || userIds.isEmpty())
+		  return userIdSectionListMap;
+	  
+	  for (Iterator userIter = userIds.iterator(); userIter.hasNext();) {
+		  String userId = (String) userIter.next();
+		  userIdSectionListMap.put(userId, new ArrayList());
+	  }
+	  
+	  try {
+		  Site currentSite = SiteService.getSite(ToolManager.getCurrentPlacement().getContext()); 
+		  Collection groups = currentSite.getGroups();
+		  if (groups == null || groups.isEmpty()) {
+			  return userIdSectionListMap;
+		  }
+		  
+		  for (Iterator groupIter = groups.iterator(); groupIter.hasNext();) {
+			  Group currentGroup = (Group) groupIter.next(); 
+			  String groupTitle = currentGroup.getTitle();
+			  Set members = currentGroup.getMembers();
+			  if (members != null && !members.isEmpty()) {
+				  for (Iterator memberIter = members.iterator(); memberIter.hasNext();) {
+					  Member member = (Member) memberIter.next();
+					  if (member != null) {
+						  String memberId = member.getUserId();
+						  List sectionList = (ArrayList)userIdSectionListMap.get(memberId);
+						  if (sectionList != null) {
+							  sectionList.add(groupTitle);
+						  }
+					  }
+				  }
+			  }
+		  }
+	  } catch (Exception e) {
+		  LOG.error("getMapOfUserSections: " + e.getMessage(), e);
+		  
+	  }
+	  
+	  return userIdSectionListMap;  
   }
  
   /**
