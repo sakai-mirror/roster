@@ -228,7 +228,7 @@ public class FilteredParticipantListingBean implements Serializable {
 
 	public String getRoleCountMessage() {
         if(roleCounts.size() == 0) return "";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("(");
 		for(Iterator<Entry<String, Integer>> iter = roleCounts.entrySet().iterator(); iter.hasNext();) {
 			Entry<String, Integer> entry = iter.next();
