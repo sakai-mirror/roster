@@ -134,7 +134,7 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
                         <t:div>
-                            <h:outputFormat value="#{participant.user.displayName}" title="#{participant.user.displayName}">
+                            <h:outputFormat value="#{participant.user.sortName}" title="#{participant.user.displayName}">
                                 <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>
