@@ -44,7 +44,8 @@ public class RosterPictures extends BaseRosterPageBean {
 	}
 
 	public String getPageTitle() {
-		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+        filter.services.eventTrackingService.post(filter.services.eventTrackingService.newEvent("roster.view.photos",getSiteReference(),false));
+        return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_pictures");
 	}
 	public boolean isExportablePage() {

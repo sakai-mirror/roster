@@ -105,6 +105,10 @@
             <property-name>photoService</property-name>
             <value>#{org_sakaiproject_api_app_roster_PhotoService}</value>
         </managed-property>
+        <managed-property>
+            <property-name>eventTrackingService</property-name>
+            <value>#{org_sakaiproject_event_api_EventTrackingService}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>

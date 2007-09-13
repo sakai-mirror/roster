@@ -88,29 +88,34 @@
       <version>${sakai.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-component-api</artifactId>
-      <version>${sakai.version}</version>
+        <groupId>org.sakaiproject</groupId>
+        <artifactId>sakai-component-api</artifactId>
+        <version>${sakai.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-sections-api</artifactId>
-      <version>${sakai.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-coursemanagement-api</artifactId>
-      <version>${sakai.version}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.sakaiproject</groupId>
+          <artifactId>sakai-sections-api</artifactId>
+          <version>${sakai.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.sakaiproject</groupId>
+          <artifactId>sakai-coursemanagement-api</artifactId>
+          <version>${sakai.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.sakaiproject</groupId>
+          <artifactId>sakai-event-api</artifactId>
+          <version>${sakai.version}</version>
+      </dependency>
   </dependencies>
-  <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/bundle</directory>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-      </resource>
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/bundle</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
       <resource>
         <directory>src/java</directory>
         <includes>

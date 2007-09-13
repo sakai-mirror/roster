@@ -61,8 +61,10 @@ public class RosterProfile {
 			return "profileNotFound";
 		}
 		participant = services.rosterManager.getParticipantById(userId);
-
-		if (services.userDirectoryService.getCurrentUser().getId()
+        //log event to event service
+        services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile",participant.getUser().getEid(),false));
+        
+        if (services.userDirectoryService.getCurrentUser().getId()
 				.equals(userId)) {
 			// This user is looking at him/her self
 			return "completeProfile";

@@ -30,67 +30,75 @@ import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.UserDirectoryService;
+import org.sakaiproject.event.api.EventTrackingService;
 
 public class RosterManagerTestImpl extends RosterManagerImpl {
 
-	@Override
-	public AuthzGroupService authzGroupService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public AuthzGroupService authzGroupService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public CourseManagementService cmService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public CourseManagementService cmService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public FunctionManager functionManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public FunctionManager functionManager() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public PrivacyManager privacyManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public PrivacyManager privacyManager() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public ProfileManager profileManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public ProfileManager profileManager() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public SectionAwareness sectionService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public SectionAwareness sectionService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public SecurityService securityService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public SecurityService securityService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public SiteService siteService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public SiteService siteService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public ToolManager toolManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public ToolManager toolManager() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public UserDirectoryService userDirectoryService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public UserDirectoryService userDirectoryService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public EventTrackingService eventTrackingService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

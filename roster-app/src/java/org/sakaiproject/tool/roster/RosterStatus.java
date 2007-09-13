@@ -112,7 +112,8 @@ public class RosterStatus extends BaseRosterPageBean {
 	}
 	
 	public String getPageTitle() {
-		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+        filter.services.eventTrackingService.post(filter.services.eventTrackingService.newEvent("roster.view",getSiteReference(),false));
+        return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_status");
 	}
 	public boolean isExportablePage() {

@@ -68,7 +68,8 @@ public class RosterOverview extends BaseRosterPageBean {
 	}
 			
 	public String getPageTitle() {
-		return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+        filter.services.eventTrackingService.post(filter.services.eventTrackingService.newEvent("roster.view",getSiteReference(),false));
+        return LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
 				ServicesBean.MESSAGE_BUNDLE, "title_overview");
 	}
 
@@ -105,7 +106,7 @@ public class RosterOverview extends BaseRosterPageBean {
         	CourseSection section = filter.services.sectionAwareness.getSection(filter.getSectionFilter());
         	spreadsheetNameRaw = section.getTitle();
         }
-        
+
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
     }
