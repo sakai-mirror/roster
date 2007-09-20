@@ -69,7 +69,7 @@
 						<f:facet name="header">
 				   		  <h:outputText value="#{msgs.facet_visible}" />
 				   		</f:facet>
-						<h:graphicImage value="#{(searchResultAll.participant.privacy == true) ? '/images/user_visible.png' : '/images/user_invisible.png'}" alt="#{(searchResultAll.participant.privacy == true) ? 'Visible' : 'Invisible'}" />
+						<h:graphicImage value="#{(searchResultAll.participant.privacy == true) ? '/images/user_visible.png' : '/images/user_invisible.png'}" alt="#{(searchResultAll.participant.privacy == true) ? 'Visible' : 'Invisible'}" title="#{(searchResultAll.participant.privacy == true) ? 'Visible' : 'Invisible'}" />
 					</h:column>
 					<%--********************* End Oncourse *********************--%>
 				    
