@@ -75,6 +75,7 @@ public abstract class RosterManagerImpl implements RosterManager {
     public abstract EventTrackingService eventTrackingService();
 
     private boolean displayFilterSingleGroup;
+    private boolean displayPhotoFirstNameLastName;
 
     public void init() {
         log.info("init()");
@@ -545,4 +546,13 @@ public abstract class RosterManagerImpl implements RosterManager {
     public void setDisplayFilterSingleGroup(boolean displayFilterSingleGroup) {
         this.displayFilterSingleGroup = displayFilterSingleGroup;
     }
+
+    public boolean isDisplayPhotoFirstNameLastName(){
+        return displayPhotoFirstNameLastName;
+    }
+
+    public void setDisplayPhotoFirstNameLastName(boolean displayPhotoFirstNameLastName) {
+        this.displayPhotoFirstNameLastName = displayPhotoFirstNameLastName;
+    }
+
 }

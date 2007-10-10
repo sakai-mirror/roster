@@ -31,6 +31,10 @@
                 <property name="displayFilterSingleGroup">
                     <value>false</value>
                 </property>
+
+                <property name="displayPhotoFirstNameLastName">
+                    <value>true</value>
+                </property>
             </bean>
 
         </property>
