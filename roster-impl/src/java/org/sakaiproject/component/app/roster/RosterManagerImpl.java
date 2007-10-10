@@ -547,6 +547,10 @@ public abstract class RosterManagerImpl implements RosterManager {
         this.displayFilterSingleGroup = displayFilterSingleGroup;
     }
 
+    /**
+     *  Option (preferably default) to show names on picture page as displayname format (firstname lastname)
+     * @return true or false
+     */
     public boolean isDisplayPhotoFirstNameLastName(){
         return displayPhotoFirstNameLastName;
     }
