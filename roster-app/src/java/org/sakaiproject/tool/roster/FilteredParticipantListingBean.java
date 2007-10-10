@@ -65,8 +65,9 @@ public class FilteredParticipantListingBean implements Serializable {
 	protected List<Participant> participants;
 	protected Integer participantCount;
 	protected SortedMap<String, Integer> roleCounts;
+    protected boolean displayFilterSingleGroup;
 
-	/**
+    /**
 	 * Initialize this bean once, so we can call our access method as often as we like
 	 * without invoking unnecessary service calls.
 	 */
@@ -165,10 +166,19 @@ public class FilteredParticipantListingBean implements Serializable {
 	}
 
 	public boolean isDisplaySectionsFilter() {
-		return requestCache().viewableSections.size() > 1;
+        if(isDisplayFilterSingleGroup())return true;
+        return requestCache().viewableSections.size() > 1;
 	}
 
-	public String getSearchFilterString() {
+    /**
+     * Display section/group dropdown filter when site has only a single group or section defined: true or false
+     * @return true or false
+     */
+    public boolean isDisplayFilterSingleGroup() {
+        return services.rosterManager.isDisplayFilterSingleGroup();
+    }
+
+    public String getSearchFilterString() {
 		return searchFilter.getSearchFilter();
 	}
 
