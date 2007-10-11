@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 
+
 /**
  * @author rshastri 
  */
@@ -34,33 +35,33 @@ public interface RosterManager
   public static final String VIEW_ALL_SECT = "roster_all_sections";
   public static final String VIEW_SECT_CATEGORY_PREFIX = "roster_category_";
 
-  public void init();
+    public void init();
 
-  public void destroy();
+    public void destroy();
 
-  /**
-   * Check for export permission (roster.export)
-   * @return
-   */
-  public boolean currentUserHasExportPerm();
+    /**
+     * Check for export permission (roster.export)
+     * @return
+     */
+    public boolean currentUserHasExportPerm();
 
-  /**
-   *  Get the sections viewable by current user
-   * @return
-   */
-  public List<CourseSection> getViewableSectionsForCurrentUser();
+    /**
+     *  Get the sections viewable by current user
+     * @return
+     */
+    public List<CourseSection> getViewableSectionsForCurrentUser();
 
-  /**
-   *  Get the sections which are viewable by current user and for which the current
-   *  user has roster.viewenrollmentstatus
-   * @return
-   */
-  public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser();
+    /**
+     *  Get the sections which are viewable by current user and for which the current
+     *  user has roster.viewenrollmentstatus
+     * @return
+     */
+    public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser();
 
-  /**
-   * @return An unfiltered List of viewable (to current user) Participants in the site.
-   */
-  public List<Participant> getRoster();
+    /**
+     * @return An unfiltered List of viewable (to current user) Participants in the site.
+     */
+    public List<Participant> getRoster();
   
     /**
      * @param groupReference The Reference string for the group
@@ -91,13 +92,5 @@ public interface RosterManager
     /**
      * Display section/group dropdown filter when site has only a single group or section defined: true or false
      * @return true or false     
-     */
-    public boolean isDisplayFilterSingleGroup();
-
-    /**
-     *  Option (preferably default) to show names on picture page as displayname format (firstname lastname)
-     * @return true or false
-     */
-    public boolean isDisplayPhotoFirstNameLastName();
-
+     */   
 }

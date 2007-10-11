@@ -58,6 +58,7 @@ import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.event.api.EventTrackingService;
+import org.sakaiproject.component.api.ServerConfigurationService;
 
 public abstract class RosterManagerImpl implements RosterManager {
     private static final Log log = LogFactory.getLog(RosterManagerImpl.class);
@@ -73,10 +74,7 @@ public abstract class RosterManagerImpl implements RosterManager {
     public abstract SecurityService securityService();
     public abstract CourseManagementService cmService();
     public abstract EventTrackingService eventTrackingService();
-
-    private boolean displayFilterSingleGroup;
-    private boolean displayPhotoFirstNameLastName;
-
+    
     public void init() {
         log.info("init()");
 
@@ -536,27 +534,5 @@ public abstract class RosterManagerImpl implements RosterManager {
                 RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
     }
 
-    /**
-     * Display section/group dropdown filter when site has only a single group or section defined: true or false
-     * @return true or false
-     */
-    public boolean isDisplayFilterSingleGroup() {
-        return displayFilterSingleGroup;
-    }
-    public void setDisplayFilterSingleGroup(boolean displayFilterSingleGroup) {
-        this.displayFilterSingleGroup = displayFilterSingleGroup;
-    }
-
-    /**
-     *  Option (preferably default) to show names on picture page as displayname format (firstname lastname)
-     * @return true or false
-     */
-    public boolean isDisplayPhotoFirstNameLastName(){
-        return displayPhotoFirstNameLastName;
-    }
-
-    public void setDisplayPhotoFirstNameLastName(boolean displayPhotoFirstNameLastName) {
-        this.displayPhotoFirstNameLastName = displayPhotoFirstNameLastName;
-    }
 
 }
