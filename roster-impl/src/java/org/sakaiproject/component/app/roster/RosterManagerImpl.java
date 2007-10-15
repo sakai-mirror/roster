@@ -74,6 +74,8 @@ public abstract class RosterManagerImpl implements RosterManager {
     public abstract CourseManagementService cmService();
     public abstract EventTrackingService eventTrackingService();
 
+    private boolean displayFilterSingleGroup;
+
     public void init() {
         log.info("init()");
 
@@ -531,5 +533,16 @@ public abstract class RosterManagerImpl implements RosterManager {
     public boolean isOfficialPhotosViewable() {
         return userHasSitePermission(userDirectoryService().getCurrentUser(),
                 RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
+    }
+
+    /**
+     * Display section/group dropdown filter when site has only a single group or section defined: true or false
+     * @return true or false
+     */
+    public boolean isDisplayFilterSingleGroup() {
+        return displayFilterSingleGroup;
+    }
+    public void setDisplayFilterSingleGroup(boolean displayFilterSingleGroup) {
+        this.displayFilterSingleGroup = displayFilterSingleGroup;
     }
 }
