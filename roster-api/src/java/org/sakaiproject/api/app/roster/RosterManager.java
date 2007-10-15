@@ -95,8 +95,8 @@ public interface RosterManager
     public boolean isDisplayFilterSingleGroup();
 
     /**
-     * 
-     * @return
+     *  Option (preferably default) to show names on picture page as displayname format (firstname lastname)
+     * @return true or false
      */
     public boolean isDisplayPhotoFirstNameLastName();
 
