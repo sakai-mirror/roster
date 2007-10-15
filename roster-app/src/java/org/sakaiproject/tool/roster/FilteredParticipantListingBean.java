@@ -178,6 +178,10 @@ public class FilteredParticipantListingBean implements Serializable {
         return services.rosterManager.isDisplayFilterSingleGroup();
     }
 
+    public boolean isDisplayPhotoFirstNameLastName(){        
+       return services.rosterManager.isDisplayPhotoFirstNameLastName();
+    }
+
     public String getSearchFilterString() {
 		return searchFilter.getSearchFilter();
 	}

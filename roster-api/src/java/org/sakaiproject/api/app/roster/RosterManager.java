@@ -62,36 +62,42 @@ public interface RosterManager
    */
   public List<Participant> getRoster();
   
-  /**
-   * @param groupReference The Reference string for the group
-   * @return An List of viewable (to current user) Participants in a single group.
-   */
-  public List<Participant> getRoster(String groupReference);
+    /**
+     * @param groupReference The Reference string for the group
+     * @return An List of viewable (to current user) Participants in a single group.
+     */
+    public List<Participant> getRoster(String groupReference);
 
-  /**
-   * Returns a participant by the id
-   * @param participantId
-   * @return
-   */
-  public Participant getParticipantById(String participantId);
+    /**
+     * Returns a participant by the id
+     * @param participantId
+     * @return
+     */
+    public Participant getParticipantById(String participantId);
 
-  /**
-   * Are user profiles viewable for the current user in this site?
-   * 
-   * @return
-   */
-  public boolean isProfilesViewable();
+    /**
+     * Are user profiles viewable for the current user in this site?
+     *
+     * @return
+     */
+    public boolean isProfilesViewable();
 
-  /**
-   * Are users official photos viewable for the current user in this site?
-   * @return
-   */
-  public boolean isOfficialPhotosViewable();
+    /**
+     * Are users official photos viewable for the current user in this site?
+     * @return
+     */
+    public boolean isOfficialPhotosViewable();
 
     /**
      * Display section/group dropdown filter when site has only a single group or section defined: true or false
      * @return true or false     
      */
-   public boolean isDisplayFilterSingleGroup();
+    public boolean isDisplayFilterSingleGroup();
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplayPhotoFirstNameLastName();
 
 }

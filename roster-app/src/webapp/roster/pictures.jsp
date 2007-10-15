@@ -30,17 +30,6 @@ response.setContentType("text/html; charset=UTF-8");
                 <h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
             </h:panelGrid>
 
-            <%---
-            <t:div styleClass="instruction">
-                <h:outputFormat value="#{msgs.no_participants_msg}" rendered="#{empty filter.participants && filter.searchFilterString eq filter.defaultSearchText}" >
-                     <f:param value="#{filter.sectionFilterTitle}"/>
-                </h:outputFormat>
-                <h:outputFormat value="#{msgs.no_partcipants_in_section}" rendered="#{empty filter.participants &&  filter.searchFilterString != filter.defaultSearchText}" >
-                    <f:param value="#{filter.searchFilterString}"/>
-                    <f:param value="#{filter.sectionFilterTitle}"/>
-                </h:outputFormat>
-            </t:div>
-            ---%>
 
              <t:div styleClass="instruction">
 
@@ -134,7 +123,10 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
                     <t:div rendered="#{prefs.displayNames}">
                         <t:div>
-                            <h:outputFormat value="#{participant.user.sortName}" title="#{participant.user.displayName}">
+                            <h:outputFormat value="#{participant.user.sortName}" title="#{participant.user.displayName}" rendered="#{filter.displayPhotoFirstNameLastName}">
+                                <f:converter converterId="textTruncateConverter"/>
+                            </h:outputFormat>
+                            <h:outputFormat value="#{participant.user.sortName}" title="#{participant.user.displayName}" rendered="#{!filter.displayPhotoFirstNameLastName}">
                                 <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>
