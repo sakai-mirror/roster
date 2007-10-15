@@ -55,7 +55,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	public void setSearchFilter(SearchFilter searchFilter) {
 		this.searchFilter = searchFilter;
 	}
-	
+
 	protected String defaultSearchText;
 	protected String sectionFilter;
 
@@ -122,7 +122,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	protected boolean filterParticipant(Participant participant) {
 		return getSearchFilterString() != null && ! getSearchFilterString().equals(defaultSearchText) && ! searchMatches(getSearchFilterString(), participant.getUser());
 	}
-	
+
 	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
@@ -166,7 +166,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	}
 
 	public boolean isDisplaySectionsFilter() {
-        if(isDisplayFilterSingleGroup())return true;
+        if(isHideSingleGroupFilter())return true;
         return requestCache().viewableSections.size() > 1;
 	}
 
@@ -174,12 +174,15 @@ public class FilteredParticipantListingBean implements Serializable {
      * Display section/group dropdown filter when site has only a single group or section defined: true or false
      * @return true or false
      */
-    public boolean isDisplayFilterSingleGroup() {
-        return services.rosterManager.isDisplayFilterSingleGroup();
+    public boolean isHideSingleGroupFilter() {
+        if("true".equals(services.serverConfigurationService.getString("roster.display.hideSingleGroupFilter")))return true;
+        return false;
     }
 
-    public boolean isDisplayPhotoFirstNameLastName(){        
-       return services.rosterManager.isDisplayPhotoFirstNameLastName();
+
+    public boolean isDisplayPhotoFirstNameLastName(){
+       if("true".equals(services.serverConfigurationService.getString("roster.display.firstNameLastName"))) return true;
+       return false;
     }
 
     public String getSearchFilterString() {
