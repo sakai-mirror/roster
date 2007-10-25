@@ -44,8 +44,10 @@ public abstract class BaseRosterPageBean {
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
-	
-	static {
+
+    private String sortColumn;
+
+    static {
 		sortNameComparator = new Comparator<Participant>() {
 			public int compare(Participant one, Participant another) {
 				int comparison = Collator.getInstance().compare(
@@ -122,73 +124,79 @@ public abstract class BaseRosterPageBean {
 			if(!prefs.sortAscending) {
 				Collections.reverse(participants);
 			}
-		}
-		return participants;
-	}
+        }
+        return participants;
+    }
 
-	protected Comparator<Participant> getComparator() {
-		String sortColumn = prefs.sortColumn;
-		Comparator<Participant> comparator;
-		if (Participant.SORT_BY_ID.equals(sortColumn)) {
-			comparator = displayIdComparator;
-		} else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
-			comparator = emailComparator;
-		} else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
-			comparator = roleComparator;
-		} else {
-			// Default to the sort name
-			comparator = sortNameComparator;
-		}
-		return comparator;
-	}
+    protected Comparator<Participant> getComparator() {
 
-	// UI logic
-	protected Boolean renderOfficialPhotos;
-	protected Boolean renderStatusLink;
-	protected Boolean renderPicturesLink;
-	protected Boolean renderProfileLinks;
+        if(filter.services.serverConfigurationService.getString("roster.defaultSortColumn")!=null && !filter.services.serverConfigurationService.getString("roster.defaultSortColumn").equals("")){
+            sortColumn = filter.services.serverConfigurationService.getString("roster.defaultSortColumn");
+        }else{
+             sortColumn = prefs.sortColumn;
+        }
+        Comparator<Participant> comparator;
+        if (Participant.SORT_BY_ID.equals(sortColumn)) {
+            comparator = displayIdComparator;
+        } else if (Participant.SORT_BY_EMAIL.equals(sortColumn)) {
+            comparator = emailComparator;
+        } else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
+            comparator = roleComparator;
+        } else {
+            // Default to the sort name
+            comparator = sortNameComparator;
+        }
+        return comparator;
+    }
 
-	public boolean isRenderStatusLink() {
-		if(renderStatusLink == null) {
-			renderStatusLink = filter.services.securityService.unlock(
-					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, getSiteReference()) &&
-					! filter.statusRequestCache().enrollmentSets.isEmpty();
-		}
-		return renderStatusLink.booleanValue();
-	}
+    // UI logic
+    protected Boolean renderOfficialPhotos;
+    protected Boolean renderStatusLink;
+    protected Boolean renderPicturesLink;
+    protected Boolean renderProfileLinks;
 
-	public boolean isRenderPicturesLink() {
-		if(renderPicturesLink == null) {
-			renderPicturesLink = filter.services.rosterManager.isOfficialPhotosViewable() || filter.services.rosterManager.isProfilesViewable();
-		}
-		return renderPicturesLink.booleanValue();
-	}
+    public boolean isRenderStatusLink() {
+        if(renderStatusLink == null) {
+            renderStatusLink = filter.services.securityService.unlock(
+                    RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, getSiteReference()) &&
+                    ! filter.statusRequestCache().enrollmentSets.isEmpty();
+        }
+        return renderStatusLink.booleanValue();
+    }
 
-	public boolean isRenderProfileLinks() {
-		if(renderProfileLinks == null) {
-			renderProfileLinks = filter.services.rosterManager.isProfilesViewable();
-		}
-		return renderProfileLinks.booleanValue();
-	}
+    public boolean isRenderPicturesLink() {
+        if(renderPicturesLink == null) {
+            renderPicturesLink = filter.services.rosterManager.isOfficialPhotosViewable() || filter.services.rosterManager.isProfilesViewable();
+        }
+        return renderPicturesLink.booleanValue();
+    }
 
-	public boolean isOfficialPhotosAvailableToCurrentUser() {
-		if(renderOfficialPhotos == null) {
-			renderOfficialPhotos = filter.services.rosterManager.isOfficialPhotosViewable();
-		}
-		return renderOfficialPhotos.booleanValue();
-	}
+    public boolean isRenderProfileLinks() {
+        if(renderProfileLinks == null) {
+            renderProfileLinks = filter.services.rosterManager.isProfilesViewable();
+        }
+        return renderProfileLinks.booleanValue();
+    }
 
-	/**
-	 * Some institutions use an email address as a user's displayId.  For these institutions,
-	 * we provide a way to hide the email column.
-	 */
-	public boolean isEmailColumnRendered() {
-		return Boolean.TRUE.toString().equalsIgnoreCase(
-				filter.services.serverConfigurationService.getString(ROSTER_VIEW_EMAIL, "true"));
+    public boolean isOfficialPhotosAvailableToCurrentUser() {
+        if(renderOfficialPhotos == null) {
+            renderOfficialPhotos = filter.services.rosterManager.isOfficialPhotosViewable();
+        }
+        return renderOfficialPhotos.booleanValue();
+    }
+
+    /**
+     * Some institutions use an email address as a user's displayId.  For these institutions,
+     * we provide a way to hide the email column.
+     */
+    public boolean isEmailColumnRendered() {
+        return Boolean.TRUE.toString().equalsIgnoreCase(
+                filter.services.serverConfigurationService.getString(ROSTER_VIEW_EMAIL, "true"));
 	}
 	
 	protected String getDownloadFileName(String rawString) {
         String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
         return rawString.replaceAll("\\W","_")+ "_"+dateString;
-	}
+    }
+  
 }

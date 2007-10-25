@@ -30,16 +30,16 @@ public class RosterPreferences {
 	protected boolean sortAscending;
 	protected boolean displayNames;
 	protected boolean displayProfilePhotos;
-	
+
 	// Keep the "return page" here, since this is a session scoped bean.  Ugh, this is so nasty.
 	protected String returnPage;
-	
+
 	public RosterPreferences() {
-		sortColumn = DISPLAY_NAME_COLUMN;
+		sortColumn = ROLE_COLUMN;
 		sortAscending = true;
 		displayNames = true;
 	}
-	
+
 	public String getReturnPage() {
 		return returnPage;
 	}
@@ -75,5 +75,5 @@ public class RosterPreferences {
 
 	public void setDisplayProfilePhotos(boolean displayProfilePhotos) {
 		this.displayProfilePhotos = displayProfilePhotos;
-	}	
+	}
 }
