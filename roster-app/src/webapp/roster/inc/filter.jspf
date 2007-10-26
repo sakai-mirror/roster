@@ -1,7 +1,7 @@
 <%-- Initialize the filter --%>
 <h:outputText value="#{filter.init}" />
 
-<h:panelGrid columns="3" rendered="#{!filter.displaySectionsFilter}">
+<h:panelGrid columns="3" rendered="#{filter.displaySectionsFilter}">
     <h:outputText value="#{msgs.section_filter_pre}" styleClass="filterLabel" />
     <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true">
         <f:selectItems value="#{filter.sectionSelectItems}" />

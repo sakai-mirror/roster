@@ -166,7 +166,7 @@ public class FilteredParticipantListingBean implements Serializable {
 	}
 
 	public boolean isDisplaySectionsFilter() {
-        if(isHideSingleGroupFilter())return true;
+        if(!isHideSingleGroupFilter())return true;
         return requestCache().viewableSections.size() > 1;
 	}
 
