@@ -35,7 +35,7 @@ public class RosterPreferences {
 	protected String returnPage;
 
 	public RosterPreferences() {
-		sortColumn = ROLE_COLUMN;
+		sortColumn = DISPLAY_NAME_COLUMN;
 		sortAscending = true;
 		displayNames = true;
 	}
