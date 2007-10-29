@@ -19,7 +19,7 @@ response.setContentType("text/html; charset=UTF-8");
             <%@include file="inc/filter.jspf" %>
 
             <h:panelGrid columns="2" styleClass="rosterPicturesFilter" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
-                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onchange="this.form.submit()" immediate="true" rendered="#{pictures.renderPicturesOptions}">
+                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onclick="this.form.submit()" immediate="true" rendered="#{pictures.renderPicturesOptions}">
                     <f:selectItems value="#{pictures.photoSelectItems}" />
                 </t:selectOneRadio>
 				
