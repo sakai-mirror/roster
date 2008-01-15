@@ -35,7 +35,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.PhotoService;
+import org.sakaiproject.api.app.roster.RosterFunctions;
+import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader;
 
 public class ParticipantImageServlet extends HttpServlet
@@ -96,7 +101,16 @@ public class ParticipantImageServlet extends HttpServlet
 					+ "OutputStream stream, HttpServletResponse response)");
 		try
 		{
-			byte[] displayPhoto = photoService.getPhotoAsByteArray(userId);
+			
+			String siteid = ToolManager.getCurrentPlacement().getContext();
+		
+			// Two possible permission scenarios: 
+			// 1. Official photos are being displayed (user has permission to view for this site)
+			// 2. User profile photos are being displayed, and the target user has elected to 
+			//    use his/her official photo as user profile photo
+			
+			byte[] displayPhoto = photoService.getPhotoAsByteArray(userId, SecurityService.unlock(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO, SiteService.siteReference(siteid)));
+ 
 			if (displayPhoto != null && displayPhoto.length > 0)
 			{
 				LOG.debug("Display University ID photo for user:" + userId);

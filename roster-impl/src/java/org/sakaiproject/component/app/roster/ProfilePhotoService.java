@@ -38,10 +38,10 @@ public class ProfilePhotoService implements PhotoService {
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.api.app.roster.PhotoService#getPhotoAsByteArray(java.lang.String)
 	 */
-	public byte[] getPhotoAsByteArray(String userId) {
+	public byte[] getPhotoAsByteArray(String userId, boolean hasSitePermission) {
 		if (log.isDebugEnabled()) log.debug("getPhotoAsByteArray for " + userId + " from " + profileManager);
 		if (profileManager != null) {
-			return profileManager.getInstitutionalPhotoByUserId(userId, true);			
+			return profileManager.getInstitutionalPhotoByUserId(userId, hasSitePermission);			
 		} else {
 			return null;
 		}
