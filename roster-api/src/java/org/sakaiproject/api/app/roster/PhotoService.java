@@ -26,5 +26,5 @@ package org.sakaiproject.api.app.roster;
  * Allow institution-specific roster photo service implementations.
  */
 public interface PhotoService {
-	public byte[] getPhotoAsByteArray(String userId);
+	public byte[] getPhotoAsByteArray(String userId, boolean hasSitePermission);
 }
