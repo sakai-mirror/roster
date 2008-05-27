@@ -154,6 +154,17 @@ public abstract class BaseRosterPageBean {
     protected Boolean renderStatusLink;
     protected Boolean renderPicturesLink;
     protected Boolean renderProfileLinks;
+    // ONC
+    protected Boolean renderVisibility;
+    
+    // check if the user has the View Hidden permission
+    public boolean isRenderVisibility() {
+		if (renderVisibility == null) {
+			renderVisibility = filter.services.rosterManager.isViewHidden();
+		}
+		return renderVisibility.booleanValue();
+    }
+    //end ONC
 
     public boolean isRenderStatusLink() {
         if(renderStatusLink == null) {

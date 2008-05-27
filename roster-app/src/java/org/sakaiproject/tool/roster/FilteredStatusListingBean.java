@@ -112,12 +112,14 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
 			Enrollment enr = iter.next();
 			final User user;
+			final boolean userHidden; // ONC
 			try {
 				user = services.userDirectoryService.getUserByEid(enr.getUserId());
 			} catch (UserNotDefinedException unde) {
 				log.warn("Can not find user " + enr.getUserId());
 				continue;
 			}
+			userHidden = services.privacyManager.isViewable(getSiteReference(), user.getId());  // ONC
 			Participant p = new Participant() {
 				public Profile getProfile() {return null;}
 				public String getRoleTitle() {return studentRole;}
@@ -125,6 +127,7 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 				public boolean isOfficialPhotoPreferred() {return false;}
 				public boolean isOfficialPhotoPublicAndPreferred() {return false;}
 				public boolean isProfilePhotoPublic() {return false;}
+				public boolean getUserHidden() {return userHidden;} // ONC
 			};
 			EnrolledParticipant ep = new EnrolledParticipant(p, statusCodes.get(enr.getEnrollmentStatus()), enr.getCredits());
 			participants.add(ep);

@@ -23,6 +23,7 @@ package org.sakaiproject.tool.roster;
 import org.sakaiproject.api.app.profile.ProfileManager;
 import org.sakaiproject.api.app.roster.PhotoService;
 import org.sakaiproject.api.app.roster.RosterManager;
+import org.sakaiproject.api.privacy.PrivacyManager; // ONC
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.SecurityService;
@@ -52,6 +53,7 @@ public class ServicesBean {
     protected ProfileManager profileManager;
     protected PhotoService photoService;
     protected EventTrackingService eventTrackingService;
+    protected PrivacyManager privacyManager; // ONC
 
     // The group provider may not exist, so ensure that it's accessible only via getGroupProvider()
     private GroupProvider groupProvider;
@@ -94,6 +96,11 @@ public class ServicesBean {
 
     public void setEventTrackingService(EventTrackingService eventTrackingService){
         this.eventTrackingService = eventTrackingService;
+    }
+    
+    // ONC
+    public void setPrivacyManager(PrivacyManager privacyManager) {
+    	this.privacyManager = privacyManager;
     }
 
     // Don't inject the group provider, since it may not exist.

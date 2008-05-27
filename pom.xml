@@ -4,21 +4,13 @@
   <parent>
     <artifactId>base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>SNAPSHOT</version>
+    <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Roster Project</name>
   <groupId>org.sakaiproject</groupId>
   <artifactId>roster-base</artifactId>
   <packaging>pom</packaging>
-  
-  <scm>
-    <connection>scm:svn:https://source.sakaiproject.org/svn/roster/trunk</connection>
-    <developerConnection>scm:svn:https://source.sakaiproject.org/svn/roster/trunk</developerConnection>
-    <url>https://source.sakaiproject.org/svn/roster/trunk</url>
-  </scm>
-  
-
   <modules>
     <module>components</module>
     <module>roster-api</module>

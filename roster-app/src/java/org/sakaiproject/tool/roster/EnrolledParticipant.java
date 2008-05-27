@@ -88,4 +88,9 @@ public class EnrolledParticipant implements Participant {
 	public boolean isOfficialPhotoPreferred() {
 		return participant.isOfficialPhotoPreferred();
 	}
+	
+	// ONC
+	public boolean getUserHidden() {
+		return participant.getUserHidden();
+	}
 }

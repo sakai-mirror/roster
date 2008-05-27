@@ -41,6 +41,7 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected User user;
 	protected Profile profile;
 	protected String roleTitle;
+	protected boolean userHidden; // oncourse
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -49,10 +50,12 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param profile
 	 * @param roleTitle
 	 */
-	public ParticipantImpl(User user, Profile profile, String roleTitle) {
+	// ONC - added userHidden variable to ParticipantImpl
+	public ParticipantImpl(User user, Profile profile, String roleTitle, boolean userHidden) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
+		this.userHidden = userHidden; // ONC
 	}
 
 	public Profile getProfile() {
@@ -94,6 +97,15 @@ public class ParticipantImpl implements Participant, Serializable {
 		if(profile == null) return false;
 		if( ! isProfilePhotoPublic()) return false;
 		return isOfficialPhotoPreferred();
+	}
+	
+	// ONC
+	public boolean getUserHidden() {
+		return userHidden;
+	}
+	
+	public void setUserHidden(boolean userHidden) {
+		this.userHidden = userHidden;
 	}
 	
 	private boolean isTrue(Boolean bool) {

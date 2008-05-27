@@ -109,6 +109,12 @@
             <property-name>eventTrackingService</property-name>
             <value>#{org_sakaiproject_event_api_EventTrackingService}</value>
         </managed-property>
+        <!-- ONC -->
+        <managed-property>
+            <property-name>privacyManager</property-name>
+            <value>#{org_sakaiproject_api_privacy_PrivacyManager}</value>
+        </managed-property>
+        <!-- End ONC -->
     </managed-bean>
 
     <managed-bean>

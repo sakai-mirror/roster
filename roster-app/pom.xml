@@ -4,7 +4,7 @@
   <parent>
     <artifactId>roster-base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>SNAPSHOT</version>
+    <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Roster List Tool</name>
@@ -22,6 +22,13 @@
       <artifactId>sakai-profile-api</artifactId>
       <version>${sakai.version}</version>
     </dependency>
+    <!-- ONC -->
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-privacy-api</artifactId>
+      <version>${sakai.version}</version>
+    </dependency>
+ 	<!-- end ONC -->
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>

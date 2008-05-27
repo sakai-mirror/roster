@@ -118,7 +118,8 @@ public abstract class RosterManagerImpl implements RosterManager {
         userIds.add(user.getId());
 
         String roleTitle = getUserRoleTitle(user);
-        return new ParticipantImpl(user, profile, roleTitle);
+        boolean userHidden = getUserPrivacy(user); // ONC
+        return new ParticipantImpl(user, profile, roleTitle, userHidden); // ONC - added userHidden
     }
 
 
@@ -318,7 +319,8 @@ public abstract class RosterManagerImpl implements RosterManager {
                 continue;
             }
 
-            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
+            boolean userHidden = getUserPrivacy(userRole.user); // ONC
+            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, userHidden)); // ONC - added userHidden
         }
         return participants;
     }
@@ -463,6 +465,12 @@ public abstract class RosterManagerImpl implements RosterManager {
         return toolManager().getCurrentPlacement().getContext();
     }
 
+    // ONC
+    private boolean getUserPrivacy(User user) {
+		boolean privacyCheck = privacyManager().isViewable("/site/" + getSiteId(), user.getId());
+		return privacyCheck;
+    }
+    
     /**
      *
      * @param user
@@ -532,6 +540,12 @@ public abstract class RosterManagerImpl implements RosterManager {
     public boolean isOfficialPhotosViewable() {
         return userHasSitePermission(userDirectoryService().getCurrentUser(),
                 RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
+    }
+    
+    // ONC
+    public boolean isViewHidden() {
+        return userHasSitePermission(userDirectoryService().getCurrentUser(),
+                RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
     }
 
 

@@ -30,6 +30,14 @@ response.setContentType("text/html; charset=UTF-8");
                          sortColumn="#{prefs.sortColumn}"
                          sortAscending="#{prefs.sortAscending}"
                          styleClass="listHier rosterTable">
+                <%-- ONC --%>
+                <h:column rendered="#{overview.renderVisibility}">
+						<f:facet name="header">
+				   		  <h:outputText value="#{msgs.facet_visible}" />
+				   		</f:facet>
+ 						<h:graphicImage value="#{(participant.userHidden == true) ? '/images/user_visible.png' : '/images/user_invisible.png'}" alt="#{(participant.userHidden == true) ? 'Visible' : 'Invisible'}" title="#{(participant.userHidden == true) ? 'Visible' : 'Invisible'}" />
+				</h:column>
+				<%-- End ONC --%>
                 <h:column>
                     <f:facet name="header">
                         <t:commandSortHeader columnName="sortName" immediate="true" arrow="true">
