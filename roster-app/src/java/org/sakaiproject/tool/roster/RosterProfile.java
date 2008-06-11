@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
-
+import org.sakaiproject.authz.cover.SecurityService;
 public class RosterProfile {
 	private static final Log log = LogFactory.getLog(RosterProfile.class);
 
@@ -65,8 +65,8 @@ public class RosterProfile {
         services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile",participant.getUser().getEid(),false));
         
         if (services.userDirectoryService.getCurrentUser().getId()
-				.equals(userId)) {
-			// This user is looking at him/her self
+				.equals(userId)||SecurityService.isSuperUser()) {
+			// This user is looking at him/her self or isSuperUser
 			return "completeProfile";
 		}
 
@@ -76,6 +76,12 @@ public class RosterProfile {
 						+ userId);
 			return "profileNotFound";
 		}
+		if (participant.getProfile().getHidePublicInfo()) {
+			if (log.isDebugEnabled())
+				log.debug("You have no authrozation to view this person: " + userId);
+			return "profileNotFound";
+		}
+		
 		if (participant.getProfile().getHidePrivateInfo() == null
 				|| participant.getProfile().getHidePrivateInfo()) {
 			if (log.isDebugEnabled())
