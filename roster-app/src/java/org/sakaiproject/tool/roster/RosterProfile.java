@@ -76,7 +76,7 @@ public class RosterProfile {
 						+ userId);
 			return "profileNotFound";
 		}
-		if (participant.getProfile().getHidePublicInfo()) {
+		if (participant.getProfile().getHidePublicInfo() != null && participant.getProfile().getHidePublicInfo()) {
 			if (log.isDebugEnabled())
 				log.debug("You have no authrozation to view this person: " + userId);
 			return "profileNotFound";
