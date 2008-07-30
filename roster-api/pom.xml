@@ -21,15 +21,15 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-profile-api</artifactId>
       <version>${sakai.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-authz-api</artifactId>
-      <version>${sakai.version}</version>
-    </dependency>
+<!--org.sakaiprojectsakai-authz-api${sakai.version}-->
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-api</artifactId>
@@ -40,11 +40,7 @@
       <artifactId>sakai-coursemanagement-api</artifactId>
       <version>${sakai.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-user-api</artifactId>
-      <version>${sakai.version}</version>
-    </dependency>
+<!--org.sakaiprojectsakai-user-api${sakai.version}-->
   </dependencies>
   <build>
     <resources/>
