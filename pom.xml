@@ -24,4 +24,45 @@
     <module>roster-app</module>
     <module>roster-help</module>
   </modules>
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-roster-impl</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>     
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-roster-model</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-sections-app-util</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-jsf-app</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>
+    </dependency>
+        <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-depend-jsf-widgets-myfaces</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-jsf-spreadsheet</artifactId>
+     <version>2.6.0RC1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-jsf-tool</artifactId>
+      <version>2.6.0RC1-SNAPSHOT</version>
+    </dependency>
+
+  </dependencies>
+</dependencyManagement>
 </project>

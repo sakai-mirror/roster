@@ -36,12 +36,12 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-profile-api</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
 <!--org.sakaiprojectsakai-component${sakai.version}-->
 <!--org.sakaiprojectsakai-component-api${sakai.version}-->
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-app-util</artifactId>
-      <version>${sakai.version}</version>
+     
       <exclusions>
         <exclusion>
           <groupId>org.sakaiproject</groupId>
@@ -65,12 +65,12 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-api</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-coursemanagement-api</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
 <!--My faces dependency -->
     <dependency>
@@ -91,7 +91,7 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-app</artifactId>
-      <version>${sakai.version}</version>
+     
       <exclusions>
         <exclusion>
           <groupId>jsf</groupId>
@@ -102,13 +102,13 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-depend-jsf-widgets-myfaces</artifactId>
-      <version>${sakai.version}</version>
+     
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-spreadsheet</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
 <!--javax.servletservlet-api${sakai.servletapi.version}-->
     <dependency>
@@ -130,7 +130,7 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-tool</artifactId>
-      <version>${sakai.version}</version>
+     
     </dependency>
 <!--org.sakaiprojectsakai-event-api${sakai.version}-->
   </dependencies>
