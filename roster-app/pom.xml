@@ -18,6 +18,10 @@
   <packaging>war</packaging>
   <dependencies>
     <dependency>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-util</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
@@ -29,19 +33,16 @@
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-component-manager</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.kernel.util</groupId>
-      <artifactId>sakai-util</artifactId>
-    </dependency>
+<!--
+      This has been relocated to sakai-kernel-util
+      org.sakaiproject.kernel.utilsakai-util-->
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-profile-api</artifactId>
-     
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
-     
     </dependency>
 <!--org.sakaiprojectsakai-component${sakai.version}-->
 <!--org.sakaiprojectsakai-component-api${sakai.version}-->
@@ -54,7 +55,6 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-app-util</artifactId>
-     
       <exclusions>
         <exclusion>
           <groupId>org.sakaiproject</groupId>
@@ -65,12 +65,10 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-api</artifactId>
-     
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-coursemanagement-api</artifactId>
-     
     </dependency>
 <!--My faces dependency -->
     <dependency>
@@ -91,7 +89,6 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-app</artifactId>
-     
       <exclusions>
         <exclusion>
           <groupId>jsf</groupId>
@@ -102,13 +99,11 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-depend-jsf-widgets-myfaces</artifactId>
-     
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-spreadsheet</artifactId>
-     
     </dependency>
 <!--javax.servletservlet-api${sakai.servletapi.version}-->
     <dependency>
@@ -130,7 +125,6 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-tool</artifactId>
-     
     </dependency>
 <!--org.sakaiprojectsakai-event-api${sakai.version}-->
   </dependencies>
