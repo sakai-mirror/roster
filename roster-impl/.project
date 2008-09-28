@@ -1,0 +1,22 @@
+<projectDescription>
+  <name>sakai-roster-impl</name>
+  <comment/>
+  <projects>
+    <project>sakai-common-edu-person-api</project>
+    <project>sakai-common-manager-api</project>
+    <project>sakai-common-type-api</project>
+    <project>sakai-coursemanagement-api</project>
+    <project>sakai-privacy-api</project>
+    <project>sakai-profile-api</project>
+    <project>sakai-roster-api</project>
+    <project>sakai-sections-api</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

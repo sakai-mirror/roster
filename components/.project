@@ -1,0 +1,16 @@
+<projectDescription>
+  <name>sakai-roster-components</name>
+  <comment/>
+  <projects>
+    <project>sakai-roster-impl</project>
+    <project>sakai-roster-model</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

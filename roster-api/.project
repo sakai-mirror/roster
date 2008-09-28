@@ -1,0 +1,17 @@
+<projectDescription>
+  <name>sakai-roster-api</name>
+  <comment/>
+  <projects>
+    <project>sakai-coursemanagement-api</project>
+    <project>sakai-profile-api</project>
+    <project>sakai-sections-api</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
