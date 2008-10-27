@@ -11,32 +11,43 @@ response.setContentType("text/html; charset=UTF-8");
 <f:view>
     <sakai:view title="#{msgs.facet_roster_pictures}" toolCssHref="/sakai-roster-tool/css/roster.css">
 		<%="<script src=js/roster.js></script>"%>
-		<script language="JavaScript">
-			// open print preview in another browser window so can size approx what actual
-			// print out will look like
-			function printFriendly(url) {
-			window.open(url,'mywindow','width=960,height=1100'); 		
-			}
-		</script>
         <h:form id="roster_form">
             <t:aliasBean alias="#{viewBean}" value="#{pictures}">
-                <%@include file="inc/nav.jspf" %>
+				<h:panelGrid columns="2" styleClass="rosterPageHeader" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
+					<sakai:view_title value="#{viewBean.pageTitle}" />
+					<h:panelGroup>
+						<h:commandButton onclick="javascript:window.print();return false;" value="#{msgs.print}" title="#{msgs.print}"/>
+					</h:panelGroup>
+				</h:panelGrid>
             </t:aliasBean>
 
-            <%@include file="inc/filter.jspf" %>
-
-            <h:panelGrid columns="2" styleClass="rosterPicturesFilter" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
-                <t:selectOneRadio  value="#{prefs.displayProfilePhotos}" onclick="this.form.submit()" immediate="true" rendered="#{pictures.renderPicturesOptions}">
-                    <f:selectItems value="#{pictures.photoSelectItems}" />
-                </t:selectOneRadio>
-				
-				<%-- Render something to keep the panel grid happy with two rendered components --%>
-				<h:outputText value="" rendered="#{ ! pictures.renderPicturesOptions}"/>
-
-                <h:commandButton value="#{msgs.roster_show_names}" actionListener="#{pictures.showNames}" rendered="#{ ! prefs.displayNames}" />
-                <h:commandButton value="#{msgs.roster_hide_names}" actionListener="#{pictures.hideNames}" rendered="#{prefs.displayNames}"/>
-            </h:panelGrid>
-
+            <%-- Initialize the filter --%>
+			<h:outputText value="#{filter.init}" />
+			
+			<h:panelGrid columns="3" rendered="#{filter.displaySectionsFilter}">
+			    <h:outputText value="#{msgs.section_filter_pre}" styleClass="filterLabel" />
+			    <h:selectOneMenu id="section_filter" value="#{filter.sectionFilter}" onchange="this.form.submit()" immediate="true">
+			        <f:selectItems value="#{filter.sectionSelectItems}" />
+			    </h:selectOneMenu>
+			    <h:outputText value="#{msgs.section_filter_post}" styleClass="filterLabel" />
+			</h:panelGrid>
+			
+			<h:panelGrid id="search_group" columns="2" styleClass="searchFilter">
+			    <h:panelGroup styleClass="instruction">
+			        <t:div style="padding-left:10px;" rendered="#{filter.participantCount > 0}">
+			            <h:outputFormat value="#{msgs.currently_displaying_participants}" rendered="#{filter.participantCount > 1}">
+			                <f:param value="#{filter.participantCount}" />
+			            </h:outputFormat>
+			            <h:outputFormat value="#{msgs.currently_displaying_participant}"  rendered="#{filter.participantCount == 1}">
+			                <f:param value="#{filter.participantCount}" />
+			            </h:outputFormat>
+			        </t:div>
+			
+			        <t:div style="padding-left:10px;" rendered="#{filter.participantCount > 1 }">
+			            <h:outputText value="#{filter.roleCountMessage}" />
+			        </t:div>
+			    </h:panelGroup>
+			</h:panelGrid>
 
              <t:div styleClass="instruction">
 
@@ -62,7 +73,7 @@ response.setContentType("text/html; charset=UTF-8");
             </t:div>
 
             <t:dataTable
-                    newspaperColumns="5"
+                    newspaperColumns="1"
                     newspaperOrientation="horizontal"
                     value="#{pictures.participants}"
                     var="participant"
@@ -131,10 +142,8 @@ response.setContentType("text/html; charset=UTF-8");
                     <t:div rendered="#{prefs.displayNames}">
                         <t:div>
                             <h:outputFormat value="#{participant.user.displayName}" title="#{participant.user.displayName}" rendered="#{filter.displayPhotoFirstNameLastName}">
-                                <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                             <h:outputFormat value="#{participant.user.sortName}" title="#{participant.user.displayName}" rendered="#{!filter.displayPhotoFirstNameLastName}">
-                                <f:converter converterId="textTruncateConverter"/>
                             </h:outputFormat>
                         </t:div>
                     </t:div>
