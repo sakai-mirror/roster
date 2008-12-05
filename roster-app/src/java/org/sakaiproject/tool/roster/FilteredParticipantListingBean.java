@@ -58,6 +58,7 @@ public class FilteredParticipantListingBean implements Serializable {
 
 	protected String defaultSearchText;
 	protected String sectionFilter;
+	protected String groupFilter;
 
 
 	// Cache the participants list so we don't have to fetch it twice (once for the list,
@@ -184,6 +185,14 @@ public class FilteredParticipantListingBean implements Serializable {
        if("true".equals(services.serverConfigurationService.getString("roster.display.firstNameLastName"))) return true;
        return false;
     }
+    
+    public boolean isGroupedBy() {
+		String groupFilter = StringUtils.trimToNull(getGroupFilter());
+		if (groupFilter == null)
+			return false;
+		boolean grouped = Boolean.valueOf(groupFilter);
+		return grouped;
+	}
 
     public String getSearchFilterString() {
 		return searchFilter.getSearchFilter();
@@ -220,6 +229,20 @@ public class FilteredParticipantListingBean implements Serializable {
     		 return "unknown site";
     	 }
     }
+     
+    public void setGroupFilter(String groupFilter) {
+ 		// if we set the groupfilter, we don't want the section filter to interfere, so make it null
+    	if(sectionFilter!=null)
+    		sectionFilter = null;
+    	// Don't allow this value to be set to the separater line
+ 		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
+ 				ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line")
+ 				.equals(groupFilter)) {
+ 			this.groupFilter = null;
+ 		} else {
+ 			this.groupFilter = StringUtils.trimToNull(groupFilter);
+ 		}
+ 	}
 
     public void setSectionFilter(String sectionFilter) {
 		// Don't allow this value to be set to the separater line
@@ -261,6 +284,27 @@ public class FilteredParticipantListingBean implements Serializable {
         MessageFormat format = new MessageFormat(rawString);
         return format.format(params);
 	}
+	
+	public String getGroupFilter() {
+		// if we set the groupfilter, we don't want the section filter to interfere, so make it null
+    	if(sectionFilter!=null)
+    		sectionFilter = null;
+		return groupFilter;
+	}
+	
+	public List<SelectItem> getGroupSelectItems() {
+        List<SelectItem> list = new ArrayList<SelectItem>();
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        String ungrouped = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_ungrouped");
+        String byGroup = LocaleUtil.getLocalizedString(facesContext, ServicesBean.MESSAGE_BUNDLE, "roster_group_bygroup");
+
+        // Add the "all" select option and a separator line
+        list.add(new SelectItem("false", ungrouped));
+        list.add(new SelectItem("true", byGroup));
+
+        return list;
+    }
 	
 	public boolean isDisplayingParticipants() {
 		// if we have entries in the roleCounts map, we have participants to display

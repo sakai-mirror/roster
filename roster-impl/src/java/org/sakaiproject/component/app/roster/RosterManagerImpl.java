@@ -21,8 +21,11 @@
 
 package org.sakaiproject.component.app.roster;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,7 +121,7 @@ public abstract class RosterManagerImpl implements RosterManager {
         userIds.add(user.getId());
 
         String roleTitle = getUserRoleTitle(user);
-        return new ParticipantImpl(user, profile, roleTitle);
+        return new ParticipantImpl(user, profile, roleTitle, null);
     }
 
 
@@ -193,6 +196,21 @@ public abstract class RosterManagerImpl implements RosterManager {
         List<Participant> participants = getParticipantsInGroups(currentUser, groupMembers);
         filterHiddenUsers(currentUser, participants, groupMembers);
         return participants;
+    }
+    
+    public boolean isParticipantGrouped(String userId) {
+    	Map<Group, Set<String>> groupMembers = getGroupMembers();
+    	for(Iterator<Set<String>> groupValueSet = groupMembers.values().iterator(); groupValueSet.hasNext();)
+    	{
+    		Set<String> groupValueSetString = groupValueSet.next();
+    		for (Iterator<String> gsa = groupValueSetString.iterator(); gsa.hasNext();)
+    		{
+    			String wee = gsa.next();
+    			if (wee.equals(userId))
+    				return true;
+    		}
+    	}
+    	return false;
     }
 
     /**
@@ -317,10 +335,28 @@ public abstract class RosterManagerImpl implements RosterManager {
                 log.warn("A profile exists for non-existent user " + profile.getUserId());
                 continue;
             }
+            
+            List<Group> groupsWithMember = null;
+            try {
+            	groupsWithMember = new ArrayList<Group>(siteService().getSite(getSiteId()).getGroupsWithMember(userId));
+            	Collections.sort(groupsWithMember, sortGroups());
+			} catch (IdUnusedException e) {
+				log.error("getGroupsWithMember: " + e.getMessage(), e);
+			}
 
-            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
+            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsWithMember));
         }
         return participants;
+    }
+    
+    private Comparator<Group> sortGroups() {
+    	Comparator<Group> groupComparator = new Comparator<Group>() {
+			public int compare(Group one, Group another)
+			{
+				return Collator.getInstance().compare(one.getTitle(),another.getTitle());
+			}
+    	};
+        return groupComparator;
     }
 
     /**
@@ -534,5 +570,17 @@ public abstract class RosterManagerImpl implements RosterManager {
                 RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
     }
 
-
+    public boolean isGroupMembershipViewable() {
+    	Site site;
+        try {
+            site = siteService().getSite(getSiteId());
+        } catch (IdUnusedException ide) {
+            log.warn("isGroupMembershipViewable: " + ide);
+            return false;
+        }
+        Collection groups = site.getGroups();
+        if (groups.isEmpty())
+        	return false;
+        return true;
+    }
 }

@@ -22,11 +22,15 @@
 package org.sakaiproject.component.app.roster;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
+import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.site.api.Group;
 import org.sakaiproject.user.api.User;
 
 /**
@@ -41,6 +45,7 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected User user;
 	protected Profile profile;
 	protected String roleTitle;
+	protected List<Group> groupsWithMember;
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -49,10 +54,11 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param profile
 	 * @param roleTitle
 	 */
-	public ParticipantImpl(User user, Profile profile, String roleTitle) {
+	public ParticipantImpl(User user, Profile profile, String roleTitle, List<Group> groupsWithMember) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
+		this.groupsWithMember = groupsWithMember;
 	}
 
 	public Profile getProfile() {
@@ -101,4 +107,27 @@ public class ParticipantImpl implements Participant, Serializable {
 		return bool.booleanValue();
 	}
 
+	public List<Group> getGroupsWithMember() {
+		return groupsWithMember;
+	}
+
+	public void setGroupsWithMember(List<Group> groupsWithMember) {
+		this.groupsWithMember = groupsWithMember;
+	}
+
+	public String getGroupsWithMemberString() {
+		String groupsString = "";
+		if (getGroupsWithMember()==null)
+			return groupsString;
+		List<Group> groupsList = getGroupsWithMember();
+		for (Iterator<Group> iter = groupsList.iterator(); iter.hasNext();)
+		{
+			Group group = iter.next();
+			if (iter.hasNext())
+				groupsString = groupsString + group.getTitle() + ", ";
+			else
+				groupsString = groupsString + group.getTitle();
+		}
+		return groupsString;
+	}
 }

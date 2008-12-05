@@ -154,6 +154,7 @@ public abstract class BaseRosterPageBean {
     protected Boolean renderStatusLink;
     protected Boolean renderPicturesLink;
     protected Boolean renderProfileLinks;
+    protected Boolean renderGroupMembershipLink;
 
     public boolean isRenderStatusLink() {
         if(renderStatusLink == null) {
@@ -176,6 +177,13 @@ public abstract class BaseRosterPageBean {
             renderProfileLinks = filter.services.rosterManager.isProfilesViewable();
         }
         return renderProfileLinks.booleanValue();
+    }
+    
+    public boolean isRenderGroupMembershipLink() {
+    	if(renderGroupMembershipLink == null) {
+    		renderGroupMembershipLink = filter.services.rosterManager.isGroupMembershipViewable();
+    	}
+    	return renderGroupMembershipLink.booleanValue();
     }
 
     public boolean isOfficialPhotosAvailableToCurrentUser() {

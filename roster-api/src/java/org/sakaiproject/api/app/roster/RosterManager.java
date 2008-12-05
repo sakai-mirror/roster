@@ -22,8 +22,11 @@
 package org.sakaiproject.api.app.roster;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
+import org.sakaiproject.site.api.Group;
 
 
 /**
@@ -93,4 +96,17 @@ public interface RosterManager
      * Display section/group dropdown filter when site has only a single group or section defined: true or false
      * @return true or false     
      */   
+    
+    /**
+     * Is there a group defined in the site for the group membership link to be displayed?
+     * @return
+     */
+    public boolean isGroupMembershipViewable();
+    
+    /**
+     * Is the user part of a group?
+     * @param userId
+     * @return
+     */
+    public boolean isParticipantGrouped(String userId);
 }

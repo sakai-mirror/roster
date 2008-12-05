@@ -88,4 +88,8 @@ public class EnrolledParticipant implements Participant {
 	public boolean isOfficialPhotoPreferred() {
 		return participant.isOfficialPhotoPreferred();
 	}
+	
+	public String getGroupsWithMemberString() {
+		return participant.getGroupsWithMemberString();
+	}
 }

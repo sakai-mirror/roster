@@ -125,6 +125,7 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 				public boolean isOfficialPhotoPreferred() {return false;}
 				public boolean isOfficialPhotoPublicAndPreferred() {return false;}
 				public boolean isProfilePhotoPublic() {return false;}
+				public String getGroupsWithMemberString() {return "";}
 			};
 			EnrolledParticipant ep = new EnrolledParticipant(p, statusCodes.get(enr.getEnrollmentStatus()), enr.getCredits());
 			participants.add(ep);
