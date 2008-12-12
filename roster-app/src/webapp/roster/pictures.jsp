@@ -15,7 +15,7 @@ response.setContentType("text/html; charset=UTF-8");
 			// open print preview in another browser window so can size approx what actual
 			// print out will look like
 			function printFriendly(url) {
-			window.open(url,'mywindow','width=960,height=1100'); 		
+			window.open(url,'mywindow','width=960,height=1100,scrollbars=1'); 		
 			}
 		</script>
         <h:form id="roster_form">
