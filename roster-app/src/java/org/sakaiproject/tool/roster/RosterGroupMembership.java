@@ -78,11 +78,20 @@ public class RosterGroupMembership extends BaseRosterPageBean {
         {
             Group group = groupIter.next();
             List<Participant> roster = filter.services.rosterManager.getRoster(group.getReference());
+            Collections.sort(roster, getComparator());
+    		if(!prefs.sortAscending) {
+    			Collections.reverse(roster);
+    		}
             groupedParticipants.add(new GroupedParticipants(group.getTitle(), roster, roster.size(), getRoleCountMessage(filter.findRoleCounts(roster))));
         }
         
         List<Participant> fullRoster = filter.services.rosterManager.getRoster();
         List<Participant> unassignedList = new ArrayList();
+        
+        Collections.sort(fullRoster, getComparator());
+		if(!prefs.sortAscending) {
+			Collections.reverse(fullRoster);
+		}
         // checking if there's any participants who are not in any groups
         for(Iterator<Participant> partIter = fullRoster.iterator(); partIter.hasNext();)
         {
