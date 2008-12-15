@@ -74,11 +74,12 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 		}
         List<GroupedParticipants> groupedParticipants = new ArrayList<GroupedParticipants>();
         Collection groups = site.getGroups();
+        Comparator<Participant> comparator = getComparator();
         for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();)
         {
             Group group = groupIter.next();
             List<Participant> roster = filter.services.rosterManager.getRoster(group.getReference());
-            Collections.sort(roster, getComparator());
+            Collections.sort(roster, comparator);
     		if(!prefs.sortAscending) {
     			Collections.reverse(roster);
     		}
@@ -88,7 +89,7 @@ public class RosterGroupMembership extends BaseRosterPageBean {
         List<Participant> fullRoster = filter.services.rosterManager.getRoster();
         List<Participant> unassignedList = new ArrayList();
         
-        Collections.sort(fullRoster, getComparator());
+        Collections.sort(fullRoster, comparator);
 		if(!prefs.sortAscending) {
 			Collections.reverse(fullRoster);
 		}
@@ -96,8 +97,8 @@ public class RosterGroupMembership extends BaseRosterPageBean {
         for(Iterator<Participant> partIter = fullRoster.iterator(); partIter.hasNext();)
         {
         	Participant participant = partIter.next();
-        	boolean userGrouped = filter.services.rosterManager.isParticipantGrouped(participant.getUser().getId());
-        	if (!userGrouped)
+        	String groupsString = participant.getGroupsString();
+        	if (groupsString == null || "".equals(groupsString))
         	{
         		unassignedList.add(participant);
         	}
@@ -248,7 +249,7 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 					row.add(participant.getUser().getSortName());
 					row.add(participant.getUser().getDisplayId());
 					row.add(participant.getRoleTitle());
-					row.add(participant.getGroupsWithMemberString());
+					row.add(participant.getGroupsString());
 		            spreadsheetData.add(row);
 		        }
 			}
@@ -262,7 +263,7 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 				row.add(participant.getUser().getSortName());
 				row.add(participant.getUser().getDisplayId());
 				row.add(participant.getRoleTitle());
-				row.add(participant.getGroupsWithMemberString());
+				row.add(participant.getGroupsString());
 	            spreadsheetData.add(row);
 	        }
 		}

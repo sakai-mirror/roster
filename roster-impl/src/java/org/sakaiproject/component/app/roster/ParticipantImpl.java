@@ -45,7 +45,7 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected User user;
 	protected Profile profile;
 	protected String roleTitle;
-	protected List<Group> groupsWithMember;
+	protected String groupsString;
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -54,11 +54,11 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param profile
 	 * @param roleTitle
 	 */
-	public ParticipantImpl(User user, Profile profile, String roleTitle, List<Group> groupsWithMember) {
+	public ParticipantImpl(User user, Profile profile, String roleTitle, String groupsString) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
-		this.groupsWithMember = groupsWithMember;
+		this.groupsString = groupsString;
 	}
 
 	public Profile getProfile() {
@@ -106,28 +106,12 @@ public class ParticipantImpl implements Participant, Serializable {
 		if(bool == null) return false;
 		return bool.booleanValue();
 	}
-
-	public List<Group> getGroupsWithMember() {
-		return groupsWithMember;
-	}
-
-	public void setGroupsWithMember(List<Group> groupsWithMember) {
-		this.groupsWithMember = groupsWithMember;
-	}
-
-	public String getGroupsWithMemberString() {
-		String groupsString = "";
-		if (getGroupsWithMember()==null)
-			return groupsString;
-		List<Group> groupsList = getGroupsWithMember();
-		for (Iterator<Group> iter = groupsList.iterator(); iter.hasNext();)
-		{
-			Group group = iter.next();
-			if (iter.hasNext())
-				groupsString = groupsString + group.getTitle() + ", ";
-			else
-				groupsString = groupsString + group.getTitle();
-		}
+	
+	public String getGroupsString() {
 		return groupsString;
+	}
+
+	public void setGroupsString(String groupsString) {
+		this.groupsString = groupsString;
 	}
 }

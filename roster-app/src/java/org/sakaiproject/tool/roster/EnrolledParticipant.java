@@ -89,7 +89,7 @@ public class EnrolledParticipant implements Participant {
 		return participant.isOfficialPhotoPreferred();
 	}
 	
-	public String getGroupsWithMemberString() {
-		return participant.getGroupsWithMemberString();
+	public String getGroupsString() {
+		return participant.getGroupsString();
 	}
 }

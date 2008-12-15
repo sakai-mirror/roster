@@ -63,7 +63,7 @@ response.setContentType("text/html; charset=UTF-8");
                     <f:facet name="header">
 	                    <h:outputText value="#{msgs.facet_groups}" />
                     </f:facet>
-                    <h:outputFormat value="#{participant.groupsWithMemberString}" title="#{participant.groupsWithMemberString}">
+                    <h:outputFormat value="#{participant.groupsString}" title="#{participant.groupsString}">
                     	<f:converter converterId="groupTextTruncateConverter"/>
                     </h:outputFormat>
                 </h:column>
@@ -75,16 +75,13 @@ response.setContentType("text/html; charset=UTF-8");
                          var="groupTable"
                          width="100%"
                          rendered="#{groupMembership.groupedBy}">
-                <t:column rendered="#{!empty groupTable.groupedParticipants}">
+                <t:column rendered="#{groupTable.groupedParticipantCount >= 1}">
                 	<t:panelGrid columns="2" width="100%">
 	                	<sakai:view_title value="#{groupTable.groupTitle}" />
 	                	
 	                	<t:panelGroup styleClass="instruction" style="text-align: right" rendered="#{groupMembership.groupedBy}">    
 					        <t:div style="padding-left:10px;" rendered="#{filter.participantCount > 0}">
-					            <h:outputFormat value="#{msgs.currently_displaying_participants}" rendered="#{groupTable.groupedParticipantCount > 1}">
-					                <f:param value="#{groupTable.groupedParticipantCount}" />
-					            </h:outputFormat>
-					            <h:outputFormat value="#{msgs.currently_displaying_participant}"  rendered="#{groupTable.groupedParticipantCount == 1}">
+					             <h:outputFormat value="#{msgs.currently_displaying_participants}" rendered="#{groupTable.groupedParticipantCount >= 1}">
 					                <f:param value="#{groupTable.groupedParticipantCount}" />
 					            </h:outputFormat>
 					        </t:div>
@@ -133,7 +130,7 @@ response.setContentType("text/html; charset=UTF-8");
 		                    <f:facet name="header">
 			                    <h:outputText value="#{msgs.facet_groups}" />
 		                    </f:facet>
-		                    <h:outputFormat value="#{participant.groupsWithMemberString}" title="#{participant.groupsWithMemberString}">
+		                    <h:outputFormat value="#{participant.groupsString}" title="#{participant.groupsString}">
 		                    	<f:converter converterId="groupTextTruncateConverter"/>
 		                    </h:outputFormat>
 		                </t:column>

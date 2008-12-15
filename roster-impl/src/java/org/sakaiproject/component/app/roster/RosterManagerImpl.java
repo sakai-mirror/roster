@@ -197,21 +197,6 @@ public abstract class RosterManagerImpl implements RosterManager {
         filterHiddenUsers(currentUser, participants, groupMembers);
         return participants;
     }
-    
-    public boolean isParticipantGrouped(String userId) {
-    	Map<Group, Set<String>> groupMembers = getGroupMembers();
-    	for(Iterator<Set<String>> groupValueSet = groupMembers.values().iterator(); groupValueSet.hasNext();)
-    	{
-    		Set<String> groupValueSetString = groupValueSet.next();
-    		for (Iterator<String> gsa = groupValueSetString.iterator(); gsa.hasNext();)
-    		{
-    			String wee = gsa.next();
-    			if (wee.equals(userId))
-    				return true;
-    		}
-    	}
-    	return false;
-    }
 
     /**
      * Gets a Map of the groups in this site (key) to the user IDs for the members in the group (value)
@@ -322,6 +307,14 @@ public abstract class RosterManagerImpl implements RosterManager {
 
     private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, Profile> profilesMap) {
         List<Participant> participants = new ArrayList<Participant>();
+        Site site = null;
+        try {
+			site = siteService().getSite(getSiteId());
+		} catch (IdUnusedException e) {
+			log.error("getGroupsWithMember: " + e.getMessage(), e);
+		}
+		Collection<Group> groups = site.getGroups();
+		
         for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
             Entry<String, Profile> entry = iter.next();
             String userId = entry.getKey();
@@ -336,15 +329,22 @@ public abstract class RosterManagerImpl implements RosterManager {
                 continue;
             }
             
-            List<Group> groupsWithMember = null;
-            try {
-            	groupsWithMember = new ArrayList<Group>(siteService().getSite(getSiteId()).getGroupsWithMember(userId));
-            	Collections.sort(groupsWithMember, sortGroups());
-			} catch (IdUnusedException e) {
-				log.error("getGroupsWithMember: " + e.getMessage(), e);
-			}
+            String groupsString = "";
+            for (Group group : groups)
+            {
+            	Member member = group.getMember(userId);
+            	if (member !=null)
+            	{
+        			groupsString = groupsString + group.getTitle() + ", ";
+            	}
+            }
+            if (groupsString != "")
+            {
+            	int endIndex = groupsString.lastIndexOf(", ");
+            	groupsString = groupsString.substring(0, endIndex);
+            }
 
-            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsWithMember));
+            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsString));
         }
         return participants;
     }

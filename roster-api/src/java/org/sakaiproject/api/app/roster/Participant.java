@@ -44,5 +44,5 @@ public interface Participant
   public boolean isOfficialPhotoPreferred();
   public boolean isOfficialPhotoPublicAndPreferred();
   public boolean isProfilePhotoPublic();
-  public String getGroupsWithMemberString();
+  public String getGroupsString();
 }

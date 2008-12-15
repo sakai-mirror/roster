@@ -102,11 +102,4 @@ public interface RosterManager
      * @return
      */
     public boolean isGroupMembershipViewable();
-    
-    /**
-     * Is the user part of a group?
-     * @param userId
-     * @return
-     */
-    public boolean isParticipantGrouped(String userId);
 }
