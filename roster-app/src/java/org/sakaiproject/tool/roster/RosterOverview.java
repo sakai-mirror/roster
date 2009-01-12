@@ -104,7 +104,7 @@ public class RosterOverview extends BaseRosterPageBean {
         	spreadsheetNameRaw = filter.getCourseFilterTitle();
         } else {
         	CourseSection section = filter.services.sectionAwareness.getSection(filter.getSectionFilter());
-        	spreadsheetNameRaw = section.getTitle();
+        	spreadsheetNameRaw = filter.getCourseFilterTitle() + "_" + section.getTitle();
         }
 
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
