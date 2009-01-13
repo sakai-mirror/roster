@@ -269,6 +269,14 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 		}
 
         String spreadsheetNameRaw = filter.getCourseFilterTitle();
+        if (isGroupedBy())
+        {
+        	spreadsheetNameRaw = spreadsheetNameRaw + "_ByGroup";
+        }
+        else
+        {
+        	spreadsheetNameRaw = spreadsheetNameRaw + "_Ungrouped";
+        }
 
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
         SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
