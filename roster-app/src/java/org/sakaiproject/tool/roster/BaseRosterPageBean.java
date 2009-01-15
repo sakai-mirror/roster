@@ -207,4 +207,10 @@ public abstract class BaseRosterPageBean {
         return rawString.replaceAll("\\W","_")+ "_"+dateString;
     }
   
+	public String groupMembership()
+	{
+		// clears section filter for the group membership page
+		filter.sectionFilter = null;
+		return "groupMembership";
+	}
 }

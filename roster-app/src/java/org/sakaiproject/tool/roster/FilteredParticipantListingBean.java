@@ -231,9 +231,6 @@ public class FilteredParticipantListingBean implements Serializable {
     }
      
     public void setGroupFilter(String groupFilter) {
- 		// if we set the groupfilter, we don't want the section filter to interfere, so make it null
-    	if(sectionFilter!=null)
-    		sectionFilter = null;
     	// Don't allow this value to be set to the separater line
  		if(LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(),
  				ServicesBean.MESSAGE_BUNDLE, "roster_section_sep_line")
@@ -286,9 +283,6 @@ public class FilteredParticipantListingBean implements Serializable {
 	}
 	
 	public String getGroupFilter() {
-		// if we set the groupfilter, we don't want the section filter to interfere, so make it null
-    	if(sectionFilter!=null)
-    		sectionFilter = null;
 		return groupFilter;
 	}
 	
