@@ -11,6 +11,7 @@ response.setContentType("text/html; charset=UTF-8");
 <f:view>
     <sakai:view title="#{msgs.facet_roster_pictures}" toolCssHref="/sakai-roster-tool/css/roster.css">
 		<%="<script src=js/roster.js></script>"%>
+		<%="<script src=js/print.js></script>"%>
         <h:form id="roster_form">
             <t:aliasBean alias="#{viewBean}" value="#{pictures}">
 				<h:panelGrid columns="2" styleClass="rosterPageHeader" columnClasses="rosterPageHeaderLeft,rosterPageHeaderRight">
