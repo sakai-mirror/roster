@@ -314,7 +314,7 @@ public abstract class RosterManagerImpl implements RosterManager {
             // Profiles may exist for users that have been removed.  If there's a profile
             // for a missing user, skip the profile.  See SAK-10936
             if(userRole == null || userRole.user == null) {
-                log.warn("A profile exists for non-existent user " + userId);
+                log.warn("A profile exists for non-existent user " + profile.getUserId());
                 continue;
             }
 
