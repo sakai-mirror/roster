@@ -150,10 +150,7 @@ response.setContentType("text/html; charset=UTF-8");
                     </t:div>
 
                     <t:div>
-                        <h:commandLink action="#{profileBean.displayProfile}" value="#{participant.user.displayId}" title="#{msgs.show_profile}" rendered="#{pictures.renderProfileLinks}">
-                            <f:param name="participantId" value="#{participant.user.id}" />
-                            <f:param name="returnPage" value="pictures" />
-                        </h:commandLink>
+                        <h:outputText value="#{participant.user.displayId}" title="#{msgs.show_profile}" rendered="#{pictures.renderProfileLinks}" style="text-decoration: underline;" />
                         <h:outputText value="#{participant.user.displayId}" rendered="#{ ! pictures.renderProfileLinks}" />
                     </t:div>
                     <t:div rendered="#{((partIndex + 1) mod 7) == 0}" style="page-break-after: always;">
