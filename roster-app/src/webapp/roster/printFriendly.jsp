@@ -156,6 +156,32 @@ response.setContentType("text/html; charset=UTF-8");
                         </h:commandLink>
                         <h:outputText value="#{participant.user.displayId}" rendered="#{ ! pictures.renderProfileLinks}" />
                     </t:div>
+                    <t:div rendered="#{((partIndex + 1) mod 7) == 0}" style="page-break-after: always;">
+                    	<t:div styleClass="noprint">
+	                    	<f:verbatim><p style="text-align: center;"></f:verbatim>
+	                    	<h:outputText value="#{((partIndex + 1) / 7)}">
+	                    		<f:convertNumber type="number" integerOnly="true"/>
+	                    	</h:outputText>
+	                    	<h:outputText value=" of " />
+	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
+	                    	</h:outputText>
+	                    	<f:verbatim></p><hr/></f:verbatim>
+	                    </t:div>
+                    </t:div>
+                    <t:div rendered="#{(partIndex + 1) == partCounter}" style="page-break-after: always;">
+	                    <t:div styleClass="noprint">
+	                    	<f:verbatim><p style="text-align: center;"></f:verbatim>
+	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
+	                    	</h:outputText>
+	                    	<h:outputText value=" of " />
+	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
+	                    	</h:outputText>
+	                    	<f:verbatim></p><hr/></f:verbatim>
+	                    </t:div>
+                    </t:div>
                 </h:column>
             </t:dataTable>
         </h:form>

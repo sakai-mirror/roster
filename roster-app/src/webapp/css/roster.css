@@ -38,3 +38,5 @@ table.rosterPictures td {
 	height:10em;
 	vertical-align:top;
 }
+
+@media print  { .noprint  { display: none; } }
