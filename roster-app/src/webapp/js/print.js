@@ -22,7 +22,7 @@ function DomReady(fn)
 function readyState(fn)
 {
 	//dom is ready for interaction
-	if(document.readyState == "interactive")
+	if(document.readyState == "complete")
 	{
 		fn();
 	}
