@@ -153,14 +153,14 @@ response.setContentType("text/html; charset=UTF-8");
                         <h:outputText value="#{participant.user.displayId}" title="#{msgs.show_profile}" rendered="#{pictures.renderProfileLinks}" style="text-decoration: underline;" />
                         <h:outputText value="#{participant.user.displayId}" rendered="#{ ! pictures.renderProfileLinks}" />
                     </t:div>
-                    <t:div rendered="#{((partIndex + 1) mod 7) == 0}" style="page-break-after: always;">
+                    <t:div rendered="#{(((partIndex + 1) mod 7) == 0) && ((partIndex + 1) != partCounter)}" style="page-break-after: always;">
                     	<t:div styleClass="noprint">
 	                    	<f:verbatim><p style="text-align: center;"></f:verbatim>
 	                    	<h:outputText value="#{((partIndex + 1) / 7)}">
 	                    		<f:convertNumber type="number" integerOnly="true"/>
 	                    	</h:outputText>
 	                    	<h:outputText value=" of " />
-	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    	<h:outputText value="#{(partCounter mod 7 == 0) ? (partCounter / 7) : (partCounter / 7) + 1}">
 	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
 	                    	</h:outputText>
 	                    	<f:verbatim></p><hr/></f:verbatim>
@@ -169,11 +169,11 @@ response.setContentType("text/html; charset=UTF-8");
                     <t:div rendered="#{(partIndex + 1) == partCounter}" style="page-break-after: always;">
 	                    <t:div styleClass="noprint">
 	                    	<f:verbatim><p style="text-align: center;"></f:verbatim>
-	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    	<h:outputText value="#{(partCounter mod 7 == 0) ? (partCounter / 7) : ((partCounter < 7) ? 1 : (partCounter / 7) + 1)}">
 	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
 	                    	</h:outputText>
 	                    	<h:outputText value=" of " />
-	                    	<h:outputText value="#{(partCounter / 7) + 1}">
+	                    	<h:outputText value="#{(partCounter mod 7 == 0) ? (partCounter / 7) : ((partCounter < 7) ? 1 : (partCounter / 7) + 1)}">
 	                    		<f:convertNumber type="number" integerOnly="true" maxFractionDigits="0"/>
 	                    	</h:outputText>
 	                    	<f:verbatim></p><hr/></f:verbatim>
