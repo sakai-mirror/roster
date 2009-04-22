@@ -2,7 +2,7 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.7-SNAPSHOT/sakai-kernel-util-1.0.7-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.6/sakai-kernel-util-1.0.6.jar"/>
   <classpathentry kind="src" path="/sakai-roster-impl"/>
   <classpathentry kind="src" path="/sakai-roster-model"/>
 </classpath>
