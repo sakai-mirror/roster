@@ -20,9 +20,9 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/myfaces/core/myfaces-impl/1.1.5/myfaces-impl-1.1.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar"/>
   <classpathentry kind="var" path="M2_REPO/poi/poi/2.5.1-final-20040804/poi-2.5.1-final-20040804.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.8/sakai-component-manager-1.0.8.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.8/sakai-component-manager-1.0.8-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.9/sakai-component-manager-1.0.9.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.9/sakai-component-manager-1.0.9-sources.jar">
     <attributes>
-      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-component-manager/1.0.8/sakai-component-manager-1.0.8-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-component-manager/1.0.9/sakai-component-manager-1.0.9-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="src" path="/sakai-coursemanagement-api"/>
@@ -31,14 +31,14 @@
   <classpathentry kind="src" path="/sakai-jsf-tool"/>
   <classpathentry kind="src" path="/sakai-jsf-widgets"/>
   <classpathentry kind="src" path="/sakai-jsf-widgets-myfaces"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.8/sakai-kernel-api-1.0.8.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.8/sakai-kernel-api-1.0.8-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9-sources.jar">
     <attributes>
-      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.0.8/sakai-kernel-api-1.0.8-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.8/sakai-kernel-util-1.0.8.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.8/sakai-kernel-util-1.0.8-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.9/sakai-kernel-util-1.0.9.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.9/sakai-kernel-util-1.0.9-sources.jar">
     <attributes>
-      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-kernel-util/1.0.8/sakai-kernel-util-1.0.8-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-kernel-util/1.0.9/sakai-kernel-util-1.0.9-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="src" path="/sakai-profile-api"/>
