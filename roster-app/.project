@@ -1,0 +1,35 @@
+<projectDescription>
+  <name>sakai-roster-tool</name>
+  <comment/>
+  <projects>
+    <project>sakai-authz-api</project>
+    <project>sakai-component</project>
+    <project>sakai-component-api</project>
+    <project>sakai-coursemanagement-api</project>
+    <project>sakai-depend-jsf-widgets-myfaces</project>
+    <project>sakai-entity-api</project>
+    <project>sakai-event-api</project>
+    <project>sakai-jsf-app</project>
+    <project>sakai-jsf-spreadsheet</project>
+    <project>sakai-jsf-tool</project>
+    <project>sakai-jsf-widgets</project>
+    <project>sakai-jsf-widgets-myfaces</project>
+    <project>sakai-profile-api</project>
+    <project>sakai-roster-api</project>
+    <project>sakai-sections-api</project>
+    <project>sakai-sections-app-util</project>
+    <project>sakai-site-api</project>
+    <project>sakai-tool-api</project>
+    <project>sakai-user-api</project>
+    <project>sakai-util</project>
+    <project>sakai-util-api</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
