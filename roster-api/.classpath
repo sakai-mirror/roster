@@ -4,11 +4,7 @@
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
   <classpathentry kind="src" path="/sakai-coursemanagement-api"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/arwhyte/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.0.9/sakai-kernel-api-1.0.9-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.11/sakai-kernel-api-1.0.11.jar"/>
   <classpathentry kind="src" path="/sakai-profile-api"/>
   <classpathentry kind="src" path="/sakai-sections-api"/>
 </classpath>
