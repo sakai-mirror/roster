@@ -73,12 +73,11 @@ response.setContentType("text/html; charset=UTF-8");
 
             </t:div>
 
-            <t:dataTable
-                    newspaperColumns="1"
-                    newspaperOrientation="horizontal"
+            <t:dataList
                     value="#{pictures.participants}"
                     var="participant"
-                    styleClass="rosterPictures">
+                    rowIndexVar="partIndex"
+                    rowCountVar="partCounter">
                 <h:column>
                     <t:div>
                         <h:graphicImage
@@ -180,7 +179,7 @@ response.setContentType("text/html; charset=UTF-8");
 	                    </t:div>
                     </t:div>
                 </h:column>
-            </t:dataTable>
+            </t:dataList>
         </h:form>
     </sakai:view>
 </f:view>
