@@ -63,59 +63,61 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 	public boolean isGroupedBy() {
 		return filter.isGroupedBy();
 	}
-	
-	public List<GroupedParticipants> getGroupedParticipants() {
-        Site site;
+	@SuppressWarnings("unchecked")
+	public Collection<GroupedParticipants> getGroupedParticipants() {
+		List<GroupedParticipants> groupedParticipants = null;
+		Site site = null;
+
 		try {
 			site = filter.services.siteService.getSite(filter.getSiteReference().substring(6));
 		} catch (IdUnusedException e) {
 			log.error("Unable to find site for: " + getSiteReference() + " " + e.getMessage(), e);
 			return null;
 		}
-        List<GroupedParticipants> groupedParticipants = new ArrayList<GroupedParticipants>();
-        Collection groups = site.getGroups();
-        Comparator<Participant> comparator = getComparator();
-        for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();)
-        {
-            Group group = groupIter.next();
-            List<Participant> roster = filter.services.rosterManager.getRoster(group.getReference());
-            Collections.sort(roster, comparator);
-    		if(!prefs.sortAscending) {
-    			Collections.reverse(roster);
-    		}
-            groupedParticipants.add(new GroupedParticipants(group.getTitle(), roster, roster.size(), getRoleCountMessage(filter.findRoleCounts(roster))));
-        }
-        
-        List<Participant> fullRoster = filter.services.rosterManager.getRoster();
-        List<Participant> unassignedList = new ArrayList();
-        
-        Collections.sort(fullRoster, comparator);
-		if(!prefs.sortAscending) {
-			Collections.reverse(fullRoster);
-		}
-        // checking if there's any participants who are not in any groups
-        for(Iterator<Participant> partIter = fullRoster.iterator(); partIter.hasNext();)
-        {
-        	Participant participant = partIter.next();
-        	String groupsString = participant.getGroupsString();
-        	if (groupsString == null || "".equals(groupsString))
-        	{
-        		unassignedList.add(participant);
-        	}
-        }
-        // if we have participants who are ungrouped, we add them here to a new one for rendering called "Unassigned"
-        if (!unassignedList.isEmpty())
-        {
-        	String unassigned = "Unassigned";
-        	groupedParticipants.add(new GroupedParticipants(unassigned, unassignedList, unassignedList.size(), getRoleCountMessage(filter.findRoleCounts(unassignedList))));
-        }
+				
+		if (site != null) {
+			groupedParticipants = new ArrayList<GroupedParticipants>();
+			Collection<Group> groups = (Collection<Group>) site.getGroups();
 
-        Collections.sort(groupedParticipants, sortByGroup());
+			//Use a HashSet because we'll have to use .removeAll() on it many times
+			//.remove() is roughly constant time for a HashSet.
+			Set<Participant> unassignedParticipants = new HashSet<Participant>(
+					filter.services.rosterManager.getRoster()
+			);
+
+			for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();)
+			{
+				Group group = groupIter.next();
+				List<Participant> roster = filter.services.rosterManager.getRoster(group.getReference());
+
+				//remove each grouped participant from the 'unassignedParticipants' set
+				unassignedParticipants.removeAll(roster);
+
+				groupedParticipants.add(new GroupedParticipants(group.getTitle(), roster, roster.size(), getRoleCountMessage(filter.findRoleCounts(roster))));
+			}
+
+			// if we have participants who are ungrouped, we add them here to a new one for rendering called "Unassigned"
+			if (!unassignedParticipants.isEmpty())
+			{
+				String unassigned = LocaleUtil.getLocalizedString(FacesContext.getCurrentInstance(), ServicesBean.MESSAGE_BUNDLE, "roster_group_unassigned");
+				groupedParticipants.add(
+						new GroupedParticipants(
+								unassigned, 
+								unassignedParticipants, 
+								unassignedParticipants.size(), 
+								getRoleCountMessage(filter.findRoleCounts(unassignedParticipants))
+						)
+				);
+			}
+
+			Collections.sort(groupedParticipants, sortByGroup());
+		}
+		
         return groupedParticipants;
 	}
 	
 	public class GroupedParticipants {
-        List<Participant> groupedParticipants = new ArrayList<Participant>();
+		Collection<Participant> groupedParticipants = new ArrayList<Participant>();
         String groupTitle;
         int groupedParticipantCount;
         String roleCountMessage;
@@ -132,10 +134,10 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 		public void setGroupTitle(String groupTitle) {
 			this.groupTitle = groupTitle;
 		}
-		public List<Participant> getGroupedParticipants() {
+		public Collection<Participant> getGroupedParticipants() {
 			return groupedParticipants;
 		}
-		public void setGroupedParticipants(List<Participant> groupedParticipants) {
+		public void setGroupedParticipants(Collection<Participant> groupedParticipants) {
 			this.groupedParticipants = groupedParticipants;
 		}
 		public String getRoleCountMessage() {
@@ -147,7 +149,7 @@ public class RosterGroupMembership extends BaseRosterPageBean {
 		
 		public GroupedParticipants() {}
         
-		public GroupedParticipants(String groupTitle, List<Participant> groupedParticipants, int groupedParticipantCount, String roleCountMessage) {
+		public GroupedParticipants(String groupTitle, Collection<Participant> groupedParticipants, int groupedParticipantCount, String roleCountMessage) {
 			this.groupTitle = groupTitle;
 			this.groupedParticipants = groupedParticipants;
 			this.groupedParticipantCount = groupedParticipantCount;

@@ -114,4 +114,31 @@ public class ParticipantImpl implements Participant, Serializable {
 	public void setGroupsString(String groupsString) {
 		this.groupsString = groupsString;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return user.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		boolean rv = false;
+		Participant p = null;
+
+		if (this == obj) {
+			rv = true;
+		} else if (user != null && obj != null && obj instanceof Participant) {
+			p = (Participant) obj;
+
+			rv = user.equals(p.getUser());
+		}
+
+		return rv;
+	}
 }

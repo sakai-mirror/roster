@@ -23,6 +23,7 @@ package org.sakaiproject.tool.roster;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -124,8 +125,9 @@ public class FilteredParticipantListingBean implements Serializable {
 		return getSearchFilterString() != null && ! getSearchFilterString().equals(defaultSearchText) && ! searchMatches(getSearchFilterString(), participant.getUser());
 	}
 
-	protected SortedMap<String, Integer> findRoleCounts(List<Participant> participants) {
+	protected SortedMap<String, Integer> findRoleCounts(Iterable<Participant> participants) {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
+		
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
 			String role = participant.getRoleTitle();
