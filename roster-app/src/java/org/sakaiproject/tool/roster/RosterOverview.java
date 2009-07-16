@@ -3,7 +3,7 @@
  * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2007 Sakai Foundation
+ * Copyright (c) 2007, 2008, 2009 The Sakai Foundation
  *
  * Licensed under the Educational Community License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class RosterOverview extends BaseRosterPageBean {
         	spreadsheetNameRaw = filter.getCourseFilterTitle();
         } else {
         	CourseSection section = filter.services.sectionAwareness.getSection(filter.getSectionFilter());
-        	spreadsheetNameRaw = section.getTitle();
+        	spreadsheetNameRaw = filter.getCourseFilterTitle() + "_" + section.getTitle();
         }
 
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
