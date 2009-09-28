@@ -46,23 +46,21 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
+     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>${sakai.commons.lang.version}</version>
-    </dependency>
+     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
+      <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-common-manager-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
+      <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-common-edu-person-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
+      <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-common-type-api</artifactId>
     </dependency>
 <!--org.sakaiprojectsakai-component-api${sakai.version}-->
