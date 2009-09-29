@@ -33,6 +33,7 @@ import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 
 public abstract class BaseRosterPageBean {
+	
 	public static final String ROSTER_VIEW_EMAIL = "roster_view_email";
 	
 	public abstract String getPageTitle();
@@ -44,8 +45,6 @@ public abstract class BaseRosterPageBean {
 	public static final Comparator<Participant> displayIdComparator;
 	public static final Comparator<Participant> emailComparator;
 	public static final Comparator<Participant> roleComparator;
-
-    private String sortColumn;
 
     static {
 		sortNameComparator = new Comparator<Participant>() {
@@ -129,12 +128,7 @@ public abstract class BaseRosterPageBean {
     }
 
     protected Comparator<Participant> getComparator() {
-
-        if(filter.services.serverConfigurationService.getString("roster.defaultSortColumn")!=null && !filter.services.serverConfigurationService.getString("roster.defaultSortColumn").equals("")){
-            sortColumn = filter.services.serverConfigurationService.getString("roster.defaultSortColumn");
-        }else{
-             sortColumn = prefs.sortColumn;
-        }
+    	String sortColumn = prefs.getSortColumn();
         Comparator<Participant> comparator;
         if (Participant.SORT_BY_ID.equals(sortColumn)) {
             comparator = displayIdComparator;
@@ -142,6 +136,8 @@ public abstract class BaseRosterPageBean {
             comparator = emailComparator;
         } else if(Participant.SORT_BY_ROLE.equals(sortColumn)) {
             comparator = roleComparator;
+        } else if(Participant.SORT_BY_NAME.equals(sortColumn)) {
+        	comparator = sortNameComparator;
         } else {
             // Default to the sort name
             comparator = sortNameComparator;

@@ -20,12 +20,35 @@
  **********************************************************************************/
 package org.sakaiproject.tool.roster;
 
-public class RosterPreferences {
-	public static final String DISPLAY_NAME_COLUMN = "sortName";
-	public static final String DISPLAY_ID_COLUMN = "displayId";
-	public static final String ROLE_COLUMN = "role";
-	public static final String EMAIL_COLUMN = "email";
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class RosterPreferences {
+	private static final Log LOG = LogFactory.getLog(RosterPreferences.class);
+	
+	public enum Column {
+		DISPLAY_NAME("sortName"), DISPLAY_ID("displayId"), ROLE("role"), EMAIL("email");
+		
+		private final String sortColumnName;
+		
+		Column(String sortColumnName) {
+			this.sortColumnName = sortColumnName;
+		}
+		
+		@Override public String toString() {
+			return this.sortColumnName;
+		}
+	}
+
+	private static final Set<String> SORT_COLUMNS = new HashSet<String>(
+														Arrays.asList(
+															Column.DISPLAY_NAME.toString(), Column.DISPLAY_ID.toString(),
+															Column.ROLE.toString(), Column.EMAIL.toString()));
+		
 	protected String sortColumn;
 	protected boolean sortAscending;
 	protected boolean displayNames;
@@ -33,9 +56,13 @@ public class RosterPreferences {
 
 	// Keep the "return page" here, since this is a session scoped bean.  Ugh, this is so nasty.
 	protected String returnPage;
+	
+	protected ServicesBean services;
+	public void setServices(ServicesBean services) {
+		this.services = services;
+	}
 
 	public RosterPreferences() {
-		sortColumn = DISPLAY_NAME_COLUMN;
 		sortAscending = true;
 		displayNames = true;
 	}
@@ -55,8 +82,12 @@ public class RosterPreferences {
 		this.sortAscending = sortAscending;
 	}
 	public String getSortColumn() {
-		return sortColumn;
+		if (this.sortColumn == null) {
+			this.sortColumn = determineSortColumn();
+		}
+		return this.sortColumn;
 	}
+
 	public void setSortColumn(String sortColumn) {
 		this.sortColumn = sortColumn;
 	}
@@ -75,5 +106,30 @@ public class RosterPreferences {
 
 	public void setDisplayProfilePhotos(boolean displayProfilePhotos) {
 		this.displayProfilePhotos = displayProfilePhotos;
+	}
+	
+	private String determineSortColumn() {
+		String sortColumn;
+		String defaultSortColumn = this.services.serverConfigurationService.getString("roster.defaultSortColumn");
+		if (valid(defaultSortColumn)) {
+			sortColumn = defaultSortColumn;
+		}
+		else {
+			sortColumn = Column.DISPLAY_NAME.toString();
+			LOG.warn("defaultSortColumn value = " + defaultSortColumn + " is invalid, must be one of " + SORT_COLUMNS.toString());
+			LOG.warn("Check your default.sakai.preferences and sakai.preferences for a valid roster.defaultSortColumn value");				
+			LOG.warn("Defaulting to sorting by " + sortColumn);	
+		}
+		return sortColumn;
+	}
+
+	private boolean valid(String defaultSortColumn) {
+		boolean valid = false;
+		if (defaultSortColumn != null) {
+			if (SORT_COLUMNS.contains(defaultSortColumn.trim())) {
+				valid = true;
+			}
+		}
+		return valid;
 	}
 }

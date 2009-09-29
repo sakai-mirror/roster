@@ -127,6 +127,10 @@
         <managed-bean-name>prefs</managed-bean-name>
         <managed-bean-class>org.sakaiproject.tool.roster.RosterPreferences</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+	        <property-name>services</property-name>
+	        <value>#{services}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
