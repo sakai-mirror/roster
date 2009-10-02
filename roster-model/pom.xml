@@ -34,7 +34,7 @@
       <artifactId>sakai-profile-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
+      <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-privacy-api</artifactId>
     </dependency>
 <!--org.sakaiprojectsakai-authz-api${sakai.version}-->
