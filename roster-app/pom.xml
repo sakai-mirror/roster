@@ -57,18 +57,18 @@
       <artifactId>sakai-sections-app-util</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.sakaiproject</groupId>
-          <artifactId>sakai-sections-model</artifactId>
+          <groupId>org.sakaiproject.edu-services.sections</groupId>
+          <artifactId>sections-model</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-sections-api</artifactId>
+      <groupId>org.sakaiproject.edu-services.sections</groupId>
+      <artifactId>sections-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-coursemanagement-api</artifactId>
+      <groupId>org.sakaiproject.edu-services.course-management</groupId>
+      <artifactId>coursemanagement-api</artifactId>
     </dependency>
 <!--My faces dependency -->
     <dependency>
@@ -119,8 +119,7 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
+     </dependency>
 <!--org.sakaiprojectsakai-user-api${sakai.version}-->
     <dependency>
       <groupId>org.sakaiproject</groupId>
