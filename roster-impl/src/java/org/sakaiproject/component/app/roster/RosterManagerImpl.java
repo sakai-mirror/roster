@@ -21,8 +21,11 @@
 
 package org.sakaiproject.component.app.roster;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,7 +121,7 @@ public abstract class RosterManagerImpl implements RosterManager {
         userIds.add(user.getId());
 
         String roleTitle = getUserRoleTitle(user);
-        return new ParticipantImpl(user, profile, roleTitle);
+        return new ParticipantImpl(user, profile, roleTitle, null);
     }
 
 
@@ -304,6 +307,14 @@ public abstract class RosterManagerImpl implements RosterManager {
 
     private List<Participant> buildParticipantList(Map<String, UserRole> userMap, Map<String, Profile> profilesMap) {
         List<Participant> participants = new ArrayList<Participant>();
+        Site site = null;
+        try {
+			site = siteService().getSite(getSiteId());
+		} catch (IdUnusedException e) {
+			log.error("getGroupsWithMember: " + e.getMessage(), e);
+		}
+		Collection<Group> groups = site.getGroups();
+		
         for (Iterator<Entry<String, Profile>> iter = profilesMap.entrySet().iterator(); iter.hasNext();) {
             Entry<String, Profile> entry = iter.next();
             String userId = entry.getKey();
@@ -317,10 +328,35 @@ public abstract class RosterManagerImpl implements RosterManager {
                 log.warn("A profile exists for non-existent user " + userId);
                 continue;
             }
+            
+            String groupsString = "";
+            for (Group group : groups)
+            {
+            	Member member = group.getMember(userId);
+            	if (member !=null)
+            	{
+        			groupsString = groupsString + group.getTitle() + ", ";
+            	}
+            }
+            if (groupsString != "")
+            {
+            	int endIndex = groupsString.lastIndexOf(", ");
+            	groupsString = groupsString.substring(0, endIndex);
+            }
 
-            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role));
+            participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsString));
         }
         return participants;
+    }
+    
+    private Comparator<Group> sortGroups() {
+    	Comparator<Group> groupComparator = new Comparator<Group>() {
+			public int compare(Group one, Group another)
+			{
+				return Collator.getInstance().compare(one.getTitle(),another.getTitle());
+			}
+    	};
+        return groupComparator;
     }
 
     /**
@@ -534,5 +570,17 @@ public abstract class RosterManagerImpl implements RosterManager {
                 RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
     }
 
-
+    public boolean isGroupMembershipViewable() {
+    	Site site;
+        try {
+            site = siteService().getSite(getSiteId());
+        } catch (IdUnusedException ide) {
+            log.warn("isGroupMembershipViewable: " + ide);
+            return false;
+        }
+        Collection groups = site.getGroups();
+        if (groups.isEmpty())
+        	return false;
+        return true;
+    }
 }

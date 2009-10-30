@@ -41,6 +41,7 @@ public class ParticipantImpl implements Participant, Serializable {
 	protected User user;
 	protected Profile profile;
 	protected String roleTitle;
+	protected String groupsString;
 
 	/**
 	 * Constructs a ParticipantImpl.
@@ -49,10 +50,11 @@ public class ParticipantImpl implements Participant, Serializable {
 	 * @param profile
 	 * @param roleTitle
 	 */
-	public ParticipantImpl(User user, Profile profile, String roleTitle) {
+	public ParticipantImpl(User user, Profile profile, String roleTitle, String groupsString) {
 		this.user = user;
 		this.profile = profile;
 		this.roleTitle = roleTitle;
+		this.groupsString = groupsString;
 	}
 
 	public Profile getProfile() {
@@ -100,5 +102,39 @@ public class ParticipantImpl implements Participant, Serializable {
 		if(bool == null) return false;
 		return bool.booleanValue();
 	}
+	
+	public String getGroupsString() {
+		return groupsString;
+	}
 
+	public void setGroupsString(String groupsString) {
+		this.groupsString = groupsString;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return user.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		boolean rv = false;
+		Participant p = null;
+
+		if (this == obj) {
+			rv = true;
+		} else if (user != null && obj != null && obj instanceof Participant) {
+			p = (Participant) obj;
+
+			rv = user.equals(p.getUser());
+		}
+
+		return rv;
+	}
 }

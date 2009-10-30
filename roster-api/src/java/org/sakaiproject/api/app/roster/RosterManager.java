@@ -93,4 +93,10 @@ public interface RosterManager
      * Display section/group dropdown filter when site has only a single group or section defined: true or false
      * @return true or false     
      */   
+    
+    /**
+     * Is there a group defined in the site for the group membership link to be displayed?
+     * @return
+     */
+    public boolean isGroupMembershipViewable();
 }

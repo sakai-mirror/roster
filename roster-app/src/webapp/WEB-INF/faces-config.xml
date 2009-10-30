@@ -55,6 +55,11 @@
             <to-view-id>/roster/status.jsp</to-view-id>
             <redirect/>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>groupMembership</from-outcome>
+            <to-view-id>/roster/groupMembership.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
 
     <managed-bean>
@@ -232,6 +237,20 @@
             <value>#{enrollmentStatusPrefs}</value>
         </managed-property>
     </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>groupMembership</managed-bean-name>
+        <managed-bean-class>org.sakaiproject.tool.roster.RosterGroupMembership</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>filter</property-name>
+            <value>#{filter}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>prefs</property-name>
+            <value>#{prefs}</value>
+        </managed-property>
+    </managed-bean>
 
     <!-- =================== Component to display richtext  ============== -->
     <component>
@@ -259,6 +278,11 @@
     <converter>
         <converter-id>textTruncateConverter</converter-id>
         <converter-class>org.sakaiproject.jsf.roster.TextTruncateConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>groupTextTruncateConverter</converter-id>
+        <converter-class>org.sakaiproject.jsf.roster.GroupTextTruncateConverter</converter-class>
     </converter>
 
 </faces-config>

@@ -153,6 +153,7 @@ public abstract class BaseRosterPageBean {
     protected Boolean renderStatusLink;
     protected Boolean renderPicturesLink;
     protected Boolean renderProfileLinks;
+    protected Boolean renderGroupMembershipLink;
 
     public boolean isRenderStatusLink() {
         if(renderStatusLink == null) {
@@ -175,6 +176,13 @@ public abstract class BaseRosterPageBean {
             renderProfileLinks = filter.services.rosterManager.isProfilesViewable();
         }
         return renderProfileLinks.booleanValue();
+    }
+    
+    public boolean isRenderGroupMembershipLink() {
+    	if(renderGroupMembershipLink == null) {
+    		renderGroupMembershipLink = filter.services.rosterManager.isGroupMembershipViewable();
+    	}
+    	return renderGroupMembershipLink.booleanValue();
     }
 
     public boolean isOfficialPhotosAvailableToCurrentUser() {
@@ -204,4 +212,10 @@ public abstract class BaseRosterPageBean {
         return rawString.replaceAll("\\W","_")+ "_"+dateString;
     }
   
+	public String groupMembership()
+	{
+		// clears section filter for the group membership page
+		filter.sectionFilter = null;
+		return "groupMembership";
+	}
 }
