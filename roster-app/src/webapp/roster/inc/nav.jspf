@@ -9,6 +9,7 @@
 
 	<h:panelGroup>
 		<h:commandButton actionListener="#{viewBean.export}" value="#{msgs.export}" rendered="#{viewBean.exportablePage}" title="#{msgs.export_roster}"/>
-		<h:commandButton onclick="javascript:window.print();return false;" value="#{msgs.print}" title="#{msgs.print}"/>
+		<h:commandButton onclick="javascript:window.print();return false;" value="#{(viewBean ne pictures) ? msgs.print : msgs.print_screen}" title="#{(viewBean ne pictures) ? msgs.print : msgs.print_screen}"/>
+		<h:commandButton onclick="javascript:printFriendly('#{viewBean.printFriendlyUrl}');" value="#{msgs.print_single}" rendered="#{viewBean eq pictures}" />
 	</h:panelGroup>
 </h:panelGrid>

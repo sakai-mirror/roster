@@ -31,6 +31,9 @@ import javax.faces.event.ActionEvent;
 
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFunctions;
+import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.tool.cover.ToolManager;
 
 public abstract class BaseRosterPageBean {
 	
@@ -180,6 +183,12 @@ public abstract class BaseRosterPageBean {
         }
         return renderOfficialPhotos.booleanValue();
     }
+    
+    public String getPrintFriendlyUrl()
+	{
+    	return ServerConfigurationService.getToolUrl() + Entity.SEPARATOR
+    		+ ToolManager.getCurrentPlacement().getId() + Entity.SEPARATOR + "printFriendly";
+	}
 
     /**
      * Some institutions use an email address as a user's displayId.  For these institutions,
