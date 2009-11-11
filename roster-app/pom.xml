@@ -33,9 +33,6 @@
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-component-manager</artifactId>
     </dependency>
-<!--
-      This has been relocated to sakai-kernel-util
-      org.sakaiproject.kernel.utilsakai-util-->
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-profile-api</artifactId>
@@ -44,14 +41,6 @@
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-component${sakai.version}-->
-<!--org.sakaiprojectsakai-component-api${sakai.version}-->
-<!--org.sakaiprojectsakai-authz-api${sakai.version}-->
-<!--org.sakaiprojectsakai-tool-api${sakai.version}-->
-<!--org.sakaiprojectsakai-site-api${sakai.version}-->
-<!--org.sakaiprojectsakai-entity-api${sakai.version}-->
-<!--org.sakaiprojectsakai-util-api${sakai.version}-->
-<!--org.sakaiprojectsakai-util${sakai.version}-->
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-app-util</artifactId>
@@ -87,8 +76,8 @@
       <version>1.1.6</version>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-jsf-app</artifactId>
+      <groupId>org.sakaiproject.jsf</groupId>
+      <artifactId>jsf-app</artifactId>
       <exclusions>
         <exclusion>
           <groupId>jsf</groupId>
@@ -97,15 +86,18 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-depend-jsf-widgets-myfaces</artifactId>
+      <groupId>org.sakaiproject.jsf</groupId>
+      <artifactId>myfaces-widgets-depend</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-jsf-spreadsheet</artifactId>
+      <groupId>org.sakaiproject.jsf</groupId>
+      <artifactId>jsf-spreadsheet</artifactId>
     </dependency>
-<!--javax.servletservlet-api${sakai.servletapi.version}-->
+    <dependency>
+      <groupId>org.sakaiproject.jsf</groupId>
+      <artifactId>jsf-tool</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jsp-api</artifactId>
@@ -120,12 +112,6 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
      </dependency>
-<!--org.sakaiprojectsakai-user-api${sakai.version}-->
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-jsf-tool</artifactId>
-    </dependency>
-<!--org.sakaiprojectsakai-event-api${sakai.version}-->
   </dependencies>
   <build>
     <resources>
