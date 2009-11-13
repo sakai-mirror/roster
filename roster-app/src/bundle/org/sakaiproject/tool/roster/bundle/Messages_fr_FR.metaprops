@@ -19,9 +19,6 @@ enrollment_status_filter..text.md5=pgB8/O/rGXNe7Ig2liwTUw\=\=
 enrollment_status_filter_label..text.author=cyril
 enrollment_status_filter_label..text.changed=20090327082629
 enrollment_status_filter_label..text.md5=PRo8mComG/t0cXHMfnd5yg\=\=
-enrollments_currently_displaying..text.author=cyril
-enrollments_currently_displaying..text.changed=20090327082710
-enrollments_currently_displaying..text.md5=aTZRIPkKXpO3Qtk1Nr8+0A\=\=
 export..text.author=cyril
 export..text.changed=20090327082718
 export..text.md5=01O4cg/L6+Q4XveiOkOqIg\=\=
@@ -109,9 +106,6 @@ navbar_status..text.md5=PRo8mComG/t0cXHMfnd5yg\=\=
 no_participants..text.author=cyril
 no_participants..text.changed=20090327081717
 no_participants..text.md5=U5Nb1PTTm9FReqTM5NjCHA\=\=
-no_participants_in_section..text.author=cyril
-no_participants_in_section..text.changed=20090327081707
-no_participants_in_section..text.md5=Nlq9c3RK3LyGwfnYQmNCHw\=\=
 no_participants_msg..text.author=cyril
 no_participants_msg..text.changed=20090327081637
 no_participants_msg..text.md5=eM6Pi9kfXmJg1zQltS/z5w\=\=
