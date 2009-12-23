@@ -30,19 +30,13 @@
       <artifactId>sakai-roster-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-profile-api</artifactId>
+      <groupId>org.sakaiproject.profile</groupId>
+      <artifactId>profile-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-privacy-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-authz-api${sakai.version}-->
-<!--org.sakaiprojectsakai-tool-api${sakai.version}-->
-<!--org.sakaiprojectsakai-user-api${sakai.version}-->
-<!--org.sakaiprojectsakai-entity-api${sakai.version}-->
-<!--org.sakaiprojectsakai-site-api${sakai.version}-->
-<!--org.sakaiprojectsakai-util-api${sakai.version}-->
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -63,7 +57,6 @@
       <groupId>org.sakaiproject.common</groupId>
       <artifactId>sakai-common-type-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-component-api${sakai.version}-->
     <dependency>
       <groupId>org.sakaiproject.edu-services.sections</groupId>
       <artifactId>sections-api</artifactId>
@@ -72,7 +65,6 @@
       <groupId>org.sakaiproject.edu-services.course-management</groupId>
       <artifactId>coursemanagement-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-event-api${sakai.version}-->
   </dependencies>
   <build>
     <resources>

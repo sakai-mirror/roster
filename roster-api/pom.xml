@@ -25,10 +25,9 @@
       <artifactId>sakai-kernel-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-profile-api</artifactId>
+      <groupId>org.sakaiproject.profile</groupId>
+      <artifactId>profile-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-authz-api${sakai.version}-->
     <dependency>
       <groupId>org.sakaiproject.edu-services.sections</groupId>
       <artifactId>sections-api</artifactId>
@@ -37,7 +36,6 @@
       <groupId>org.sakaiproject.edu-services.course-management</groupId>
       <artifactId>coursemanagement-api</artifactId>
     </dependency>
-<!--org.sakaiprojectsakai-user-api${sakai.version}-->
   </dependencies>
   <build>
     <resources/>
