@@ -24,7 +24,6 @@ package org.sakaiproject.component.app.roster;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +48,7 @@ import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.coursemanagement.api.Section;
+import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -60,8 +60,6 @@ import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
-import org.sakaiproject.event.api.EventTrackingService;
-import org.sakaiproject.component.api.ServerConfigurationService;
 
 public abstract class RosterManagerImpl implements RosterManager {
     private static final Log log = LogFactory.getLog(RosterManagerImpl.class);
@@ -312,6 +310,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 			site = siteService().getSite(getSiteId());
 		} catch (IdUnusedException e) {
 			log.error("getGroupsWithMember: " + e.getMessage(), e);
+			return participants;
 		}
 		Collection<Group> groups = site.getGroups();
 		
@@ -333,11 +332,14 @@ public abstract class RosterManagerImpl implements RosterManager {
             for (Group group : groups)
             {
             	Member member = group.getMember(userId);
+            	StringBuffer sb = new StringBuffer();
             	if (member !=null)
             	{
-        			groupsString = groupsString + group.getTitle() + ", ";
+        			sb.append(group.getTitle() + ", ");
             	}
+            	groupsString = sb.toString();
             }
+            
             if (groupsString != "")
             {
             	int endIndex = groupsString.lastIndexOf(", ");

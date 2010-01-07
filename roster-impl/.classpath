@@ -1,18 +1,63 @@
 <classpath>
-  <classpathentry kind="src" path="src/java"/>
+  <classpathentry kind="src" path="src/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
-  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/edu-services/course-management/coursemanagement-api/1.0.0-beta02-SNAPSHOT/coursemanagement-api-1.0.0-beta02-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-edu-person-api/1.0.0-beta02-SNAPSHOT/sakai-common-edu-person-api-1.0.0-beta02-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-manager-api/1.0.0-beta02-SNAPSHOT/sakai-common-manager-api-1.0.0-beta02-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-type-api/1.0.0-beta02-SNAPSHOT/sakai-common-type-api-1.0.0-beta02-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta04-SNAPSHOT/sakai-component-manager-1.1.0-beta04-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta04-SNAPSHOT/sakai-kernel-api-1.1.0-beta04-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-privacy-api/1.0.0-beta02-SNAPSHOT/sakai-privacy-api-1.0.0-beta02-SNAPSHOT.jar"/>
-  <classpathentry kind="src" path="/sakai-profile-api"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.4/commons-lang-2.4.jar" sourcepath="M2_REPO/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar" sourcepath="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/edu-services/course-management/coursemanagement-api/1.0.0-beta02-SNAPSHOT/coursemanagement-api-1.0.0-beta02-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/edu-services/course-management/coursemanagement-api/1.0.0-beta02-SNAPSHOT/coursemanagement-api-1.0.0-beta02-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/edu-services/course-management/coursemanagement-api/1.0.0-beta02-SNAPSHOT/coursemanagement-api-1.0.0-beta02-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/profile/profile-api/2.7.0-b01/profile-api-2.7.0-b01.jar" sourcepath="M2_REPO/org/sakaiproject/profile/profile-api/2.7.0-b01/profile-api-2.7.0-b01-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/profile/profile-api/2.7.0-b01/profile-api-2.7.0-b01-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-edu-person-api/1.0.0-b03-SNAPSHOT/sakai-common-edu-person-api-1.0.0-b03-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/common/sakai-common-edu-person-api/1.0.0-b03-SNAPSHOT/sakai-common-edu-person-api-1.0.0-b03-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/common/sakai-common-edu-person-api/1.0.0-b03-SNAPSHOT/sakai-common-edu-person-api-1.0.0-b03-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-manager-api/1.0.0-b03-SNAPSHOT/sakai-common-manager-api-1.0.0-b03-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/common/sakai-common-manager-api/1.0.0-b03-SNAPSHOT/sakai-common-manager-api-1.0.0-b03-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/common/sakai-common-manager-api/1.0.0-b03-SNAPSHOT/sakai-common-manager-api-1.0.0-b03-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-common-type-api/1.0.0-b03-SNAPSHOT/sakai-common-type-api-1.0.0-b03-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/common/sakai-common-type-api/1.0.0-b03-SNAPSHOT/sakai-common-type-api-1.0.0-b03-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/common/sakai-common-type-api/1.0.0-b03-SNAPSHOT/sakai-common-type-api-1.0.0-b03-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-privacy-api/1.0.0-b03-SNAPSHOT/sakai-privacy-api-1.0.0-b03-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/common/sakai-privacy-api/1.0.0-b03-SNAPSHOT/sakai-privacy-api-1.0.0-b03-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/common/sakai-privacy-api/1.0.0-b03-SNAPSHOT/sakai-privacy-api-1.0.0-b03-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
   <classpathentry kind="src" path="/sakai-roster-api"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/edu-services/sections/sections-api/1.0.0-beta02-SNAPSHOT/sections-api-1.0.0-beta02-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/edu-services/sections/sections-api/1.0.0-beta02-SNAPSHOT/sections-api-1.0.0-beta02-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/edu-services/sections/sections-api/1.0.0-beta02-SNAPSHOT/sections-api-1.0.0-beta02-SNAPSHOT-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/edu-services/sections/sections-api/1.0.0-beta02-SNAPSHOT/sections-api-1.0.0-beta02-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="/usr/java/jdk1.5.0_20/lib/tools.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>

@@ -1,9 +1,7 @@
 <projectDescription>
   <name>sakai-roster-api</name>
   <comment/>
-  <projects>
-    <project>sakai-profile-api</project>
-  </projects>
+  <projects/>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>

@@ -2,7 +2,6 @@
   <name>sakai-roster-model</name>
   <comment/>
   <projects>
-    <project>sakai-profile-api</project>
     <project>sakai-roster-api</project>
   </projects>
   <buildSpec>

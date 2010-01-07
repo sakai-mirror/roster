@@ -2,9 +2,7 @@
   <name>sakai-roster-tool</name>
   <comment/>
   <projects>
-    <project>sakai-profile-api</project>
     <project>sakai-roster-api</project>
-    <project>sakai-sections-app-util</project>
   </projects>
   <buildSpec>
     <buildCommand>
