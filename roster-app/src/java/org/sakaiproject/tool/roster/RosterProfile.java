@@ -61,6 +61,11 @@ public class RosterProfile {
 			return "profileNotFound";
 		}
 		participant = services.rosterManager.getParticipantById(userId);
+		if (participant == null) {
+			log.debug("Can not display a profile for: " + userId);
+			return "profileNotFound";
+			
+		}
         //log event to event service
         services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile",participant.getUser().getEid(),false));
         
