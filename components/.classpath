@@ -6,9 +6,9 @@
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta07-SNAPSHOT/sakai-kernel-util-1.1.0-beta07-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta07-SNAPSHOT/sakai-kernel-util-1.1.0-beta07-SNAPSHOT-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta10-SNAPSHOT/sakai-kernel-util-1.1.0-beta10-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta10-SNAPSHOT/sakai-kernel-util-1.1.0-beta10-SNAPSHOT-sources.jar">
     <attributes>
-      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta07-SNAPSHOT/sakai-kernel-util-1.1.0-beta07-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta10-SNAPSHOT/sakai-kernel-util-1.1.0-beta10-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="src" path="/sakai-roster-impl"/>

@@ -29,16 +29,12 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
 
 public class RosterStatus extends BaseRosterPageBean {
-	private static final Log log = LogFactory.getLog(RosterStatus.class);
-
 	public static final Comparator<Participant> enrollmentStatusComparator;
 	public static final Comparator<Participant> enrollmentCreditsComparator;
 

@@ -53,9 +53,6 @@ public class ServicesBean {
     protected PhotoService photoService;
     protected EventTrackingService eventTrackingService;
 
-    // The group provider may not exist, so ensure that it's accessible only via getGroupProvider()
-    private GroupProvider groupProvider;
-
     // Service injection
     public void setRosterManager(RosterManager rosterManager) {
         this.rosterManager = rosterManager;

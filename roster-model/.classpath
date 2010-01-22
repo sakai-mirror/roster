@@ -37,14 +37,14 @@
       <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/common/sakai-common-type-api/1.0.0-b03-SNAPSHOT/sakai-common-type-api-1.0.0-b03-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta10-SNAPSHOT/sakai-component-manager-1.1.0-beta10-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta10-SNAPSHOT/sakai-component-manager-1.1.0-beta10-SNAPSHOT-sources.jar">
     <attributes>
-      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta07-SNAPSHOT/sakai-component-manager-1.1.0-beta07-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta10-SNAPSHOT/sakai-component-manager-1.1.0-beta10-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta10-SNAPSHOT/sakai-kernel-api-1.1.0-beta10-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta10-SNAPSHOT/sakai-kernel-api-1.1.0-beta10-SNAPSHOT-sources.jar">
     <attributes>
-      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta07-SNAPSHOT/sakai-kernel-api-1.1.0-beta07-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/home/dhorwitz/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta10-SNAPSHOT/sakai-kernel-api-1.1.0-beta10-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/org/sakaiproject/common/sakai-privacy-api/1.0.0-b03-SNAPSHOT/sakai-privacy-api-1.0.0-b03-SNAPSHOT.jar" sourcepath="M2_REPO/org/sakaiproject/common/sakai-privacy-api/1.0.0-b03-SNAPSHOT/sakai-privacy-api-1.0.0-b03-SNAPSHOT-sources.jar">

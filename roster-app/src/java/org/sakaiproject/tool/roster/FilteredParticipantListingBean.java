@@ -127,14 +127,14 @@ public class FilteredParticipantListingBean implements Serializable {
 
 	protected SortedMap<String, Integer> findRoleCounts(Iterable<Participant> participants) {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
-		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
-			Participant participant = iter.next();
+		for(Participant participant : participants) {
 			String role = participant.getRoleTitle();
-			Integer count = roleCountMap.get(role);
-			if(count == null) {
-				roleCountMap.put(role, new Integer(1));
+
+			if(roleCountMap.containsKey(role)) {
+				int count = roleCountMap.get(role) + 1;
+				roleCountMap.put(role, count);
 			} else {
-				roleCountMap.put(role, ++count);
+				roleCountMap.put(role, 1);
 			}
 		}
 		return roleCountMap;

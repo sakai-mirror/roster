@@ -28,8 +28,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.component.cover.ServerConfigurationService;
@@ -40,8 +38,6 @@ import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.site.api.SiteService;
 
 public class RosterOverview extends BaseRosterPageBean {
-	private static final Log log = LogFactory.getLog(RosterOverview.class);
-
 	private static final String DISPLAY_ROSTER_PRIVACY_MSG = "roster.privacy.display";
 
 	// UI method calls

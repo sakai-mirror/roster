@@ -67,8 +67,12 @@ public class RosterProfile {
 			
 		}
         //log event to event service
-        services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile",participant.getUser().getEid(),false));
-        
+		if (participant != null) {
+			services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile",participant.getUser().getEid(),false));
+		} else {
+			services.eventTrackingService.post(services.eventTrackingService.newEvent("roster.view.profile","null",false));
+		}
+		
         if (services.userDirectoryService.getCurrentUser().getId()
 				.equals(userId)||SecurityService.isSuperUser()) {
 			// This user is looking at him/her self or isSuperUser

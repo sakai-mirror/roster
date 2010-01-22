@@ -23,8 +23,6 @@ package org.sakaiproject.component.app.roster;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.profile.Profile;
 import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.user.api.User;
@@ -35,8 +33,6 @@ import org.sakaiproject.user.api.User;
  */
 public class ParticipantImpl implements Participant, Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private final static Log log = LogFactory.getLog(ParticipantImpl.class);
 
 	protected User user;
 	protected Profile profile;

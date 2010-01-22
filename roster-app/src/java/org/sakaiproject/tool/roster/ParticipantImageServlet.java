@@ -39,12 +39,15 @@ import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.site.cover.SiteService;
-import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader;
 
 public class ParticipantImageServlet extends HttpServlet
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3420767508601031864L;
 	private ResourceLoader msgs = new ResourceLoader("org.sakaiproject.tool.roster.bundle.Messages");
 	private static final Log LOG = LogFactory.getLog(ParticipantImageServlet.class);
 	private static final String UNIVERSITY_ID_PHOTO = "photo";

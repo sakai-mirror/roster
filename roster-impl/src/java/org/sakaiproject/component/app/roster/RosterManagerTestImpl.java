@@ -31,7 +31,6 @@ import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.event.api.EventTrackingService;
-import org.sakaiproject.component.api.ServerConfigurationService;
 
 public class RosterManagerTestImpl extends RosterManagerImpl {
 

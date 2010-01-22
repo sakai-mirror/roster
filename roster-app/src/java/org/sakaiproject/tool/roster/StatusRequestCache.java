@@ -21,12 +21,7 @@
 package org.sakaiproject.tool.roster;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +30,6 @@ import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.site.api.Site;
 
 /**

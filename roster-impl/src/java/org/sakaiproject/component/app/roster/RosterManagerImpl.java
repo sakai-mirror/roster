@@ -52,7 +52,6 @@ import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.section.api.SectionAwareness;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
-import org.sakaiproject.section.api.coursemanagement.ParticipationRecord;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
@@ -79,7 +78,7 @@ public abstract class RosterManagerImpl implements RosterManager {
     public void init() {
         log.info("init()");
 
-        Collection registered = functionManager().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
+        Collection<String> registered = functionManager().getRegisteredFunctions(RosterFunctions.ROSTER_FUNCTION_PREFIX);
         if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
             functionManager().registerFunction(RosterFunctions.ROSTER_FUNCTION_EXPORT);
         }
@@ -209,9 +208,10 @@ public abstract class RosterManagerImpl implements RosterManager {
             log.warn(ide);
             return groupMembers;
         }
-        Collection groups = site.getGroups();
-        for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();) {
-            Group group = groupIter.next();
+        Collection<Group> groups = site.getGroups();
+        //for(Iterator<Group> groupIter = groups.iterator(); groupIter.hasNext();) {
+        for (Group group : groups) {
+            //Group group = groupIter.next();
             Set<String> userIds = new HashSet<String>();
             Set<Member> members = group.getMembers();
             for(Iterator<Member> memberIter = members.iterator(); memberIter.hasNext();) {
@@ -253,10 +253,9 @@ public abstract class RosterManagerImpl implements RosterManager {
 
         // Keep track of the users for which the current user has the group-scoped view hidden permission
         Set<String> visibleMembersForCurrentUser = new HashSet<String>();
-        for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
-            Group group = iter.next();
-            if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, group.getReference())) {
-                visibleMembersForCurrentUser.addAll(groupMembers.get(group));
+        for (Entry<Group, Set<String>> e : groupMembers.entrySet()) {
+            if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, e.getKey().getReference())) {
+                visibleMembersForCurrentUser.addAll(e.getValue());
             }
         }
 
@@ -287,11 +286,12 @@ public abstract class RosterManagerImpl implements RosterManager {
     private List<Participant> getParticipantsInGroups(User currentUser, Map<Group, Set<String>> groupMembers) {
         boolean userHasSiteViewAll = userHasSitePermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL);
         Set<String> viewableUsers = new HashSet<String>();
-        for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
-            Group group = iter.next();
-            if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL, group.getReference())
+        //for(Iterator<Group> iter = groupMembers.keySet().iterator(); iter.hasNext();) {
+            //Group group = iter.next();
+        for(Entry<Group,Set<String>> e : groupMembers.entrySet()) {
+            if(userHasGroupPermission(currentUser, RosterFunctions.ROSTER_FUNCTION_VIEWALL, e.getKey().getReference())
                     || userHasSiteViewAll) {
-                viewableUsers.addAll(groupMembers.get(group));
+                viewableUsers.addAll(e.getValue());
             }
         }
 
@@ -361,48 +361,7 @@ public abstract class RosterManagerImpl implements RosterManager {
         return groupComparator;
     }
 
-    /**
-     * Builds a map of user IDs to a list of Sections for that user within the current site context.
-     *
-     * @param userIds The user IDs to include
-     * @return
-     */
-    private Map<String, List<CourseSection>> getSectionsMap(Set<String> userIds)
-    {
-        Map<String, List<CourseSection>> sectionsMap = new HashMap<String, List<CourseSection>>();
-        for(Iterator<CourseSection> iter = sectionService().getSections(getSiteId()).iterator(); iter.hasNext();)
-        {
-            CourseSection section = iter.next();
-            List<ParticipationRecord> sectionMembers = sectionService().getSectionMembers(section.getUuid());
-            for(Iterator<ParticipationRecord> participantIter = sectionMembers.iterator(); participantIter.hasNext();)
-            {
-                ParticipationRecord participant = participantIter.next();
-                String userId = participant.getUser().getUserUid();
-                if( ! userIds.contains(userId)) continue;
-
-                // The user was already in the map, so add this section to the list
-                if(sectionsMap.containsKey(userId))
-                {
-                    List<CourseSection> list = sectionsMap.get(userId);
-                    if( ! list.contains(section))
-                    {
-                        list.add(section);
-                    }
-                }
-                else
-                {
-                    // If this user isn't in the map, add them
-                    List<CourseSection> list = new ArrayList<CourseSection>();
-                    list.add(section);
-                    sectionsMap.put(userId, list);
-                }
-            }
-
-        }
-        return sectionsMap;
-    }
-
-    class UserRole {
+    static class UserRole {
         User user;
         String role;
 
@@ -538,7 +497,7 @@ public abstract class RosterManagerImpl implements RosterManager {
 
     public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser() {
         User user = userDirectoryService().getCurrentUser();
-        List sections = getViewableSectionsForCurrentUser();
+        List<CourseSection> sections = getViewableSectionsForCurrentUser();
 
         // If the user can view enrollment statuses at the site level, return all of the sections
         boolean siteScopedEnrollmentPermission = userHasSitePermission(user, RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS);

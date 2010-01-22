@@ -24,15 +24,12 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -45,10 +42,8 @@ import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
-import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.SectionAwareness;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.ResourceLoader;
@@ -149,34 +144,6 @@ public class FilteredStatusListingBean extends FilteredParticipantListingBean im
 			}
 		}
 		return participants;
-	}
-	
-	/**
-	 * Gets a map of user EIDs to Enrollments for a given section.
-	 * @param sectionEid
-	 * @return
-	 */
-	private Map<String, Enrollment> getEnrollmentMap(String sectionUuid) {
-		Map<String, Enrollment> enrollmentMap = new HashMap<String, Enrollment>();
-
-		CourseSection internalSection = null;
-		Section cmSection = null;
-		EnrollmentSet es = null;
-		try {
-			internalSection = services.sectionAwareness.getSection(sectionUuid);
-			cmSection = services.cmService.getSection(internalSection.getEid());
-			es = cmSection.getEnrollmentSet();
-		} catch (Exception e) {
-			log.warn(e);
-			return enrollmentMap;
-		}
-		
-		Set<Enrollment> enrollments = services.cmService.getEnrollments(es.getEid());
-		for(Iterator<Enrollment> iter = enrollments.iterator(); iter.hasNext();) {
-			Enrollment enr = iter.next();
-			enrollmentMap.put(enr.getUserId(), enr);
-		}
-		return enrollmentMap;
 	}
 
 	/**
