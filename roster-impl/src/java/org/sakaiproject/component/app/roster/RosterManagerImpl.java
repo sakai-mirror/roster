@@ -343,7 +343,10 @@ public abstract class RosterManagerImpl implements RosterManager {
             if (groupsString != "")
             {
             	int endIndex = groupsString.lastIndexOf(", ");
-            	groupsString = groupsString.substring(0, endIndex);
+		if(endIndex > 0)
+		{
+            		groupsString = groupsString.substring(0, endIndex);
+		}
             }
 
             participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsString));
