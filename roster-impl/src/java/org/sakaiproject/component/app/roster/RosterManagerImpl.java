@@ -398,8 +398,11 @@ public abstract class RosterManagerImpl implements RosterManager {
         for(Iterator<Member> iter = members.iterator(); iter.hasNext();)
         {
             Member member = iter.next();
-            userIds.add(member.getUserId());
-            roleMap.put(member.getUserId(), member.getRole().getId());
+            if (member.isActive()) {
+	            // SAK-17286 Only list users that are 'active' not 'inactive'
+				userIds.add(member.getUserId());
+	            roleMap.put(member.getUserId(), member.getRole().getId());
+			}
         }
 
         // Get the user objects
