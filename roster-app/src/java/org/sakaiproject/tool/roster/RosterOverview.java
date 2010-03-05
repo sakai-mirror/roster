@@ -34,6 +34,7 @@ import org.sakaiproject.api.app.roster.Participant;
 import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterCsv;
+import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterXls;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.jsf.util.LocaleUtil;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
@@ -108,6 +109,6 @@ public class RosterOverview extends BaseRosterPageBean {
         }
 
         String spreadsheetName = getDownloadFileName(spreadsheetNameRaw);
-        SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterCsv());
+        SpreadsheetUtil.downloadSpreadsheetData(spreadsheetData, spreadsheetName, new SpreadsheetDataFileWriterXls());
     }
 }
