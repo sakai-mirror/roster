@@ -28,7 +28,7 @@
 					<h:outputLabel for="school" value="#{msgs.profile_school}"/>
 					<h:outputText id="school" value="#{profileBean.participant.profile.school}"/>
 					<h:outputLabel for="room"  value="#{msgs.profile_room}"/>
-					<h:outputText id="root"  value="#{profileBean.participant.profile.room}"/> 
+					<h:outputText id="room"  value="#{profileBean.participant.profile.room}"/> 
 				</sakai:panel_edit>
 				</p>
 			 <h4><h:outputText  value="#{msgs.profile_personal_information}"/></h4>
