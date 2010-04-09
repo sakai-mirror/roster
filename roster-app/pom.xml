@@ -41,6 +41,7 @@
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
     </dependency>
+    <!-- SAK-18095
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-sections-app-util</artifactId>
@@ -51,6 +52,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
     <dependency>
       <groupId>org.sakaiproject.edu-services.sections</groupId>
       <artifactId>sections-api</artifactId>
