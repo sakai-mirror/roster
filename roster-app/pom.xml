@@ -61,55 +61,6 @@
       <groupId>org.sakaiproject.edu-services.course-management</groupId>
       <artifactId>coursemanagement-api</artifactId>
     </dependency>
-<!--My faces dependency -->
-    <dependency>
-      <groupId>org.apache.myfaces.core</groupId>
-      <artifactId>myfaces-api</artifactId>
-      <version>1.1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.core</groupId>
-      <artifactId>myfaces-impl</artifactId>
-      <version>1.1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk</artifactId>
-      <version>1.1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.jsf</groupId>
-      <artifactId>jsf-app</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>jsf</groupId>
-          <artifactId>jsf-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.jsf</groupId>
-      <artifactId>myfaces-widgets-depend</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.jsf</groupId>
-      <artifactId>jsf-spreadsheet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.jsf</groupId>
-      <artifactId>jsf-tool</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.1.2</version>
-    </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>

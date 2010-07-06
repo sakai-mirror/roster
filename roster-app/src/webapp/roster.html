@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  
+      xmlns="http://www.w3.org/1999/xhtml"  
+      xml:lang="en"  
+      lang="en">
+<head>
+<script type="text/javascript" src="/library/js/jquery/jquery-ui/js/jquery.js"></script>
+<script type="text/javascript" src="/library/js/jquery/jquery-ui/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/library/js/trimpath-template-latest.js"></script>
+<script type="text/javascript" src="/library/editor/FCKeditor/fckeditor.js"></script>
+<script type="text/javascript" src="/library/js/headscripts.js"></script>
+<script type="text/javascript" src="lib/sakai_utils.js"></script>
+<script type="text/javascript" src="lib/jquery.localisation.js"></script>
+<script type="text/javascript" src="lib/jquery.hoverIntent.js"></script>
+<script type="text/javascript" src="lib/jquery.dimensions.js"></script>
+<script type="text/javascript" src="lib/jquery.cluetip.min.js"></script>
+<script type="text/javascript" src="lib/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="lib/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
+<link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
+<link rel="stylesheet" type="text/css" href="/library/skin/default/tool.css" />
+<link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
+<link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
+<link rel="stylesheet" type="text/css" href="css/roster.css" />
+
+<!-- translations -->
+<script type="text/javascript">
+var arg = SakaiUtils.getParameters();
+if(arg['language'])
+{
+	$.localise('roster-translations',{language:arg['language'],loadBase: true});
+}
+else
+{
+	$.localise('roster-translations');
+}
+</script>
+
+</head>
+<body>
+
+<div id="roster_navbar"></div>
+
+<div id="rosterMainContainer">
+	<div id="roster_content"></div>
+</div>
+
+<div id="roster_navbar_template"><!--
+<div style="overflow: hidden;" class="navIntraTool">
+	<div id="roster_navbar_items">
+		<a id="navbar_overview_link" title="${navbar_overview_tooltip}" href="javascript:;">${navbar_overview}</a>
+		<a id="navbar_pics_link" title="${navbar_pics_tooltip}" href="javascript:;">${navbar_pics}</a>
+		<a id="navbar_group_membership_link" title="${navbar_group_membership_tooltip}" href="javascript:;">${navbar_group_membership}</a>
+	</div>
+</div>
+-->
+</div>
+
+<!--  Templates End -->
+
+<script type="text/javascript" src="js/roster.js"></script>
+<link rel="stylesheet" type="text/css" href="css/jquery.cluetip.css" />
+
+</body>
+</html>
