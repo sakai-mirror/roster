@@ -76,6 +76,9 @@ function switchState(state, arg) {
 	} else if ('pics' === state) {
 				
 		//templateName,contextObject,output
+		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template', arg, 'roster_section_filter');
+		SakaiUtils.renderTrimpathTemplate('roster_search_template', arg, 'roster_search');
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template', arg, 'roster_content');
 		
 	} else if ('group_membership' === state) {

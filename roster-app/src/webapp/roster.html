@@ -60,7 +60,12 @@ else
 <div id="roster_navbar"></div>
 
 <div id="rosterMainContainer">
-	<form id="roster_content"></form>
+	<form id="roster_form">
+		<div id="roster_header"></div>
+		<div id="roster_section_filter"></div>
+		<div id="roster_search"></div>
+		<div id="roster_content"></div>
+	</form>
 </div>
 
 <div id="roster_navbar_template"><!--
@@ -74,7 +79,21 @@ else
 -->
 </div>
 
-<div id="roster_pics_template" style="display:none"><!--
+<div id="roster_section_filter_template" style="display:none"><!--
+<table>
+	<tr>
+		<td><span class="filterLabel">${section_filter_pre}</span></td>
+		<td><select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+			<option selected="selected" value="">${roster_sections_all}</option>
+			<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
+		</select></td>
+		<td><span class="filterLabel">${section_filter_post}</span></td>
+	</tr>
+</table>
+ -->
+</div>
+
+<div id="roster_pics_header_template" style="display:none"><!--
 <table class="rosterPageHeader">
 	<tbody>
 		<tr>
@@ -83,33 +102,27 @@ else
 		</tr>
 	</tbody>
 </table>
-<table>
-	<tr>
-		<td><span class="filterLabel">${section_filter_pre}</span></td>
-		<td><select id="roster_content:section_filter onchange="this.form.submit()" size="1" name="roster_content:section_filter">
-			<option selected="selected" value="">${roster_sections_all}</option>
-			<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
-		</select></td>
-		<td><span class="filterLabel">${section_filter_post}</span></td>
-	</tr>
-</table>
-<table id="roster_content:search_group" class="searchFilter">
+-->
+</div>
+
+<div id="roster_search_template" style="display:none"><!--
+<table id="roster_form:search_group" class="searchFilter">
 	<tbody>
 		<tr>
 			<td>
-				<div id="roster_content:search_filter" class="act">
-					<input id="roster_content:search" type="text" onfocus="clearIfDefaultString(this, 'Name or ID')"
+				<div id="roster_form:search_filter" class="act">
+					<input id="roster_form:search" type="text" onfocus="clearIfDefaultString(this, 'Name or ID')"
 						onkeypress="return handleEnterKey(this, event)" value="Name or ID"
-						name="roster_content:search" id="roster_content:search">
-					<input id="roster_content:search_button" class="active" type="submit"
-						onclick="if(typeofwindow.clearFormHiddenParams_roster_content!='undefined')
-						{clearFormHiddenParams_roster_content('roster_content');}"
-						value="${roster_search_button}" name="roster_content:search_button" />
-					<input id="roster_content:clear_button" type="submit"
-						onclick="if(typeof window.clearFormHiddenParams_roster_content!='undefined')
-						{clearFormHiddenParams_roster_content('roster_content');}"
-						value="${roster_clear_button}" name="roster_content:clear_button"
-						id="roster_content:clear_button" />
+						name="roster_form:search" id="roster_form:search">
+					<input id="roster_form:search_button" class="active" type="submit"
+						onclick="if(typeofwindow.clearFormHiddenParams_roster_form!='undefined')
+						{clearFormHiddenParams_roster_form('roster_form');}"
+						value="${roster_search_button}" name="roster_form:search_button" />
+					<input id="roster_form:clear_button" type="submit"
+						onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
+						{clearFormHiddenParams_roster_form('roster_form');}"
+						value="${roster_clear_button}" name="roster_form:clear_button"
+						id="roster_form:clear_button" />
 				</div>
 			</td>
 			<td>
@@ -117,6 +130,17 @@ else
 					<div style="padding-left: 10px;">${currently_displaying_participants}</div>
 				</span>
 			</td>
+		</tr>
+	</tbody>
+</table>
+ -->
+</div>
+
+<div id="roster_pics_template" style="display:none"><!--
+<table>
+	<tbody>
+		<tr>
+			<td></td>
 		</tr>
 	</tbody>
 </table>
