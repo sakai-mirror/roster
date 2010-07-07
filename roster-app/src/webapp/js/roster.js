@@ -74,12 +74,26 @@ function switchState(state, arg) {
 	if ('overview' === state) {
 		
 	} else if ('pics' === state) {
-				
+		
 		//templateName,contextObject,output
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
 		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template', arg, 'roster_section_filter');
+		
+		// TODO: get role breakdowns
+		
 		SakaiUtils.renderTrimpathTemplate('roster_search_template', arg, 'roster_search');
-		SakaiUtils.renderTrimpathTemplate('roster_pics_template', arg, 'roster_content');
+		
+		jQuery.ajax({
+	    	url : "/direct/membership/site.json?siteId=" + rosterSiteId,
+	      	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+				SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':data['membership_collection']},'roster_content');
+			}
+		});
+		
+		//SakaiUtils.renderTrimpathTemplate('roster_pics_template', arg, 'roster_content');
 		
 	} else if ('group_membership' === state) {
 		
