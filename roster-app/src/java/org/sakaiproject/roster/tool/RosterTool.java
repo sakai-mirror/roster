@@ -59,7 +59,7 @@ public class RosterTool extends HttpServlet
 		Locale locale = (new ResourceLoader(userId)).getLocale();
 		String languageCode = locale.getLanguage();
 
-		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + "pictures"
+		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + "pics"
 				+ "&siteId=" + siteId + "&language=" + languageCode);
 	}
 }
