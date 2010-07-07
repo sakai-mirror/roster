@@ -93,6 +93,33 @@ else
 		<td><span class="filterLabel">${section_filter_post}</span></td>
 	</tr>
 </table>
+<table id="roster_content:search_group" class="searchFilter">
+	<tbody>
+		<tr>
+			<td>
+				<div id="roster_content:search_filter" class="act">
+					<input id="roster_content:search" type="text" onfocus="clearIfDefaultString(this, 'Name or ID')"
+						onkeypress="return handleEnterKey(this, event)" value="Name or ID"
+						name="roster_content:search" id="roster_content:search">
+					<input id="roster_content:search_button" class="active" type="submit"
+						onclick="if(typeofwindow.clearFormHiddenParams_roster_content!='undefined')
+						{clearFormHiddenParams_roster_content('roster_content');}"
+						value="${roster_search_button}" name="roster_content:search_button" />
+					<input id="roster_content:clear_button" type="submit"
+						onclick="if(typeof window.clearFormHiddenParams_roster_content!='undefined')
+						{clearFormHiddenParams_roster_content('roster_content');}"
+						value="${roster_clear_button}" name="roster_content:clear_button"
+						id="roster_content:clear_button" />
+				</div>
+			</td>
+			<td>
+				<span class="instruction">
+					<div style="padding-left: 10px;">${currently_displaying_participants}</div>
+				</span>
+			</td>
+		</tr>
+	</tbody>
+</table>
  -->
 </div>
 
