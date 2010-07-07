@@ -71,9 +71,12 @@ else
 <div id="roster_navbar_template"><!--
 <div style="overflow: hidden;" class="navIntraTool">
 	<div id="roster_navbar_items">
-		<a id="navbar_overview_link" title="${navbar_overview_tooltip}" href="javascript:;">${navbar_overview}</a>
-		<a id="navbar_pics_link" title="${navbar_pics_tooltip}" href="javascript:;">${navbar_pics}</a>
-		<a id="navbar_group_membership_link" title="${navbar_group_membership_tooltip}" href="javascript:;">${navbar_group_membership}</a>
+		<a id="navbar_overview_link" title="${navbar_overview_tooltip}"
+			href="javascript:;">${navbar_overview}</a>
+		<a id="navbar_pics_link" title="${navbar_pics_tooltip}"
+			href="javascript:;">${navbar_pics}</a>
+		<a id="navbar_group_membership_link" title="${navbar_group_membership_tooltip}"
+			href="javascript:;">${navbar_group_membership}</a>
 	</div>
 </div>
 -->
@@ -83,10 +86,12 @@ else
 <table>
 	<tr>
 		<td><span class="filterLabel">${section_filter_pre}</span></td>
-		<td><select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
-			<option selected="selected" value="">${roster_sections_all}</option>
-			<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
-		</select></td>
+		<td>
+			<select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+				<option selected="selected" value="">${roster_sections_all}</option>
+				<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
+			</select>
+		</td>
 		<td><span class="filterLabel">${section_filter_post}</span></td>
 	</tr>
 </table>
@@ -97,8 +102,13 @@ else
 <table class="rosterPageHeader">
 	<tbody>
 		<tr>
-			<td class="rosterPageHeaderLeft"><h3>${title_pictures}</h3></td>
-			<td class="rosterPageHeaderRight"><input id="print_screen_button" type="button" value="${print_screen}"/><input id="print_single_button" type="button" value="${print_single}"/></td>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_pictures}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="print_screen_button" type="button" value="${print_screen}"/>
+				<input id="print_single_button" type="button" value="${print_single}"/>
+			</td>
 		</tr>
 	</tbody>
 </table>
@@ -113,7 +123,7 @@ else
 				<div id="roster_form:search_filter" class="act">
 					<input id="roster_form:search" type="text" onfocus="clearIfDefaultString(this, 'Name or ID')"
 						onkeypress="return handleEnterKey(this, event)" value="Name or ID"
-						name="roster_form:search" id="roster_form:search">
+						name="roster_form:search" />
 					<input id="roster_form:search_button" class="active" type="submit"
 						onclick="if(typeofwindow.clearFormHiddenParams_roster_form!='undefined')
 						{clearFormHiddenParams_roster_form('roster_form');}"
@@ -121,8 +131,7 @@ else
 					<input id="roster_form:clear_button" type="submit"
 						onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
 						{clearFormHiddenParams_roster_form('roster_form');}"
-						value="${roster_clear_button}" name="roster_form:clear_button"
-						id="roster_form:clear_button" />
+						value="${roster_clear_button}" name="roster_form:clear_button" />
 				</div>
 			</td>
 			<td>
@@ -137,6 +146,42 @@ else
 </div>
 
 <div id="roster_pics_template" style="display:none"><!--
+<table class="rosterPicturesFilter">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<table>
+					<tbody>
+					<tr>
+						<td>
+							<label>
+							<input type="radio" onclick="this.form.submit()"
+								value="false" checked="checked"
+								name="roster_form:photo_filter" />
+								${roster_official_photos}
+							</label>
+						</td>
+						<td>
+							<label>
+							<input type="radio" onclick="this.form.submit()"
+								value="false" checked="checked"
+								name="roster_form:photo_filter" />
+								${roster_profile_photos}
+							</label>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="roster_form:hide_names" type="submit"
+					onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
+						{clearFormHiddenParams_roster_form('roster_form');}"
+					value="${roster_hide_names}" name="roster_form:hide_names" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+
 <table>
 	<tbody>
 		<tr>
