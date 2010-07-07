@@ -60,7 +60,7 @@ else
 <div id="roster_navbar"></div>
 
 <div id="rosterMainContainer">
-	<div id="roster_content"></div>
+	<form id="roster_content"></form>
 </div>
 
 <div id="roster_navbar_template"><!--
@@ -82,6 +82,16 @@ else
 			<td class="rosterPageHeaderRight"><input id="print_screen_button" type="button" value="${print_screen}"/><input id="print_single_button" type="button" value="${print_single}"/></td>
 		</tr>
 	</tbody>
+</table>
+<table>
+	<tr>
+		<td><span class="filterLabel">${section_filter_pre}</span></td>
+		<td><select id="roster_content:section_filter onchange="this.form.submit()" size="1" name="roster_content:section_filter">
+			<option selected="selected" value="">${roster_sections_all}</option>
+			<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
+		</select></td>
+		<td><span class="filterLabel">${section_filter_post}</span></td>
+	</tr>
 </table>
  -->
 </div>
