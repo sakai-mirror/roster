@@ -186,16 +186,17 @@ else
 	<tbody>
 		<tr>
 		{for member in membership}
+			{var count = +member_index + 1}
 			<td>
 				<div>
 					<img class="rosterImage" src="/direct/profile/${member.userId}/image"
-						title="${profile_picture_alt} ${member.userDisplayName} ${member_index}" />
+						title="${profile_picture_alt} ${member.userDisplayName} ${count}" />
 				</div>
 				<div>
 					<span title="${member.userSortName}">${member.userSortName}</span>
 				</div>
 			</td>
-		{if member_index > 0 && member_index % 5 === 0 && member_index < membership.length - 1}
+		{if count % 5 === 0}
 		</tr>
 		<tr>
 		{/if}
