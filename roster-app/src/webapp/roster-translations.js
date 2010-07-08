@@ -58,7 +58,7 @@ enrollment_status_filter="View students in";
 print="Print";
 print_single="Print Pictures in Single Column";
 print_screen="Print Screen";
-export="Export";
+export_="Export";
 export_roster="Export roster as currently showing";
 
 roster_show_names="Show Names";
