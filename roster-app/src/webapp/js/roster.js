@@ -79,9 +79,30 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
 		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template', arg, 'roster_section_filter');
 		
-		// TODO: get role breakdowns
+		// get role breakdowns for search template
+		var roles = {};
 		
-		SakaiUtils.renderTrimpathTemplate('roster_search_template', arg, 'roster_search');
+		jQuery.ajax({
+	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=access",
+	      	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+			roles['1'] = { roleType: "access", roleCount: data['membership_collection'].length};
+			}
+		});
+		
+		jQuery.ajax({
+	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=maintain",
+	      	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+				roles['2'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
+			}
+		});
+		
+		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':roles}, 'roster_search');
 		
 		jQuery.ajax({
 	    	url : "/direct/membership/site.json?siteId=" + rosterSiteId,
@@ -89,6 +110,7 @@ function switchState(state, arg) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
+			
 				SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':data['membership_collection']},'roster_content');
 			}
 		});
