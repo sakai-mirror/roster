@@ -97,6 +97,24 @@ else
  -->
 </div>
 
+<div id="roster_overview_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_overview}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="export_button" type="button" value="${export_}"/>
+				<input id="print_button" type="button" value="${print}"/>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<span class="instruction" style="display: block;">${title_msg}</span>
+-->
+</div>
+
 <div id="roster_pics_header_template" style="display:none"><!--
 <table class="rosterPageHeader">
 	<tbody>
@@ -145,6 +163,31 @@ else
 	</tbody>
 </table>
  -->
+</div>
+
+<div id="roster_overview_template" style="display:none"><!--
+<table cellspacing="0" cellpadding="0" class="listHier rosterTable" id="roster_form:rosterTable">
+	<thead>
+		<tr>
+			<th>${facet_name}</th>
+			<th>${facet_userId}</th>
+			<th>${facet_email}</th>
+			<th>${facet_role}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{for member in membership}
+			<tr>
+				<td>${member.userSortName}</td>
+				<td>${member.userDisplayId}</td>
+				<td>${member.userEmail}</td>
+				<td>${member.memberRole}</td>
+			</tr>
+		{/for}
+	</tbody>
+</table>
+
+-->
 </div>
 
 <div id="roster_pics_template" style="display:none"><!--

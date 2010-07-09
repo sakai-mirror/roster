@@ -73,53 +73,73 @@ function switchState(state, arg) {
 
 	if ('overview' === state) {
 		
+		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template', arg, 'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template', arg, 'roster_section_filter');
+		
+		// render search template with site roles
+		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':getRoles()}, 'roster_search');
+		
+		// render overview template with site membership
+		SakaiUtils.renderTrimpathTemplate('roster_overview_template',{'membership':getMembership()['membership_collection']},'roster_content');
+		
 	} else if ('pics' === state) {
 		
-		//templateName,contextObject,output
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
 		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template', arg, 'roster_section_filter');
 		
-		// get role breakdowns for search template
-		var roles = {};
+		// render search template with site roles
+		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':getRoles()}, 'roster_search');
 		
-		jQuery.ajax({
-	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=access",
-	      	dataType : "json",
-	       	async : false,
-			cache: false,
-		   	success : function(data) {
-			roles['1'] = { roleType: "access", roleCount: data['membership_collection'].length};
-			}
-		});
-		
-		jQuery.ajax({
-	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=maintain",
-	      	dataType : "json",
-	       	async : false,
-			cache: false,
-		   	success : function(data) {
-				roles['2'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
-			}
-		});
-		
-		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':roles}, 'roster_search');
-		
-		jQuery.ajax({
-	    	url : "/direct/membership/site.json?siteId=" + rosterSiteId,
-	      	dataType : "json",
-	       	async : false,
-			cache: false,
-		   	success : function(data) {
-			
-				SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':data['membership_collection']},'roster_content');
-			}
-		});
-		
-		//SakaiUtils.renderTrimpathTemplate('roster_pics_template', arg, 'roster_content');
+		// render pics template with site membership
+		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection']},'roster_content');
 		
 	} else if ('group_membership' === state) {
 		
 	}
+}
+
+function getMembership() {
+	
+	var membership;
+	
+	jQuery.ajax({
+    	url : "/direct/membership/site.json?siteId=" + rosterSiteId,
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			membership = data;
+		}
+	});
+	
+	return membership;
+}
+
+function getRoles() {
+	
+	var roles = {};
+	
+	jQuery.ajax({
+    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=access",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			roles['1'] = { roleType: "access", roleCount: data['membership_collection'].length};
+		}
+	});
+	
+	jQuery.ajax({
+    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=maintain",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			roles['2'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
+		}
+	});
+	
+	return roles;
 }
 
 /* Original Roster functions */
