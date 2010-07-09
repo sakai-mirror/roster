@@ -97,6 +97,21 @@ else
  -->
 </div>
 
+<div id="roster_group_section_filter_template" style="display:none"><!--
+<table>
+	<tr>
+		<td><span class="filterLabel">${section_filter_pre}</span></td>
+		<td>
+			<select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+				<option selected="selected" value="">${roster_group_ungrouped}</option>
+				<option value=${roster_group_bygroup}>${roster_group_bygroup}</option>
+			</select>
+		</td>
+	</tr>
+</table>
+ -->
+</div>
+
 <div id="roster_overview_header_template" style="display:none"><!--
 <table class="rosterPageHeader">
 	<tbody>
@@ -129,6 +144,24 @@ else
 		</tr>
 	</tbody>
 </table>
+-->
+</div>
+
+<div id="roster_groups_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_group_membership}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="export_button" type="button" value="${export_}"/>
+				<input id="print_button" type="button" value="${print}"/>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<span class="instruction" style="display: block;">${title_msg_groups}</span>
 -->
 </div>
 
@@ -251,6 +284,33 @@ else
 </table>
  -->
 </div>
+
+<!-- TODO this will be displayed differently depending on whether the group
+section filter is set to 'grouped' or 'ungrouped' -->
+<div id="roster_group_template" style="display:none"><!--
+<table cellspacing="0" cellpadding="0" class="listHier rosterTable">
+	<thead>
+		<tr>
+			<th>${facet_name}</th>
+			<th>${facet_userId}</th>
+			<th>${facet_role}</th>
+			<th>${facet_groups}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{for member in membership}
+			<tr>
+				<td>${member.userSortName}</td>
+				<td>${member.userDisplayId}</td>
+				<td>${member.memberRole}</td>
+				<td>groups placeholder</td>
+			</tr>
+		{/for}
+	</tbody>
+</table>
+-->
+</div>
+
 
 <!--  Templates End -->
 

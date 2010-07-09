@@ -70,7 +70,16 @@ var rosterCurrentUser = null;
 function switchState(state, arg) {
 
 	// $('#cluetip').hide();
-
+		
+	var site = getSite();
+	
+	console.log(site.siteGroups);
+	
+	// hide links groups if there are no groups
+	if (null === getSite().siteGroups) {
+		$('#navbar_group_membership_link').hide();
+	}
+	
 	if ('overview' === state) {
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template', arg, 'roster_header');
@@ -95,7 +104,31 @@ function switchState(state, arg) {
 		
 	} else if ('group_membership' === state) {
 		
+		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template', arg, 'roster_section_filter');
+		
+		// TODO code here to sort users by groups
+		
+		// render group template with site membership
+		SakaiUtils.renderTrimpathTemplate('roster_group_template',{'membership':getMembership()['membership_collection']},'roster_content');
 	}
+}
+
+function getSite() {
+	
+	var site;
+	
+	jQuery.ajax({
+    	url : "/direct/site/" + rosterSiteId + ".json?includeGroups=true",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			site = data;
+		}
+	});
+	
+	return site;
 }
 
 function getMembership() {
