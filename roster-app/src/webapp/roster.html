@@ -211,7 +211,7 @@ else
 	<tbody>
 		{for member in membership}
 			<tr>
-				<td><a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId}">${member.userSortName}</a></td>
+				<td><a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId}" title="${show_profile}">${member.userSortName}</a></td>
 				<td>${member.userDisplayId}</td>
 				<td><a href="mailto:${member.userEmail}">${member.userEmail}</a></td>
 				<td>${member.memberRole}</td>
