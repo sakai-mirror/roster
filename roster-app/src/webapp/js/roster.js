@@ -102,7 +102,7 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':getRoles()}, 'roster_search');
 		
 		// render pics template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection']},'roster_content');
+		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection'],'siteId':site.id},'roster_content');
 		
 	} else if ('group_membership' === state) {
 		
