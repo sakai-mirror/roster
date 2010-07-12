@@ -73,7 +73,7 @@ function switchState(state, arg) {
 		
 	var site = getSite();
 	
-	console.log(site.siteGroups);
+	//console.log(site.siteGroups);
 	
 	// hide links groups if there are no groups
 	if (null === getSite().siteGroups) {
