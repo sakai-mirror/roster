@@ -73,6 +73,8 @@ function switchState(state, arg) {
 		
 	var site = getSite();
 	
+	//alert("state=" + state);
+	
 	//console.log(site.siteGroups);
 	
 	// hide links groups if there are no groups
@@ -89,7 +91,7 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':getRoles()}, 'roster_search');
 		
 		// render overview template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_overview_template',{'membership':getMembership()['membership_collection']},'roster_content');
+		SakaiUtils.renderTrimpathTemplate('roster_overview_template',{'membership':getMembership()['membership_collection'],'siteId':site.id},'roster_content');
 		
 	} else if ('pics' === state) {
 		
@@ -111,6 +113,12 @@ function switchState(state, arg) {
 		
 		// render group template with site membership
 		SakaiUtils.renderTrimpathTemplate('roster_group_template',{'membership':getMembership()['membership_collection']},'roster_content');
+		
+	} else if ('profile' === state) {
+		
+		var profileMarkup = SakaiUtils.getProfileMarkup(arg.userId);
+				
+		$('#roster_content').html(profileMarkup);
 	}
 }
 
