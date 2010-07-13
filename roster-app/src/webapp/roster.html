@@ -86,9 +86,12 @@ else
 	<tr>
 		<td><span class="filterLabel">${section_filter_pre}</span></td>
 		<td>
-			<select id="roster_form:section_filter" onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+			<select id="roster_form_section_filter" size="1" name="roster_form:section_filter">
 				<option selected="selected" value="">${roster_sections_all}</option>
 				<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
+				{for group in siteGroups}
+					<option value=${group.id}>${group.title}</option>
+				{/for}
 			</select>
 		</td>
 		<td><span class="filterLabel">${section_filter_post}</span></td>
