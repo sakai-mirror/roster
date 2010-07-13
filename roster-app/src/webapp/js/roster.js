@@ -22,8 +22,10 @@ var rosterSiteId = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
-// default behaviour for group membership view
+// these are default behaviours. they need to be global because the roster
+// tool remembers these if the user navigates away
 var grouped = roster_group_ungrouped;
+var hideNames = false;
 
 (function() {
 	
@@ -43,6 +45,17 @@ var grouped = roster_group_ungrouped;
 		return switchState('group_membership');
 	});
 
+	// configure 'hide names' button
+	$('#roster_form:hide_names').bind('click', function(e) {
+		
+		if (hideNames) {
+			hideNames = false;
+		} else {
+			hideNames = true;
+		}
+		return switchState('pics');
+	});
+	
 	var arg = SakaiUtils.getParameters();
 
 	if (!arg || !arg.siteId) {
@@ -50,8 +63,6 @@ var grouped = roster_group_ungrouped;
 		return;
 	}
 	
-	//alert();
-
 	rosterSiteId = arg.siteId;
 
 	rosterCurrentUser = SakaiUtils.getCurrentUser();
@@ -78,11 +89,7 @@ function switchState(state, arg) {
 	// $('#cluetip').hide();
 		
 	var site = getSite();
-	
-	//alert("state=" + state);
-	
-	//console.log(site.siteGroups);
-	
+		
 	// hide links groups if there are no groups
 	if (null === getSite().siteGroups) {
 		$('#navbar_group_membership_link').hide();
@@ -108,8 +115,9 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_search_template', {'roles':getRoles()}, 'roster_search');
 		
 		// render pics template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection'],'siteId':site.id},'roster_content');
-		
+		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection'],
+			'siteId':site.id, 'hideNames':hideNames},'roster_content');
+				
 	} else if ('group_membership' === state) {
 			
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
