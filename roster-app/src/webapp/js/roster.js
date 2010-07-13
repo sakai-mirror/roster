@@ -193,21 +193,7 @@ function switchState(state, arg) {
 			});
 		});
 		
-		var groupsByUserId = new Array();
-        
-		for (var i = 0, groups = site.siteGroups.length; i < groups; i++) {
-					
-			for (var j = 0, groupUsers = site.siteGroups[i].users.length; j < groupUsers; j++) {
-			
-				var userId = site.siteGroups[i].users[j];
-				
-				if (undefined === groupsByUserId[userId]) {
-					groupsByUserId[userId] = new Array();
-				}
-				
-				groupsByUserId[userId][groupsByUserId[userId].length] = site.siteGroups[i].title;		
-			}
-		}
+		var groupsByUserId = getSiteGroupsByUserId(site);
 		
 		if (roster_group_bygroup === grouped) {
 						
@@ -315,6 +301,27 @@ function getGroupMembers(site,groupId) {
 	}
 	
 	return groupMembers;
+}
+
+function getSiteGroupsByUserId(site) {
+	
+	var groupsByUserId = new Array();
+	
+	for (var i = 0, k = site.siteGroups.length; i < k; i++) {	
+		for (var j = 0, l = site.siteGroups[i].users.length; j < l; j++) {
+		
+			var userId = site.siteGroups[i].users[j];
+			
+			if (undefined === groupsByUserId[userId]) {
+				groupsByUserId[userId] = new Array();
+			}
+			
+			groupsByUserId[userId][groupsByUserId[userId].length] = 
+				site.siteGroups[i].title;		
+		}
+	}
+	
+	return groupsByUserId;
 }
 
 /* Original Roster functions */
