@@ -139,9 +139,9 @@ function switchState(state, arg) {
 			
 			var groupsByUserId = new Array();
             
-			for (var i = 0; i < site.siteGroups.length; i++) {
+			for (var i = 0, groups = site.siteGroups.length; i < groups; i++) {
 						
-				for (var j = 0; j < site.siteGroups[i].users.length; j++) {
+				for (var j = 0, groupUsers = site.siteGroups[i].users.length; j < groupUsers; j++) {
 				
 					var userId = site.siteGroups[i].users[j];
 					
