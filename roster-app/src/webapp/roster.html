@@ -292,14 +292,39 @@ else
 
 <div id="roster_grouped_template" style="display:none"><!--
 <table cellspacing="0" cellpadding="0" class="listHier rosterTable">
-	<thead>
-		<tr>
-			<th>${facet_name}</th>
-			<th>${facet_userId}</th>
-			<th>${facet_role}</th>
-			<th>${facet_groups}</th>
-		</tr>
-	</thead>
+	{for siteGroup in siteGroups}
+	<table width="%100">
+		<tbody>
+			<tr>
+				<td><h3>${siteGroup.title}</h3></td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="listHier">
+		<thead>
+			<tr>
+				<th width="%25">${facet_name}</th>
+				<th width="%10">${facet_userId}</th>
+				<th width="%10">${facet_role}</th>
+				<th width="%55">${facet_groups}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{for siteGroupUser in siteGroup.users}
+				{for member in membership}
+					{if siteGroupUser === member.userId}
+						<tr>
+							<td>${member.userSortName}</td>
+							<td>${member.userDisplayId}</td>
+							<td>${member.memberRole}</td>
+							<td>${groupsByUserId[member.userId]}</td>
+						</tr>
+					{/if}
+				{/for}
+			{/for}
+		</tbody>
+	</table>
+	{/for}
 </table>
 -->
 </div>

@@ -127,31 +127,30 @@ function switchState(state, arg) {
 			switchState('group_membership');
 		});
 		
+		var groupsByUserId = new Array();
+        
+		for (var i = 0, groups = site.siteGroups.length; i < groups; i++) {
+					
+			for (var j = 0, groupUsers = site.siteGroups[i].users.length; j < groupUsers; j++) {
+			
+				var userId = site.siteGroups[i].users[j];
+				
+				if (undefined === groupsByUserId[userId]) {
+					groupsByUserId[userId] = new Array();
+				}
+				
+				groupsByUserId[userId][groupsByUserId[userId].length] = site.siteGroups[i].title;		
+			}
+		}
+		
 		if (roster_group_bygroup === grouped) {
-			
-			// TODO by group
-			
+						
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
-					{'membership':getMembership()['membership_collection']},
+					{'membership':getMembership()['membership_collection'],
+					'groupsByUserId':groupsByUserId, 'siteGroups':site.siteGroups},
 					'roster_content');
 			
 		} else {
-			
-			var groupsByUserId = new Array();
-            
-			for (var i = 0, groups = site.siteGroups.length; i < groups; i++) {
-						
-				for (var j = 0, groupUsers = site.siteGroups[i].users.length; j < groupUsers; j++) {
-				
-					var userId = site.siteGroups[i].users[j];
-					
-					if (undefined === groupsByUserId[userId]) {
-						groupsByUserId[userId] = new Array();
-					}
-					
-					groupsByUserId[userId][groupsByUserId[userId].length] = site.siteGroups[i].title;		
-				}
-			}
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'membership':getMembership()['membership_collection'],
