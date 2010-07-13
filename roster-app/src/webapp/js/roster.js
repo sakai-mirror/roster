@@ -22,7 +22,11 @@ var rosterSiteId = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
+// default behaviour for group membership view
+var grouped = roster_group_ungrouped;
+
 (function() {
+	
 	// We need the toolbar in a template so we can swap in the translations
 	SakaiUtils.renderTrimpathTemplate('roster_navbar_template', {},
 			'roster_navbar');
@@ -45,6 +49,8 @@ var rosterCurrentUser = null;
 		alert('The site id  MUST be supplied as a page parameter');
 		return;
 	}
+	
+	//alert();
 
 	rosterSiteId = arg.siteId;
 
@@ -105,14 +111,52 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template',{'membership':getMembership()['membership_collection'],'siteId':site.id},'roster_content');
 		
 	} else if ('group_membership' === state) {
-		
+			
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
-		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template', arg, 'roster_section_filter');
+		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template', {'arg':arg, 'siteId':site.id}, 'roster_section_filter');
+				
+		// TODO document ready
 		
-		// TODO code here to sort users by groups
+		// set the value
+		$('#roster_form_group_choice').val(grouped);
 		
-		// render group template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_group_template',{'membership':getMembership()['membership_collection']},'roster_content');
+		// attach handler
+		$('#roster_form_group_choice').change(function(e) {
+			grouped = this.options[this.selectedIndex].text;
+			
+			switchState('group_membership');
+		});
+		
+		if (roster_group_bygroup === grouped) {
+			
+			// TODO by group
+			
+			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
+					{'membership':getMembership()['membership_collection']},
+					'roster_content');
+			
+		} else {
+			
+			var groupsByUserId = new Array();
+            
+			for (var i = 0; i < site.siteGroups.length; i++) {
+						
+				for (var j = 0; j < site.siteGroups[i].users.length; j++) {
+				
+					var userId = site.siteGroups[i].users[j];
+					
+					if (undefined === groupsByUserId[userId]) {
+						groupsByUserId[userId] = new Array();
+					}
+					
+					groupsByUserId[userId][groupsByUserId[userId].length] = site.siteGroups[i].title;		
+				}
+			}
+			
+			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
+					{'membership':getMembership()['membership_collection'],
+					'groupsByUserId':groupsByUserId},'roster_content');
+		}		
 		
 	} else if ('profile' === state) {
 		

@@ -86,7 +86,7 @@ else
 	<tr>
 		<td><span class="filterLabel">${section_filter_pre}</span></td>
 		<td>
-			<select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+			<select id="roster_form:section_filter" onchange="this.form.submit()" size="1" name="roster_form:section_filter">
 				<option selected="selected" value="">${roster_sections_all}</option>
 				<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
 			</select>
@@ -102,7 +102,7 @@ else
 	<tr>
 		<td><span class="filterLabel">${section_filter_pre}</span></td>
 		<td>
-			<select id="roster_form:section_filter onchange="this.form.submit()" size="1" name="roster_form:section_filter">
+			<select id="roster_form_group_choice" size="1" name="roster_form:section_filter">
 				<option selected="selected" value="">${roster_group_ungrouped}</option>
 				<option value=${roster_group_bygroup}>${roster_group_bygroup}</option>
 			</select>
@@ -290,9 +290,21 @@ else
  -->
 </div>
 
-<!-- TODO this will be displayed differently depending on whether the group
-section filter is set to 'grouped' or 'ungrouped' -->
-<div id="roster_group_template" style="display:none"><!--
+<div id="roster_grouped_template" style="display:none"><!--
+<table cellspacing="0" cellpadding="0" class="listHier rosterTable">
+	<thead>
+		<tr>
+			<th>${facet_name}</th>
+			<th>${facet_userId}</th>
+			<th>${facet_role}</th>
+			<th>${facet_groups}</th>
+		</tr>
+	</thead>
+</table>
+-->
+</div>
+
+<div id="roster_ungrouped_template" style="display:none"><!--
 <table cellspacing="0" cellpadding="0" class="listHier rosterTable">
 	<thead>
 		<tr>
@@ -308,7 +320,7 @@ section filter is set to 'grouped' or 'ungrouped' -->
 				<td>${member.userSortName}</td>
 				<td>${member.userDisplayId}</td>
 				<td>${member.memberRole}</td>
-				<td>groups placeholder</td>
+				<td>${groupsByUserId[member.userId]}</td>
 			</tr>
 		{/for}
 	</tbody>
