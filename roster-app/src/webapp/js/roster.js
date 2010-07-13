@@ -183,17 +183,14 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
 		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template', {'arg':arg, 'siteId':site.id}, 'roster_section_filter');
 				
-		// TODO document ready
-		
-		// set the value
-		$('#roster_form_group_choice').val(grouped);
-		
-		// attach handler
-		$('#roster_form_group_choice').change(function(e) {
-			
-			grouped = this.options[this.selectedIndex].text;
-			
-			switchState('group_membership');
+		$(document).ready(function() {
+			$('#roster_form_group_choice').val(grouped);
+			$('#roster_form_group_choice').change(function(e) {
+				
+				grouped = this.options[this.selectedIndex].text;
+				
+				switchState('group_membership');
+			});
 		});
 		
 		var groupsByUserId = new Array();
