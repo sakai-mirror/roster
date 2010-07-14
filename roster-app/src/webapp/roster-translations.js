@@ -55,6 +55,9 @@ section_filter_pre="View";
 section_filter_post="Participants";
 enrollment_status_filter="View students in";
 
+view_table="View in Table";
+view_single="View in Single Column";
+
 print_="Print";
 print_single="Print Pictures in Single Column";
 print_screen="Print Screen";

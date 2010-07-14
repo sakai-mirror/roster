@@ -22,10 +22,11 @@ var rosterSiteId = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
-// these are default behaviours. they need to be global because the roster
-// tool remembers these if the user navigates away
+// These are default behaviours, and are global so the tool remembers
+// the user's choices.
 var grouped = roster_group_ungrouped;
 var hideNames = false;
+var viewSingleColumn = false;
 var groupToView = null;
 var groupToViewText = roster_sections_all;
 
@@ -169,7 +170,7 @@ function switchState(state, arg) {
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
 				{'membership':members, 'siteId':site.id,
-				'groupToView':groupToView, 'hideNames':hideNames},
+				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn, 'hideNames':hideNames},
 				'roster_content');
 		
 		$(document).ready(function() {
@@ -188,6 +189,17 @@ function switchState(state, arg) {
 					hideNames = false;
 				} else {
 					hideNames = true;
+				}
+				
+				switchState('pics');
+			});
+			
+			$('#roster_form_pics_view').bind('click', function(e) {
+				
+				if (viewSingleColumn) {
+					viewSingleColumn = false;
+				} else {
+					viewSingleColumn = true;
 				}
 				
 				switchState('pics');
