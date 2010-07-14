@@ -52,7 +52,7 @@ section_filter_pre="\u8868\u793a";
 section_filter_post="\u53c2\u52a0\u8005";
 enrollment_status_filter="\u5b66\u751f\u3092\u8868\u793a\u3000\u5bfe\u8c61:";
 
-print="\u5370\u5237";
+print_="\u5370\u5237";
 print_single="\u4e00\u6bb5\u7d44\u3067\u56f3\u3092\u5370\u5237";
 print_screen="\u753b\u9762\u3092\u5370\u5237";
 export_="\u30a8\u30af\u30b9\u30dd\u30fc\u30c8";
