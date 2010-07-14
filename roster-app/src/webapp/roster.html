@@ -86,7 +86,7 @@ else
 	<tr>
 		<td><span class="filterLabel">${section_filter_pre}</span></td>
 		<td>
-			<select id="roster_form_section_filter" size="1" name="roster_form:section_filter">
+			<select id="roster_form_section_filter" size="1">
 				<option selected="selected" value="">${roster_sections_all}</option>
 				<option value=${roster_section_sep_line}>${roster_section_sep_line}</option>
 				{for group in siteGroups}
@@ -255,18 +255,17 @@ else
 							</label>
 						</td>
 					</tr>
+					</tbody>
 				</table>
 			</td>
 			<td class="rosterPageHeaderRight">
 				{var roster_hide_names_label}
 				{if true === hideNames}
-					<input id="roster_form:hide_names" type="button"
-						value="${roster_show_names}"
-						name="roster_form:hide_names" />
+					<input id="roster_form_hide_names" type="button"
+						value="${roster_show_names}" />
 				{else}
-					<input id="roster_form:hide_names" type="button"
-						value="${roster_hide_names}"
-						name="roster_form:hide_names" />
+					<input id="roster_form_hide_names" type="button"
+						value="${roster_hide_names}" />
 				{/if}
 
 			</td>

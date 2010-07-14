@@ -46,17 +46,6 @@ var groupToViewText = roster_sections_all;
 	$('#navbar_group_membership_link').bind('click', function(e) {
 		return switchState('group_membership');
 	});
-
-	// configure 'hide names' button
-	$('#roster_form:hide_names').bind('click', function(e) {
-		
-		if (hideNames) {
-			hideNames = false;
-		} else {
-			hideNames = true;
-		}
-		return switchState('pics');
-	});
 		
 	var arg = SakaiUtils.getParameters();
 
@@ -107,7 +96,7 @@ function switchState(state, arg) {
 	if (site.siteGroups.length === 0) {
 		$('#navbar_group_membership_link').hide();
 	}
-	
+		
 	if ('overview' === state) {
 			
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
@@ -154,23 +143,13 @@ function switchState(state, arg) {
 				'groupToView':groupToView},'roster_content');
 		
 	} else if ('pics' === state) {
-		
+				
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
 		
 		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 				{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
 				'roster_section_filter');
-		
-		$(document).ready(function() {
-			$('#roster_form_section_filter').val(groupToViewText);
-			$('#roster_form_section_filter').change(function(e) {
-				groupToView = this.options[this.selectedIndex].value;
-				groupToViewText = this.options[this.selectedIndex].text;
-			
-				switchState('pics');
-			});
-		});
-				
+						
 		// render search template with site roles
 		SakaiUtils.renderTrimpathTemplate('roster_search_template',
 				{'_role_breakdown_fragments':_role_breakdown_fragments,
@@ -192,7 +171,29 @@ function switchState(state, arg) {
 				{'membership':members, 'siteId':site.id,
 				'groupToView':groupToView, 'hideNames':hideNames},
 				'roster_content');
+		
+		$(document).ready(function() {
+			$('#roster_form_section_filter').val(groupToViewText);
+			$('#roster_form_section_filter').change(function(e) {
+				groupToView = this.options[this.selectedIndex].value;
+				groupToViewText = this.options[this.selectedIndex].text;
 			
+				switchState('pics');
+			});
+			
+			// configure 'hide names' button
+			$('#roster_form_hide_names').bind('click', function(e) {
+				
+				if (hideNames) {
+					hideNames = false;
+				} else {
+					hideNames = true;
+				}
+				
+				switchState('pics');
+			});
+		});
+		
 	} else if ('group_membership' === state) {
 		
 		// hide search div
