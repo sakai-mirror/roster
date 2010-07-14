@@ -18,7 +18,7 @@
 
 /* Stuff that we always expect to be setup */
 var rosterSiteId = null;
-// var rosterCurrentUserPermissions = null;
+var rosterCurrentUserPermissions = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
@@ -64,8 +64,8 @@ var groupToViewText = roster_sections_all;
 		return;
 	}
 
-	// rosterCurrentUserPermissions = new
-	// RosterPermissions(SakaiUtils.getCurrentUserPermissions(rosterSiteId,'roster2'));
+	rosterCurrentUserPermissions = new RosterPermissions(
+			SakaiUtils.getCurrentUserPermissions(rosterSiteId,'roster'));
 
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
