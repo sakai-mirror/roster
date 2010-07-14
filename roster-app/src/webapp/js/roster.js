@@ -91,7 +91,18 @@ function switchState(state, arg) {
 	// $('#cluetip').hide();
 		
 	var site = getSite();
-		
+	var roles = getRoles();
+	var participants = roles['access'].roleCount + roles['maintain'].roleCount;
+	
+	// strings with tokens to replace
+	var _currently_displaying_participants = currently_displaying_participants.replace(/\{0\}/, participants);
+	var _role_breakdown_fragments = new Array();
+	_role_breakdown_fragments['access'] = role_breakdown_fragment.replace(/\{0\}/, roles['access'].roleCount);
+	_role_breakdown_fragments['access'] = _role_breakdown_fragments['access'].replace(/\{1\}/, 'access');
+	_role_breakdown_fragments['access'] += ', ';
+	_role_breakdown_fragments['maintain'] = role_breakdown_fragment.replace(/\{0\}/, roles['maintain'].roleCount);
+	_role_breakdown_fragments['maintain'] = _role_breakdown_fragments['maintain'].replace(/\{1\}/, 'maintain');
+	
 	// hide links groups if there are no groups
 	if (site.siteGroups.length === 0) {
 		$('#navbar_group_membership_link').hide();
@@ -118,7 +129,9 @@ function switchState(state, arg) {
 		
 		// render search template with site roles
 		SakaiUtils.renderTrimpathTemplate('roster_search_template',
-				{'roles':getRoles()}, 'roster_search');
+				{'_role_breakdown_fragments':_role_breakdown_fragments,
+				'_currently_displaying_participants':_currently_displaying_participants},
+				'roster_search');
 		
 		// render overview template with site membership
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
@@ -160,7 +173,9 @@ function switchState(state, arg) {
 				
 		// render search template with site roles
 		SakaiUtils.renderTrimpathTemplate('roster_search_template',
-				{'roles':getRoles()}, 'roster_search');
+				{'_role_breakdown_fragments':_role_breakdown_fragments,
+				'_currently_displaying_participants':_currently_displaying_participants},
+				'roster_search');
 					
 		var members;
 		// view all users
@@ -179,10 +194,14 @@ function switchState(state, arg) {
 				'roster_content');
 			
 	} else if ('group_membership' === state) {
-			
+		
+		// hide search div
+		//$('#roster_search').hide();
+		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
-		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template', {'arg':arg, 'siteId':site.id}, 'roster_section_filter');
-				
+		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
+		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
+		
 		$(document).ready(function() {
 			$('#roster_form_group_choice').val(grouped);
 			$('#roster_form_group_choice').change(function(e) {
@@ -253,7 +272,7 @@ function getMembership() {
 
 function getRoles() {
 	
-	var roles = {};
+	var roles = new Array();
 	
 	jQuery.ajax({
     	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=access",
@@ -261,7 +280,7 @@ function getRoles() {
        	async : false,
 		cache: false,
 	   	success : function(data) {
-			roles['1'] = { roleType: "access", roleCount: data['membership_collection'].length};
+			roles['access'] = { roleType: "access", roleCount: data['membership_collection'].length};
 		}
 	});
 	
@@ -271,7 +290,7 @@ function getRoles() {
        	async : false,
 		cache: false,
 	   	success : function(data) {
-			roles['2'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
+			roles['maintain'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
 		}
 	});
 	

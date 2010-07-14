@@ -190,9 +190,12 @@ else
 			</td>
 			<td>
 				<span class="instruction">
-					{for role in roles}
-						<div style="padding-left: 10px;">role placeholder</div>
-					{/for}
+					<div style="padding-left: 10px;">${_currently_displaying_participants}</div>
+					<div style="padding-left: 10px;">
+						{for _role_breakdown_fragment in _role_breakdown_fragments}
+							${_role_breakdown_fragment}
+						{/for}
+					</div>
 				</span>
 			</td>
 		</tr>
@@ -364,6 +367,8 @@ else
 </table>
 -->
 </div>
+
+<div id="empty_template" style="display:none"><!--  --></div>
 
 <!--  Templates End -->
 
