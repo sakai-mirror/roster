@@ -81,7 +81,7 @@ function switchState(state, arg) {
 	// $('#cluetip').hide();
 		
 	var site = getSite();
-	var roles = getRoles();
+	var roles = getRoles(site);
 	var participants = roles['access'].roleCount + roles['maintain'].roleCount;
 	
 	// strings with tokens to replace
@@ -283,30 +283,24 @@ function getMembership() {
 	return membership;
 }
 
-function getRoles() {
-	
+function getRoles(site) {
+		
 	var roles = new Array();
 	
-	jQuery.ajax({
-    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=access",
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-			roles['access'] = { roleType: "access", roleCount: data['membership_collection'].length};
-		}
-	});
-	
-	jQuery.ajax({
-    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=maintain",
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-			roles['maintain'] = { roleType: "maintain", roleCount: data['membership_collection'].length};
-		}
-	});
-	
+	for (var i = 0, j = site.userRoles.length; i < j; i++) {
+		
+		jQuery.ajax({
+	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=" + site.userRoles[i],
+	      	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+				roles[site.userRoles[i]] = { roleType: site.userRoles[i],
+						roleCount: data['membership_collection'].length};
+			}
+		});
+	}
+		
 	return roles;
 }
 
