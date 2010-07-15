@@ -82,16 +82,30 @@ function switchState(state, arg) {
 		
 	var site = getSite();
 	var roles = getRoles(site);
-	var participants = roles['access'].roleCount + roles['maintain'].roleCount;
+	var participants = null;
 	
 	// strings with tokens to replace
-	var _currently_displaying_participants = currently_displaying_participants.replace(/\{0\}/, participants);
+	var _currently_displaying_participants = null;
 	var _role_breakdown_fragments = new Array();
-	_role_breakdown_fragments['access'] = role_breakdown_fragment.replace(/\{0\}/, roles['access'].roleCount);
-	_role_breakdown_fragments['access'] = _role_breakdown_fragments['access'].replace(/\{1\}/, 'access');
-	_role_breakdown_fragments['access'] += ', ';
-	_role_breakdown_fragments['maintain'] = role_breakdown_fragment.replace(/\{0\}/, roles['maintain'].roleCount);
-	_role_breakdown_fragments['maintain'] = _role_breakdown_fragments['maintain'].replace(/\{1\}/, 'maintain');
+	
+	for (var i = 0, j = roles.length; i < j; i++) {
+		
+		participants = participants + roles[i].roleCount;
+		
+		var _role_breakdown_fragment = 
+			role_breakdown_fragment.replace(/\{0\}/, roles[i].roleCount);
+		_role_breakdown_fragment = 
+			_role_breakdown_fragment.replace(/\{1\}/, roles[i].roleType);
+		
+		if (i != j - 1) {
+			_role_breakdown_fragment = _role_breakdown_fragment + ", ";
+		}
+		
+		_role_breakdown_fragments[i] = _role_breakdown_fragment;
+	}
+
+	_currently_displaying_participants = 
+		currently_displaying_participants.replace(/\{0\}/, participants);
 	
 	// hide links groups if there are no groups
 	if (site.siteGroups.length === 0) {
@@ -295,7 +309,7 @@ function getRoles(site) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
-				roles[site.userRoles[i]] = { roleType: site.userRoles[i],
+				roles[i] = { roleType: site.userRoles[i],
 						roleCount: data['membership_collection'].length};
 			}
 		});
