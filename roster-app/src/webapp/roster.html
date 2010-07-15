@@ -235,30 +235,6 @@ else
 	<tbody>
 		<tr>
 			<td class="rosterPageHeaderLeft">
-				<table>
-					<tbody>
-					<tr>
-						<td>
-							<label>
-							<input type="radio" onclick="this.form.submit()"
-								value="false" checked="checked"
-								name="roster_form:photo_filter" />
-								${roster_official_photos}
-							</label>
-						</td>
-						<td>
-							<label>
-							<input type="radio" onclick="this.form.submit()"
-								value="false" checked="checked"
-								name="roster_form:photo_filter" />
-								${roster_profile_photos}
-							</label>
-						</td>
-					</tr>
-					</tbody>
-				</table>
-			</td>
-			<td class="rosterPageHeaderRight">
 				{if true === hideNames}
 					<input id="roster_form_hide_names" type="button"
 						value="${roster_show_names}" />
