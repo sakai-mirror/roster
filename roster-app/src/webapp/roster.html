@@ -198,10 +198,10 @@ else
 
 <div id="roster_participants_template" style="display:none"><!--
 <span class="instruction">
-	<div style="padding-top: 10px;padding-left: 10px;">${_currently_displaying_participants}</div>
+	<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
 	<div style="padding-left: 10px;">
-	{for _role_breakdown_fragment in _role_breakdown_fragments}
-		${_role_breakdown_fragment}
+	{for frag in roleFragments}
+		${frag}
 	{/for}
 	</div>
 </span>

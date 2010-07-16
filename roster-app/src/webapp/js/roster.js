@@ -82,32 +82,6 @@ function switchState(state, arg) {
 		
 	var site = getSite();
 	var roles = getRoles(site);
-	var participants = null;
-	
-	// strings with tokens to replace
-	
-	// TODO make this a function
-	var _currently_displaying_participants = null;
-	var _role_breakdown_fragments = new Array();
-	
-	for (var i = 0, j = roles.length; i < j; i++) {
-		
-		participants = participants + roles[i].roleCount;
-		
-		var _role_breakdown_fragment = 
-			role_breakdown_fragment.replace(/\{0\}/, roles[i].roleCount);
-		_role_breakdown_fragment = 
-			_role_breakdown_fragment.replace(/\{1\}/, roles[i].roleType);
-		
-		if (i != j - 1) {
-			_role_breakdown_fragment = _role_breakdown_fragment + ", ";
-		}
-		
-		_role_breakdown_fragments[i] = _role_breakdown_fragment;
-	}
-
-	_currently_displaying_participants = 
-		currently_displaying_participants.replace(/\{0\}/, participants);
 	
 	// hide links groups if there are no groups
 	if (site.siteGroups.length === 0) {
@@ -139,8 +113,8 @@ function switchState(state, arg) {
 		
 		// render site roles
 		SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-				{'_role_breakdown_fragments':_role_breakdown_fragments,
-				'_currently_displaying_participants':_currently_displaying_participants},
+				{'roleFragments':getRoleFragments(roles),
+				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_participants');
 		
 		// render overview template with site membership
@@ -177,9 +151,8 @@ function switchState(state, arg) {
 		
 		// render site roles
 		SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-				{'_role_breakdown_fragments':_role_breakdown_fragments,
-				'_currently_displaying_participants':_currently_displaying_participants},
-				'roster_participants');
+				{'participants':getCurrentlyDisplayingParticipants(roles),
+				'roleFragments':getRoleFragments(roles)},'roster_participants');
 		
 		var members;
 		// view all users
@@ -260,8 +233,8 @@ function switchState(state, arg) {
 		} else {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-					{'_role_breakdown_fragments':_role_breakdown_fragments,
-					'_currently_displaying_participants':_currently_displaying_participants},
+					{'roleFragments':getRoleFragments(roles),
+					'participants':getCurrentlyDisplayingParticipants(roles)},
 					'roster_participants');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
@@ -330,6 +303,36 @@ function getRoles(site) {
 	}
 		
 	return roles;
+}
+
+function getCurrentlyDisplayingParticipants(roles) {
+	
+	var participants = 0;
+	
+	for (var i = 0, j = roles.length; i < j; i++) {
+		
+		participants = participants + roles[i].roleCount;
+	}
+	
+	return currently_displaying_participants.replace(/\{0\}/, participants);
+}
+
+function getRoleFragments(roles) {
+	
+	var roleFragments = new Array();
+	
+	for (var i = 0, j = roles.length; i < j; i++) {
+				
+		var frag = role_breakdown_fragment.replace(/\{0\}/, roles[i].roleCount);
+		frag = frag.replace(/\{1\}/, roles[i].roleType);
+		
+		if (i != j - 1) {
+			frag = frag + ", ";
+		}
+		
+		roleFragments[i] = frag;
+	}	
+	return roleFragments;
 }
 
 function getRolesByGroup(site) {
