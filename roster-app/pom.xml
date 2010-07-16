@@ -41,18 +41,27 @@
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
     </dependency>
-    <!-- SAK-18095
+    <!-- dependencies added by DBR -->
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-sections-app-util</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.sakaiproject.edu-services.sections</groupId>
-          <artifactId>sections-model</artifactId>
-        </exclusion>
-      </exclusions>
+        <groupId>org.sakaiproject.entitybroker</groupId>
+        <artifactId>entitybroker-api</artifactId>
+        <scope>provided</scope>
     </dependency>
-    -->
+    <dependency>
+        <groupId>org.sakaiproject.entitybroker</groupId>
+        <artifactId>entitybroker-utils</artifactId>
+        <version>${entitybroker.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <!-- end of dependencies added by DBR -->
     <dependency>
       <groupId>org.sakaiproject.edu-services.sections</groupId>
       <artifactId>sections-api</artifactId>

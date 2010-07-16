@@ -23,6 +23,11 @@
     <module>roster-app</module>
     <module>roster-help</module>
   </modules>
+  
+  <properties>
+	  <entitybroker.version>1.4.0-SNAPSHOT</entitybroker.version>
+  </properties>
+  
   <dependencyManagement>
     <dependencies>
       <dependency>
