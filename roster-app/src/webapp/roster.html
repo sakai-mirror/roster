@@ -63,6 +63,7 @@ else
 	<form id="roster_form">
 		<div id="roster_header"></div>
 		<div id="roster_section_filter"></div>
+		<div id="roster_participants"></div>
 		<div id="roster_search"></div>
 		<div id="roster_content"></div>
 	</form>
@@ -96,6 +97,7 @@ else
 			</select>
 		</td>
 		<td><span class="filterLabel">${section_filter_post}</span></td>
+		<td><div id="wibble"></div></td>
 	</tr>
 </table>
  -->
@@ -188,20 +190,23 @@ else
 						value="${roster_clear_button}" name="roster_form:clear_button" />
 				</div>
 			</td>
-			<td>
-				<span class="instruction">
-					<div style="padding-left: 10px;">${_currently_displaying_participants}</div>
-					<div style="padding-left: 10px;">
-						{for _role_breakdown_fragment in _role_breakdown_fragments}
-							${_role_breakdown_fragment}
-						{/for}
-					</div>
-				</span>
-			</td>
 		</tr>
 	</tbody>
 </table>
  -->
+</div>
+
+<div id="roster_participants_template" style="display:none"><!--
+<span class="instruction">
+	<div style="padding-top: 10px;padding-left: 10px;">${_currently_displaying_participants}</div>
+	<div style="padding-left: 10px;">
+	{for _role_breakdown_fragment in _role_breakdown_fragments}
+		${_role_breakdown_fragment}
+	{/for}
+	</div>
+</span>
+
+-->
 </div>
 
 <div id="roster_overview_template" style="display:none"><!--
@@ -304,39 +309,49 @@ else
 </div>
 
 <div id="roster_grouped_template" style="display:none"><!--
-<table cellspacing="0" cellpadding="0" class="listHier rosterTable">
+<table cellspacing="0" cellpadding="0" width="%100">
 	{for siteGroup in siteGroups}
-	<table width="%100">
-		<tbody>
-			<tr>
-				<td><h3>${siteGroup.title}</h3></td>
-			</tr>
-		</tbody>
-	</table>
-	<table class="listHier">
-		<thead>
-			<tr>
-				<th width="%25">${facet_name}</th>
-				<th width="%10">${facet_userId}</th>
-				<th width="%10">${facet_role}</th>
-				<th width="%55">${facet_groups}</th>
-			</tr>
-		</thead>
-		<tbody>
-			{for siteGroupUser in siteGroup.users}
-				{for member in membership}
-					{if siteGroupUser === member.userId}
-						<tr>
-							<td>${member.userSortName}</td>
-							<td>${member.userDisplayId}</td>
-							<td>${member.memberRole}</td>
-							<td>${groupsByUserId[member.userId]}</td>
-						</tr>
-					{/if}
+		<table width="%100">
+			<tbody>
+				<tr>
+					<td><h3>${siteGroup.title}</h3></td>
+					<td>
+						<span style="text-align: right" class="instruction">
+							<div style="padding-left:10px;">${rolesText[siteGroup.id].participants}</div>
+							<div style="padding-left: 10px;">
+							{for role in rolesText[siteGroup.id].roles}
+								${role.frag}
+							{/for}
+							</div>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table cellspacing="0" cellpadding="0" class="listHier rosterTable">
+			<thead>
+				<tr>
+					<th width="%25">${facet_name}</th>
+					<th width="%10">${facet_userId}</th>
+					<th width="%10">${facet_role}</th>
+					<th width="%55">${facet_groups}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{for siteGroupUser in siteGroup.users}
+					{for member in membership}
+						{if siteGroupUser === member.userId}
+							<tr>
+								<td>${member.userSortName}</td>
+								<td>${member.userDisplayId}</td>
+								<td>${member.memberRole}</td>
+								<td>${groupsByUserId[member.userId]}</td>
+							</tr>
+						{/if}
+					{/for}
 				{/for}
-			{/for}
-		</tbody>
-	</table>
+			</tbody>
+		</table>
 	{/for}
 </table>
 -->
