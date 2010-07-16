@@ -252,53 +252,10 @@ function switchState(state, arg) {
 			
 			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_participants');
 			
-			// TODO make this a function
-			var rolesByGroup = getRolesByGroup(site);
-			
-			var rolesText = new Array();
-			
-			for (var group in rolesByGroup) {
-				
-				rolesText[group] = new Object();
-				
-				var participants = 0;
-				rolesText[group].roles = new Array();
-				
-				var numberOfRoles = 0;
-				for (var role in rolesByGroup[group].roles) {
-					numberOfRoles++;
-				}
-				
-				var roleNumber = 1;
-				for (var role in rolesByGroup[group].roles) {
-					
-					rolesText[group].roles[role] = new Object();
-					rolesText[group].roles[role].frag = 
-						role_breakdown_fragment.replace(/\{0\}/,
-								rolesByGroup[group].roles[role].roleCount);
-					
-					rolesText[group].roles[role].frag =
-						rolesText[group].roles[role].frag.replace(/\{1\}/,
-								rolesByGroup[group].roles[role].roleType);
-					
-					if (roleNumber != numberOfRoles) {
-						rolesText[group].roles[role].frag = rolesText[group].roles[role].frag + ", ";
-					}
-										
-					participants = participants + rolesByGroup[group].roles[role].roleCount;
-					
-					roleNumber++;
-				}
-				
-				
-				rolesText[group].participants =
-					currently_displaying_participants.replace(/\{0\}/, participants);
-			}
-			
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'membership':getMembership()['membership_collection'],
 					'groupsByUserId':groupsByUserId, 'siteGroups':site.siteGroups,
-					'rolesText':rolesText}, 'roster_content');
+					'rolesText':getRolesByGroupRoleFragments(site)}, 'roster_content');
 			
 		} else {
 			
@@ -409,6 +366,54 @@ function getRolesByGroup(site) {
 	}
 	
 	return rolesByGroup;
+}
+
+function getRolesByGroupRoleFragments(site) {
+
+	var rolesByGroup = getRolesByGroup(site);
+	
+	var rolesByGroupRoleFragments = new Array();
+	
+	for (var group in rolesByGroup) {
+		
+		rolesByGroupRoleFragments[group] = new Object();
+		
+		var participants = 0;
+		rolesByGroupRoleFragments[group].roles = new Array();
+		
+		var numberOfRoles = 0;
+		for (var role in rolesByGroup[group].roles) {
+			numberOfRoles++;
+		}
+		
+		var roleNumber = 1;
+		for (var role in rolesByGroup[group].roles) {
+			
+			rolesByGroupRoleFragments[group].roles[role] = new Object();
+			rolesByGroupRoleFragments[group].roles[role].frag = 
+				role_breakdown_fragment.replace(/\{0\}/,
+						rolesByGroup[group].roles[role].roleCount);
+			
+			rolesByGroupRoleFragments[group].roles[role].frag =
+				rolesByGroupRoleFragments[group].roles[role].frag.replace(/\{1\}/,
+						rolesByGroup[group].roles[role].roleType);
+			
+			if (roleNumber != numberOfRoles) {
+				rolesByGroupRoleFragments[group].roles[role].frag = 
+					rolesByGroupRoleFragments[group].roles[role].frag + ", ";
+			}
+								
+			participants = participants + rolesByGroup[group].roles[role].roleCount;
+			
+			roleNumber++;
+		}
+		
+		
+		rolesByGroupRoleFragments[group].participants =
+			currently_displaying_participants.replace(/\{0\}/, participants);
+	}
+	
+	return rolesByGroupRoleFragments;
 }
 
 function getGroupMembers(site,groupId) {
