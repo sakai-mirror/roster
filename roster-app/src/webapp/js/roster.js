@@ -35,7 +35,8 @@ var groupToViewText = roster_sections_all;
 
 var defaultSortColumn = SORT_NAME; // TODO sakai.properties
 var sortColumn = defaultSortColumn;
-var sortParams = {sortList:[[0,0]]};
+var overviewSortParams = {sortList:[[0,0]]};
+var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 
 /* New Roster functions */
 
@@ -82,13 +83,13 @@ var sortParams = {sortList:[[0,0]]};
 		
 	// TODO read sakai.properties for defaultSortColumn
 	if (SORT_NAME === sortColumn) {
-		sortParams.sortList = [[0,0]];
+		overviewSortParams.sortList = [[0,0]];
 	} else if (SORT_USER_ID === sortColumn) {
-		sortParams.sortList = [[1,0]];
+		overviewSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
-		sortParams.sortList = [[2,0]];
+		overviewSortParams.sortList = [[2,0]];
 	} else if (SORT_ROLE === sortColumn) {
-		sortParams.sortList = [[3,0]];
+		overviewSortParams.sortList = [[3,0]];
 	}
 
 	// Now switch into the requested state
@@ -230,17 +231,7 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
 		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
 		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
-		
-		$(document).ready(function() {
-			$('#roster_form_group_choice').val(grouped);
-			$('#roster_form_group_choice').change(function(e) {
 				
-				grouped = this.options[this.selectedIndex].text;
-				
-				switchState('group_membership');
-			});
-		});
-		
 		var groupsByUserId = getSiteGroupsByUserId(site);
 		
 		if (roster_group_bygroup === grouped) {
@@ -262,7 +253,19 @@ function switchState(state, arg) {
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'membership':getMembership()['membership_collection'],
 					'groupsByUserId':groupsByUserId},'roster_content');
-		}		
+		}
+		
+		$(document).ready(function() {
+			$('#roster_form_group_choice').val(grouped);
+			$('#roster_form_group_choice').change(function(e) {
+				
+				grouped = this.options[this.selectedIndex].text;
+				
+				switchState('group_membership');
+			});
+			
+			$('table').tablesorter(groupSortParams);
+		});
 		
 	} else if ('profile' === state) {
 		

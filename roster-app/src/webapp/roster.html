@@ -334,9 +334,9 @@ else
 				<table cellpadding="0" cellspacing="0" class="listHier rosterTable">
 					<thead>
 						<tr>
-							<th width="25%">${facet_name}</th>
-							<th width="10%">${facet_userId}</th>
-							<th width="15%">${facet_role}</th>
+							<th width="25%"><a href="#">${facet_name}</a></th>
+							<th width="10%"><a href="#">${facet_userId}</a></th>
+							<th width="15%"><a href="#">${facet_role}</a></th>
 							<th width="50%">${facet_groups}</th>
 						</tr>
 					</thead>
@@ -364,12 +364,12 @@ else
 </div>
 
 <div id="roster_ungrouped_template" style="display:none"><!--
-<table cellspacing="0" cellpadding="0" class="listHier rosterTable">
+<table cellspacing="0" cellpadding="0" class="listHier rosterTable" id="roster_form_rosterTable">
 	<thead>
 		<tr>
-			<th>${facet_name}</th>
-			<th>${facet_userId}</th>
-			<th>${facet_role}</th>
+			<th><a href="#">${facet_name}</a></th>
+			<th><a href="#">${facet_userId}</a></th>
+			<th><a href="#">${facet_role}</a></th>
 			<th>${facet_groups}</th>
 		</tr>
 	</thead>
