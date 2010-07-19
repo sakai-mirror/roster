@@ -157,7 +157,7 @@ function switchState(state, arg) {
 				switchState('overview');
 			});
 			
-			$('#roster_form_rosterTable').tablesorter(sortParams);
+			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
 		
 	} else if ('pics' === state) {
