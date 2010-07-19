@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/* New Roster functions */
+var SORT_NAME = 'sortName';
+var SORT_USER_ID = 'displayId';
+var SORT_EMAIL = 'email';
+var SORT_ROLE = 'role';
 
 /* Stuff that we always expect to be setup */
 var rosterSiteId = null;
 var rosterCurrentUserPermissions = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
+
 
 // These are default behaviours, and are global so the tool remembers
 // the user's choices.
@@ -29,6 +32,12 @@ var hideNames = false;
 var viewSingleColumn = false;
 var groupToView = null;
 var groupToViewText = roster_sections_all;
+
+var defaultSortColumn = SORT_NAME; // TODO sakai.properties
+var sortColumn = defaultSortColumn;
+var sortParams = {sortList:[[0,0]]};
+
+/* New Roster functions */
 
 (function() {
 	
@@ -70,7 +79,18 @@ var groupToViewText = roster_sections_all;
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
 	}
-	
+		
+	// TODO read sakai.properties for defaultSortColumn
+	if (SORT_NAME === sortColumn) {
+		sortParams.sortList = [[0,0]];
+	} else if (SORT_USER_ID === sortColumn) {
+		sortParams.sortList = [[1,0]];
+	} else if (SORT_EMAIL === sortColumn) {
+		sortParams.sortList = [[2,0]];
+	} else if (SORT_ROLE === sortColumn) {
+		sortParams.sortList = [[3,0]];
+	}
+
 	// Now switch into the requested state
 	switchState(arg.state, arg);
 
@@ -96,17 +116,7 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 				{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
 				'roster_section_filter');
-		
-		$(document).ready(function() {
-			$('#roster_form_section_filter').val(groupToViewText);
-			$('#roster_form_section_filter').change(function(e) {
-				groupToView = this.options[this.selectedIndex].value;
-				groupToViewText = this.options[this.selectedIndex].text;
-			
-				switchState('overview');
-			});
-		});
-		
+				
 		// render search template
 		SakaiUtils.renderTrimpathTemplate('roster_search_template',{},
 				'roster_search');
@@ -136,6 +146,18 @@ function switchState(state, arg) {
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
 				{'membership':members, 'siteId':site.id,
 				'groupToView':groupToView},'roster_content');
+		
+		$(document).ready(function() {
+			$('#roster_form_section_filter').val(groupToViewText);
+			$('#roster_form_section_filter').change(function(e) {
+				groupToView = this.options[this.selectedIndex].value;
+				groupToViewText = this.options[this.selectedIndex].text;
+			
+				switchState('overview');
+			});
+			
+			$('#roster_form_rosterTable').tablesorter(sortParams);
+		});
 		
 	} else if ('pics' === state) {
 				
