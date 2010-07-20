@@ -34,9 +34,9 @@ var groupToView = null;
 var groupToViewText = roster_sections_all;
 
 // sakai.properties
-var defaultSortColumn = null;
-var firstNameLastName = null;
-var hideSingleGroupFilter = null;
+var defaultSortColumn = SORT_NAME;
+var firstNameLastName = false;
+var hideSingleGroupFilter = false;
 // end of sakai.properties
 
 var sortColumn = null;
@@ -79,27 +79,20 @@ var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 	}
 	
 	// process sakai.properties
-	if (!arg.defaultSortColumn) {
-		alert("defaultSortColumn not specified");
-		return;
+	if (arg.defaultSortColumn) {
+		defaultSortColumn = arg.defaultSortColumn;
 	}
 	
-	defaultSortColumn = arg.defaultSortColumn;
 	sortColumn = defaultSortColumn;
 	
-	if (!arg.firstNameLastName) {
-		alert("firstNameLastName not specified");
-		return;
+	if (arg.firstNameLastName) {
+		firstNameLastName = arg.firstNameLastName;
+	}
+			
+	if (arg.hideSingleGroupFilter) {
+		hideSingleGroupFilter = arg.hideSingleGroupFilter;
 	}
 	
-	firstNameLastName = arg.firstNameLastName;
-		
-	if (!arg.hideSingleGroupFilter) {
-		alert("hideSingleGroupFilter not specified");
-		return;
-	}
-	
-	hideSingleGroupFilter = arg.hideSingleGroupFilter;
 	// end of sakai.properties
 	
 	rosterCurrentUserPermissions = new RosterPermissions(
@@ -154,12 +147,7 @@ function switchState(state, arg) {
 				{'roleFragments':getRoleFragments(roles),
 				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_participants');
-		
-		// render overview template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
-				{'membership':getMembership()['membership_collection'],
-				'siteId':site.id},'roster_content');
-		
+				
 		var members;
 		// view all users
 		if (groupToViewText === roster_sections_all ||
@@ -170,10 +158,12 @@ function switchState(state, arg) {
 		} else {
 			members = getGroupMembers(site,groupToView);
 		}
-		
+	
+		// render overview template with site membership
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
 				{'membership':members, 'siteId':site.id,
-				'groupToView':groupToView},'roster_content');
+				'groupToView':groupToView, 'firstNameLastName':firstNameLastName},
+				'roster_content');
 		
 		$(document).ready(function() {
 			$('#roster_form_section_filter').val(groupToViewText);
