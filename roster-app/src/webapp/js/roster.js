@@ -24,7 +24,6 @@ var rosterCurrentUserPermissions = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
-
 // These are default behaviours, and are global so the tool remembers
 // the user's choices.
 var grouped = roster_group_ungrouped;
@@ -40,13 +39,20 @@ var hideSingleGroupFilter = false;
 // end of sakai.properties
 
 var sortColumn = null;
-var overviewSortParams = {sortList:[[0,0]]};
-var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
+var overviewSortParams = {headers:{0: {sorter:'urls'}}, sortList:[[0,0]]};
+var groupSortParams = {headers:{3: {sorter:false}}, sortList:[[0,0]]};
+
+// tablesorter parser for URLs
+$.tablesorter.addParser({
+	id: 'urls',is: function(s) { return false; },
+	format: function(s) { return s.replace(new RegExp(/<.*?>/),""); },
+	type: 'text'
+});
 
 /* New Roster functions */
 
 (function() {
-	
+	    
 	// We need the toolbar in a template so we can swap in the translations
 	SakaiUtils.renderTrimpathTemplate('roster_navbar_template', {},
 			'roster_navbar');
@@ -111,7 +117,7 @@ var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 	} else if (SORT_ROLE === sortColumn) {
 		overviewSortParams.sortList = [[3,0]];
 	}
-
+	
 	// Now switch into the requested state
 	switchState(arg.state, arg);
 
@@ -173,7 +179,7 @@ function switchState(state, arg) {
 			
 				switchState('overview');
 			});
-			
+						
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
 		
