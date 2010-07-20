@@ -33,8 +33,13 @@ var viewSingleColumn = false;
 var groupToView = null;
 var groupToViewText = roster_sections_all;
 
-var defaultSortColumn = SORT_NAME; // TODO sakai.properties
-var sortColumn = defaultSortColumn;
+// sakai.properties
+var defaultSortColumn = null;
+var firstNameLastName = null;
+var hideSingleGroupFilter = null;
+// end of sakai.properties
+
+var sortColumn = null;
 var overviewSortParams = {sortList:[[0,0]]};
 var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 
@@ -64,7 +69,6 @@ var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 		alert('The site id  MUST be supplied as a page parameter');
 		return;
 	}
-	
 	rosterSiteId = arg.siteId;
 
 	rosterCurrentUser = SakaiUtils.getCurrentUser();
@@ -73,15 +77,38 @@ var groupSortParams = {headers:{3: {sorter:false}},sortList:[[0,0]]};
 		alert("No current user. Have you logged in?");
 		return;
 	}
-
+	
+	// process sakai.properties
+	if (!arg.defaultSortColumn) {
+		alert("defaultSortColumn not specified");
+		return;
+	}
+	
+	defaultSortColumn = arg.defaultSortColumn;
+	sortColumn = defaultSortColumn;
+	
+	if (!arg.firstNameLastName) {
+		alert("firstNameLastName not specified");
+		return;
+	}
+	
+	firstNameLastName = arg.firstNameLastName;
+		
+	if (!arg.hideSingleGroupFilter) {
+		alert("hideSingleGroupFilter not specified");
+		return;
+	}
+	
+	hideSingleGroupFilter = arg.hideSingleGroupFilter;
+	// end of sakai.properties
+	
 	rosterCurrentUserPermissions = new RosterPermissions(
 			SakaiUtils.getCurrentUserPermissions(rosterSiteId,'roster'));
 
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
 	}
-		
-	// TODO read sakai.properties for defaultSortColumn
+	
 	if (SORT_NAME === sortColumn) {
 		overviewSortParams.sortList = [[0,0]];
 	} else if (SORT_USER_ID === sortColumn) {

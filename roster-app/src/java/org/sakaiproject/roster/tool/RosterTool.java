@@ -52,14 +52,13 @@ public class RosterTool extends HttpServlet
 			// We are not logged in
 			throw new ServletException("getCurrentUser returned null.");
 		}
-
-		String siteId = sakaiProxy.getCurrentSiteId();
-
-		// We need to pass the language code to the JQuery code in the pages.
-		Locale locale = (new ResourceLoader(userId)).getLocale();
-		String languageCode = locale.getLanguage();
-
+		
+		// pass siteId, language code and sakai.properties to the JQuery code
 		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + "pics"
-				+ "&siteId=" + siteId + "&language=" + languageCode);
+				+ "&siteId=" + sakaiProxy.getCurrentSiteId() + "&language="
+				+ (new ResourceLoader(userId)).getLocale().getLanguage()
+				+ "&defaultSortColumn=" + sakaiProxy.getDefaultSortColumn()
+				+ "&firstNameLastName=" + sakaiProxy.getDisplayFirstNameLastName()
+				+ "&hideSingleGroupFilter=" + sakaiProxy.getHideSingleGroupFilter());
 	}
 }
