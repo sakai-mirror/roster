@@ -40,7 +40,7 @@ var hideSingleGroupFilter = false;
 
 var sortColumn = null;
 var overviewSortParams = {headers:{0: {sorter:'urls'}}, sortList:[[0,0]]};
-var groupSortParams = {headers:{3: {sorter:false}}, sortList:[[0,0]]};
+var groupSortParams = {headers:{0: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
 
 // tablesorter parser for URLs
 $.tablesorter.addParser({
@@ -264,7 +264,8 @@ function switchState(state, arg) {
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'membership':getMembership()['membership_collection'],
 					'groupsByUserId':groupsByUserId, 'siteGroups':site.siteGroups,
-					'rolesText':getRolesByGroupRoleFragments(site)}, 'roster_content');
+					'rolesText':getRolesByGroupRoleFragments(site),'siteId':rosterSiteId},
+					'roster_content');
 			
 		} else {
 			
@@ -275,7 +276,8 @@ function switchState(state, arg) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'membership':getMembership()['membership_collection'],
-					'groupsByUserId':groupsByUserId},'roster_content');
+					'groupsByUserId':groupsByUserId,'siteId':rosterSiteId},
+					'roster_content');
 		}
 		
 		$(document).ready(function() {
