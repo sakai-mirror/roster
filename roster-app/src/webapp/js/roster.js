@@ -36,6 +36,7 @@ var groupToViewText = roster_sections_all;
 var defaultSortColumn = SORT_NAME;
 var firstNameLastName = false;
 var hideSingleGroupFilter = false;
+var viewEmailColumn = true;
 // end of sakai.properties
 
 var sortColumn = null;
@@ -99,6 +100,9 @@ $.tablesorter.addParser({
 		hideSingleGroupFilter = arg.hideSingleGroupFilter;
 	}
 	
+	if (arg.viewEmailColumn) {
+		viewEmailColumn = arg.viewEmailColumn;
+	}
 	// end of sakai.properties
 	
 	rosterCurrentUserPermissions = new RosterPermissions(
@@ -113,9 +117,18 @@ $.tablesorter.addParser({
 	} else if (SORT_USER_ID === sortColumn) {
 		overviewSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
-		overviewSortParams.sortList = [[2,0]];
+		
+		if (viewEmailColumn) {
+			overviewSortParams.sortList = [[2,0]];
+		}
+		
 	} else if (SORT_ROLE === sortColumn) {
-		overviewSortParams.sortList = [[3,0]];
+	
+		if (viewEmailColumn) {
+			overviewSortParams.sortList = [[2,0]];
+		} else {
+			overviewSortParams.sortList = [[3,0]];
+		}
 	}
 	
 	// Now switch into the requested state
@@ -170,7 +183,8 @@ function switchState(state, arg) {
 		// render overview template with site membership
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
 				{'membership':members, 'siteId':site.id,
-				'groupToView':groupToView, 'firstNameLastName':firstNameLastName},
+				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
+				'viewEmailColumn':viewEmailColumn},
 				'roster_content');
 		
 		$(document).ready(function() {

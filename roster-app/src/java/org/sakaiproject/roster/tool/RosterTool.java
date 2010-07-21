@@ -1,7 +1,6 @@
 package org.sakaiproject.roster.tool;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -59,6 +58,7 @@ public class RosterTool extends HttpServlet
 				+ (new ResourceLoader(userId)).getLocale().getLanguage()
 				+ "&defaultSortColumn=" + sakaiProxy.getDefaultSortColumn()
 				+ "&firstNameLastName=" + sakaiProxy.getDisplayFirstNameLastName()
-				+ "&hideSingleGroupFilter=" + sakaiProxy.getHideSingleGroupFilter());
+				+ "&hideSingleGroupFilter=" + sakaiProxy.getHideSingleGroupFilter()
+				+ "&viewEmailColumn=" + sakaiProxy.getViewEmailColumn());
 	}
 }

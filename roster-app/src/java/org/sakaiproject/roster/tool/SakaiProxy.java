@@ -34,6 +34,7 @@ public class SakaiProxy {
 	public final static String DEFAULT_SORT_COLUMN = "sortName";
 	public final static Boolean DEFAULT_FIRST_NAME_LAST_NAME = false;
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
+	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
 	
 	private ToolManager toolManager = null;
 	private UserDirectoryService userDirectoryService = null;
@@ -87,4 +88,9 @@ public class SakaiProxy {
 				DEFAULT_HIDE_SINGLE_GROUP_FILTER);
 	}
 	
+	public Boolean getViewEmailColumn() {
+
+		return serverConfigurationService.getBoolean("roster_view_email",
+				DEFAULT_VIEW_EMAIL_COLUMN);
+	}
 }
