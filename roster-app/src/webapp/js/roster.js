@@ -146,24 +146,16 @@ function switchState(state, arg) {
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
 					'roster_section_filter');
 			
-			SakaiUtils.renderTrimpathTemplate('roster_search_template',{},
-					'roster_search');
-			
-			SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-					{'roleFragments':getRoleFragments(roles),
-					'participants':getCurrentlyDisplayingParticipants(roles)},
-					'roster_participants');
 		} else {
 			
 			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_section_filter');
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_participants');
-			
-			SakaiUtils.renderTrimpathTemplate('roster_search_with_participants_template',
-					{'roleFragments':getRoleFragments(roles),
-					'participants':getCurrentlyDisplayingParticipants(roles)},
-					'roster_search');
 		}
-				
+		
+		SakaiUtils.renderTrimpathTemplate('roster_search_with_participants_template',
+				{'roleFragments':getRoleFragments(roles),
+				'participants':getCurrentlyDisplayingParticipants(roles)},
+				'roster_search');
+		
 		var members;
 		// view all users
 		if (groupToViewText === roster_sections_all ||
@@ -183,7 +175,7 @@ function switchState(state, arg) {
 		
 		$(document).ready(function() {
 			
-			if (site.siteGroups.length != 0) {
+			if (site.siteGroups.length > 0) {
 				
 				$('#roster_form_section_filter').val(groupToViewText);
 				$('#roster_form_section_filter').change(function(e) {
@@ -206,24 +198,15 @@ function switchState(state, arg) {
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
 					'roster_section_filter');
-			
-			SakaiUtils.renderTrimpathTemplate('roster_search_template', {},
-					'roster_search');
-			
-			SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-					{'participants':getCurrentlyDisplayingParticipants(roles),
-					'roleFragments':getRoleFragments(roles)},'roster_participants');
 		} else {
 			
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_section_filter');
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_participants');
-			
-			SakaiUtils.renderTrimpathTemplate('roster_search_with_participants_template',
-					{'roleFragments':getRoleFragments(roles),
-					'participants':getCurrentlyDisplayingParticipants(roles)},
-					'roster_search');
-			
+			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_section_filter');			
 		}
+		
+		SakaiUtils.renderTrimpathTemplate('roster_search_with_participants_template',
+				{'roleFragments':getRoleFragments(roles),
+				'participants':getCurrentlyDisplayingParticipants(roles)},
+				'roster_search');
 		
 		var members;
 		// view all users
@@ -242,13 +225,16 @@ function switchState(state, arg) {
 				'roster_content');
 		
 		$(document).ready(function() {
-			$('#roster_form_section_filter').val(groupToViewText);
-			$('#roster_form_section_filter').change(function(e) {
-				groupToView = this.options[this.selectedIndex].value;
-				groupToViewText = this.options[this.selectedIndex].text;
 			
-				switchState('pics');
-			});
+			if (site.siteGroups.length > 0) {
+				$('#roster_form_section_filter').val(groupToViewText);
+				$('#roster_form_section_filter').change(function(e) {
+					groupToView = this.options[this.selectedIndex].value;
+					groupToViewText = this.options[this.selectedIndex].text;
+			
+					switchState('pics');
+				});
+			}
 			
 			// configure 'hide names' button
 			$('#roster_form_hide_names').bind('click', function(e) {
@@ -277,14 +263,15 @@ function switchState(state, arg) {
 	} else if ('group_membership' === state) {
 				
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
-		SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
+						
 		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
 				
 		var groupsByUserId = getSiteGroupsByUserId(site);
 		
 		if (roster_group_bygroup === grouped) {
 			
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_participants');
+			SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',
+					{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'membership':getMembership()['membership_collection'],
@@ -294,10 +281,9 @@ function switchState(state, arg) {
 			
 		} else {
 			
-			SakaiUtils.renderTrimpathTemplate('roster_participants_template',
-					{'roleFragments':getRoleFragments(roles),
-					'participants':getCurrentlyDisplayingParticipants(roles)},
-					'roster_participants');
+			SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_with_participants_template',
+					{'arg':arg, 'siteId':site.id,'roleFragments':getRoleFragments(roles),
+				'participants':getCurrentlyDisplayingParticipants(roles)}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'membership':getMembership()['membership_collection'],

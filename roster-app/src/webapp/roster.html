@@ -63,7 +63,6 @@ else
 	<form id="roster_form">
 		<div id="roster_header"></div>
 		<div id="roster_section_filter"></div>
-		<div id="roster_participants"></div>
 		<div id="roster_search"></div>
 		<div id="roster_content"></div>
 	</form>
@@ -97,7 +96,6 @@ else
 			</select>
 		</td>
 		<td><span class="filterLabel">${section_filter_post}</span></td>
-		<td><div id="wibble"></div></td>
 	</tr>
 </table>
  -->
@@ -112,6 +110,31 @@ else
 				<option selected="selected" value="">${roster_group_ungrouped}</option>
 				<option value=${roster_group_bygroup}>${roster_group_bygroup}</option>
 			</select>
+		</td>
+	</tr>
+</table>
+ -->
+</div>
+
+<div id="roster_group_section_filter_with_participants_template" style="display:none"><!--
+<table>
+	<tr>
+		<td><span class="filterLabel">${section_filter_pre}</span></td>
+		<td>
+			<select id="roster_form_group_choice" size="1" name="roster_form:section_filter">
+				<option selected="selected" value="">${roster_group_ungrouped}</option>
+				<option value=${roster_group_bygroup}>${roster_group_bygroup}</option>
+			</select>
+		</td>
+		<td>
+			<span class="instruction">
+				<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
+				<div style="padding-left: 10px;">
+				{for frag in roleFragments}
+					${frag}
+				{/for}
+				</div>
+			</span>
 		</td>
 	</tr>
 </table>
@@ -168,32 +191,6 @@ else
 </table>
 <span class="instruction" style="display: block;">${title_msg_groups}</span>
 -->
-</div>
-
-<div id="roster_search_template" style="display:none"><!--
-<table id="roster_form:search_group" class="searchFilter">
-	<tbody>
-		<tr>
-			<td>
-				<div id="roster_form:search_filter" class="act">
-					<input id="roster_form:search" type="text"
-						onfocus="clearIfDefaultString(this, ${roster_search_text})"
-						onkeypress="return handleEnterKey(this, event)" value="${roster_search_text}"
-						name="roster_form:search" />
-					<input id="roster_form:search_button" class="active" type="submit"
-						onclick="if(typeofwindow.clearFormHiddenParams_roster_form!='undefined')
-						{clearFormHiddenParams_roster_form('roster_form');}"
-						value="${roster_search_button}" name="roster_form:search_button" />
-					<input id="roster_form:clear_button" type="submit"
-						onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
-						{clearFormHiddenParams_roster_form('roster_form');}"
-						value="${roster_clear_button}" name="roster_form:clear_button" />
-				</div>
-			</td>
-		</tr>
-	</tbody>
-</table>
- -->
 </div>
 
 <div id="roster_search_with_participants_template" style="display:none"><!--
