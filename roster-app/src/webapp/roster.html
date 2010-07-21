@@ -196,6 +196,42 @@ else
  -->
 </div>
 
+<div id="roster_search_with_participants_template" style="display:none"><!--
+<table id="roster_form:search_group" class="searchFilter">
+	<tbody>
+		<tr>
+			<td>
+				<div id="roster_form:search_filter" class="act">
+					<input id="roster_form:search" type="text"
+						onfocus="clearIfDefaultString(this, ${roster_search_text})"
+						onkeypress="return handleEnterKey(this, event)" value="${roster_search_text}"
+						name="roster_form:search" />
+					<input id="roster_form:search_button" class="active" type="submit"
+						onclick="if(typeofwindow.clearFormHiddenParams_roster_form!='undefined')
+						{clearFormHiddenParams_roster_form('roster_form');}"
+						value="${roster_search_button}" name="roster_form:search_button" />
+					<input id="roster_form:clear_button" type="submit"
+						onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
+						{clearFormHiddenParams_roster_form('roster_form');}"
+						value="${roster_clear_button}" name="roster_form:clear_button" />
+				</div>
+			</td>
+			<td>
+				<span class="instruction">
+					<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
+					<div style="padding-left: 10px;">
+						{for frag in roleFragments}
+							${frag}
+						{/for}
+					</div>
+				</span>
+			</td>
+		</tr>
+	</tbody>
+</table>
+ -->
+</div>
+
 <div id="roster_participants_template" style="display:none"><!--
 <span class="instruction">
 	<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
