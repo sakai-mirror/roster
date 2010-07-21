@@ -199,17 +199,13 @@ else
 		<tr>
 			<td>
 				<div id="roster_form:search_filter" class="act">
-					<input id="roster_form:search" type="text"
-						onfocus="clearIfDefaultString(this, ${roster_search_text})"
-						onkeypress="return handleEnterKey(this, event)" value="${roster_search_text}"
-						name="roster_form:search" />
-					<input id="roster_form:search_button" class="active" type="submit"
-						onclick="if(typeofwindow.clearFormHiddenParams_roster_form!='undefined')
-						{clearFormHiddenParams_roster_form('roster_form');}"
+					<input id="roster_form_search" type="text" value="${roster_search_text}"
+						onfocus="clearIfDefaultString(this, roster_search_text)"
+						onkeypress="return handleEnterKey(this, event)"
+						name="roster_form_search" />
+					<input id="roster_form_search_button" class="active" type="button"
 						value="${roster_search_button}" name="roster_form:search_button" />
-					<input id="roster_form:clear_button" type="submit"
-						onclick="if(typeof window.clearFormHiddenParams_roster_form!='undefined')
-						{clearFormHiddenParams_roster_form('roster_form');}"
+					<input id="roster_form_clear_button" type="button"
 						value="${roster_clear_button}" name="roster_form:clear_button" />
 				</div>
 			</td>

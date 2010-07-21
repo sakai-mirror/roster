@@ -199,7 +199,15 @@ function switchState(state, arg) {
 					switchState('overview');
 				});
 			}
-						
+			
+			$('#roster_form_search_button').bind('click', function(e) {
+				alert('search button clicked');
+			});
+			
+			$('#roster_form_clear_button').bind('click', function(e) {
+				switchState('pics');
+			});
+			
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
 		
@@ -270,6 +278,15 @@ function switchState(state, arg) {
 					viewSingleColumn = true;
 				}
 				
+				switchState('pics');
+			});
+			
+			$('#roster_form_search_button').bind('click', function(e) {
+				alert('search button clicked');
+			});
+			
+			$('#roster_form_clear_button').bind('click', function(e) {
+				// lazy
 				switchState('pics');
 			});
 		});
@@ -551,8 +568,8 @@ function handleEnterKey(field, event) {
 	var keyCode = event.keyCode ? event.keyCode : event.which ? event.which
 			: event.charCode;
 	if (keyCode == 13) {
-		// document.getElementById('roster_form:search_button').click();
-		return false;
+		document.getElementById('roster_form_search_button').click();
+		//return false;
 	}
 	return true;
 }
