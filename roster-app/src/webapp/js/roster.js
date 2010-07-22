@@ -136,12 +136,11 @@ $.tablesorter.addParser({
 
 })();
 
-function switchState(state, arg) {
+function switchState(state, arg, searchQuery) {
 
 	// $('#cluetip').hide();
 		
 	var site = getSite();
-	var roles = getRoles(site);
 	
 	// hide group membership link if there are no groups
 	if (site.siteGroups.length === 0) {
@@ -149,9 +148,14 @@ function switchState(state, arg) {
 	}
 		
 	if ('overview' === state) {
-			
-		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
-				arg, 'roster_header');
+		
+		var members = getMembers(site, searchQuery);
+		var roles = getRolesUsingMembers(site, members);
+		
+		var roles = getRolesUsingMembers(site, members);
+		
+		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template', {},
+				'roster_header');
 		
 		if (site.siteGroups.length > 0) {
 			
@@ -168,24 +172,18 @@ function switchState(state, arg) {
 				{'roleFragments':getRoleFragments(roles),
 				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_search');
-		
-		var members;
-		// view all users
-		if (groupToViewText === roster_sections_all ||
-				groupToViewText === roster_section_sep_line) {
-			
-			members = getMembership()['membership_collection'];			
-		// view a specific group
-		} else {
-			members = getGroupMembers(site,groupToView);
-		}
 	
-		// render overview template with site membership
-		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
-				{'membership':members, 'siteId':site.id,
-				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
-				'viewEmailColumn':viewEmailColumn},
-				'roster_content');
+		if (members.length > 0) {
+			
+			SakaiUtils.renderTrimpathTemplate('roster_overview_template',
+					{'membership':members, 'siteId':site.id,
+					'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
+					'viewEmailColumn':viewEmailColumn},
+					'roster_content');
+		} else {
+			
+			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_content');
+		}
 		
 		$(document).ready(function() {
 			
@@ -201,19 +199,29 @@ function switchState(state, arg) {
 			}
 			
 			$('#roster_form_search_button').bind('click', function(e) {
-				alert('search button clicked');
+				
+				if (roster_form_search_field.value != roster_search_text &&
+						roster_form_search_field.value != "") {
+					
+					searchQuery = roster_form_search_field.value.toLowerCase();
+					switchState('overview', null, searchQuery);
+				}
 			});
 			
 			$('#roster_form_clear_button').bind('click', function(e) {
-				switchState('pics');
+				switchState('overview');
 			});
 			
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
 		
 	} else if ('pics' === state) {
-				
-		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', arg, 'roster_header');
+		
+		var members = getMembers(site, searchQuery);
+		var roles = getRolesUsingMembers(site, members);
+		
+		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', {},
+				'roster_header');
 		
 		if (site.siteGroups.length > 0) {
 			
@@ -230,21 +238,16 @@ function switchState(state, arg) {
 				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_search');
 		
-		var members;
-		// view all users
-		if (groupToViewText === roster_sections_all ||
-				groupToViewText === roster_section_sep_line) {
+		if (members.length > 0) {
 			
-			members = getMembership()['membership_collection'];			
-		// view a specific group
+			SakaiUtils.renderTrimpathTemplate('roster_pics_template',
+					{'membership':members, 'siteId':site.id,
+					'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
+					'hideNames':hideNames},'roster_content');
 		} else {
-			members = getGroupMembers(site,groupToView);
+			
+			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_content');
 		}
-		
-		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
-				{'membership':members, 'siteId':site.id,
-				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn, 'hideNames':hideNames},
-				'roster_content');
 		
 		$(document).ready(function() {
 			
@@ -254,7 +257,7 @@ function switchState(state, arg) {
 					groupToView = this.options[this.selectedIndex].value;
 					groupToViewText = this.options[this.selectedIndex].text;
 			
-					switchState('pics');
+					switchState('pics', null, searchQuery);
 				});
 			}
 			
@@ -267,7 +270,7 @@ function switchState(state, arg) {
 					hideNames = true;
 				}
 				
-				switchState('pics');
+				switchState('pics', null, searchQuery);
 			});
 			
 			$('#roster_form_pics_view').bind('click', function(e) {
@@ -278,11 +281,17 @@ function switchState(state, arg) {
 					viewSingleColumn = true;
 				}
 				
-				switchState('pics');
+				switchState('pics', null, searchQuery);
 			});
 			
 			$('#roster_form_search_button').bind('click', function(e) {
-				alert('search button clicked');
+				
+				if (roster_form_search_field.value != roster_search_text &&
+						roster_form_search_field.value != "") {
+					
+					searchQuery = roster_form_search_field.value.toLowerCase();
+					switchState('pics', null, searchQuery);
+				}
 			});
 			
 			$('#roster_form_clear_button').bind('click', function(e) {
@@ -292,7 +301,9 @@ function switchState(state, arg) {
 		});
 		
 	} else if ('group_membership' === state) {
-				
+		
+		var roles = getRoles(site);
+		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
 						
 		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
@@ -376,27 +387,6 @@ function getMembership() {
 	return membership;
 }
 
-function getRoles(site) {
-		
-	var roles = new Array();
-	
-	for (var i = 0, j = site.userRoles.length; i < j; i++) {
-		
-		jQuery.ajax({
-	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=" + site.userRoles[i],
-	      	dataType : "json",
-	       	async : false,
-			cache: false,
-		   	success : function(data) {
-				roles[i] = { roleType: site.userRoles[i],
-						roleCount: data['membership_collection'].length};
-			}
-		});
-	}
-		
-	return roles;
-}
-
 function getCurrentlyDisplayingParticipants(roles) {
 	
 	var participants = 0;
@@ -425,6 +415,62 @@ function getRoleFragments(roles) {
 		roleFragments[i] = frag;
 	}	
 	return roleFragments;
+}
+
+// used by group membership view
+function getRoles(site) {
+	
+	var roles = new Array();
+	
+	for (var i = 0, j = site.userRoles.length; i < j; i++) {
+		
+		jQuery.ajax({
+	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=" + site.userRoles[i],
+	      	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+				roles[i] = { roleType: site.userRoles[i],
+						roleCount: data['membership_collection'].length};
+			}
+		});
+	}
+		
+	return roles;
+}
+
+// used by overview and pictures view
+function getRolesUsingMembers(site, members) {
+	
+	var roles = new Array();
+	
+	for (var i = 0, j = site.userRoles.length; i < j; i++) {
+		roles[i] = { roleType: site.userRoles[i], roleCount: 0 };
+	}
+		
+	for (var i = 0, j = members.length; i < j; i++) {
+		
+		for (var k = 0, l = roles.length; k < l; k++) {
+			
+			if (roles[k].roleType === members[i].memberRole) {
+				roles[k].roleCount++;
+				continue;
+			}
+		}
+	}
+	
+	// filter out roles with 0 members of that role type
+	var rolesToReturn = new Array();
+	var rolesCount = 0;
+	for (var i = 0, j = roles.length; i < j; i++) {
+		
+		if (roles[i].roleCount != 0) {
+			rolesToReturn[rolesCount] = roles[i];
+			rolesCount++;
+		}
+	}
+	
+	return rolesToReturn;
 }
 
 function getRolesByGroup(site) {
@@ -509,6 +555,42 @@ function getRolesByGroupRoleFragments(site) {
 	}
 	
 	return rolesByGroupRoleFragments;
+}
+
+function getMembers(site, searchQuery) {
+	
+	var members;
+	
+	// view all users
+	if (groupToViewText === roster_sections_all ||
+			groupToViewText === roster_section_sep_line) {
+		
+		members = getMembership()['membership_collection'];			
+	// view a specific group (note: search is done within group if selected)
+	} else {
+		members = getGroupMembers(site,groupToView);
+	}
+	
+	var membersToReturn = new Array();
+	var memberCount = 0;
+	
+	// search is performed against all members or selected group
+	if (searchQuery) {
+		
+		for (var i = 0, j = members.length; i < j; i++) {
+							
+			if (members[i].userDisplayName.toLowerCase().indexOf(searchQuery) >= 0 ||
+					members[i].userDisplayId.toLowerCase().indexOf(searchQuery) >= 0) {
+									
+				membersToReturn[memberCount] = members[i];
+				memberCount++;
+			}
+		}
+	} else {
+		membersToReturn = members;
+	}
+	
+	return membersToReturn;
 }
 
 function getGroupMembers(site,groupId) {
