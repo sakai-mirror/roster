@@ -25,7 +25,8 @@ import org.sakaiproject.user.api.UserDirectoryService;
 /**
  * <code>SakaiProxy</code> acts as a proxy between Roster and Sakai components.
  * 
- * @author d.b.robinson@lancaster.ac.uk
+ * @author Daniel Robinson (d.b.robinson@lancaster.ac.uk)
+ * @author Adrian Fish (a.fish@lancaster.ac.uk)
  */
 public class SakaiProxy {
 

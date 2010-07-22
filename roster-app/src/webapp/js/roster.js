@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Daniel Robinson (d.b.robinson@lancaster.ac.uk)
+ * Adrian Fish (a.fish@lancaster.ac.uk)
+ */
+
 var SORT_NAME = 'sortName';
 var SORT_USER_ID = 'displayId';
 var SORT_EMAIL = 'email';
