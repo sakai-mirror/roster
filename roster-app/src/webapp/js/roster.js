@@ -193,6 +193,10 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
+			$('#export_button').bind('click', function(e) {
+				alert('export');
+			});
+			
 			if (site.siteGroups.length > 0) {
 				
 				$('#roster_form_section_filter').val(groupToViewText);
@@ -307,7 +311,7 @@ function switchState(state, arg, searchQuery) {
 		});
 		
 	} else if ('group_membership' === state) {
-		
+			
 		var roles = getRoles(site);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
@@ -341,6 +345,11 @@ function switchState(state, arg, searchQuery) {
 		}
 		
 		$(document).ready(function() {
+			
+			$('#export_button').bind('click', function(e) {
+				alert('export');
+			});
+			
 			$('#roster_form_group_choice').val(grouped);
 			$('#roster_form_group_choice').change(function(e) {
 				
