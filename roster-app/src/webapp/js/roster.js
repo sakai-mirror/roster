@@ -160,8 +160,8 @@ function switchState(state, arg, searchQuery) {
 		
 		var roles = getRolesUsingMembers(site, members);
 		
-		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template', {},
-				'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
+				{'siteTitle':site.title}, 'roster_header');
 		
 		if (site.siteGroups.length > 0) {
 			
@@ -226,8 +226,8 @@ function switchState(state, arg, searchQuery) {
 		var members = getMembers(site, searchQuery);
 		var roles = getRolesUsingMembers(site, members);
 		
-		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template', {},
-				'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
+				{'siteTitle':site.title}, 'roster_header');
 		
 		if (site.siteGroups.length > 0) {
 			
@@ -310,7 +310,8 @@ function switchState(state, arg, searchQuery) {
 		
 		var roles = getRoles(site);
 		
-		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template', arg, 'roster_header');
+		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
+				{'siteTitle':site.title}, 'roster_header');
 						
 		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
 				
