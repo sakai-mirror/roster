@@ -35,7 +35,6 @@ function RosterPermissions(data) {
 		} else if ('roster.viewhidden' === data[i]) {
 			this.viewHidden = true;
 		} else if ('roster.viewofficialphoto' === data[i]) {
-			// TODO this may be removed soon
 			this.viewOfficialPhoto = true;
 		} else if ('roster.viewprofile' === data[i]) {
 			this.viewProfile = true;

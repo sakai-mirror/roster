@@ -19,6 +19,10 @@
  * Adrian Fish (a.fish@lancaster.ac.uk)
  */
 
+var STATE_OVERVIEW = 'overview';
+var STATE_PICTURES = 'pics';
+var STATE_GROUP_MEMBERSHIP = 'group_membership';
+
 var SORT_NAME = 'sortName';
 var SORT_USER_ID = 'displayId';
 var SORT_EMAIL = 'email';
@@ -144,6 +148,8 @@ $.tablesorter.addParser({
 
 function switchState(state, arg, searchQuery) {
 
+	readPermissions(state);
+	
 	// $('#cluetip').hide();
 		
 	var site = getSite();
@@ -153,8 +159,8 @@ function switchState(state, arg, searchQuery) {
 		$('#navbar_group_membership_link').hide();
 	}
 		
-	if ('overview' === state) {
-		
+	if (STATE_OVERVIEW === state) {
+			
 		var members = getMembers(site, searchQuery);
 		var roles = getRolesUsingMembers(site, members);
 		
@@ -225,7 +231,7 @@ function switchState(state, arg, searchQuery) {
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
 		
-	} else if ('pics' === state) {
+	} else if (STATE_PICTURES === state) {
 		
 		var members = getMembers(site, searchQuery);
 		var roles = getRolesUsingMembers(site, members);
@@ -310,7 +316,7 @@ function switchState(state, arg, searchQuery) {
 			});
 		});
 		
-	} else if ('group_membership' === state) {
+	} else if (STATE_GROUP_MEMBERSHIP === state) {
 			
 		var roles = getRoles(site);
 		
@@ -575,6 +581,8 @@ function getRolesByGroupRoleFragments(site) {
 
 function getMembers(site, searchQuery) {
 	
+	// TODO need to query rosterCurrentUserPermissions.viewAllMembers
+	
 	var members;
 	
 	// view all users
@@ -610,6 +618,8 @@ function getMembers(site, searchQuery) {
 }
 
 function getGroupMembers(site,groupId) {
+	
+	// TODO need to query rosterCurrentUserPermissions.viewgroup?
 	
 	var usersToRender;
 	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
@@ -653,6 +663,18 @@ function getSiteGroupsByUserId(site) {
 	}
 	
 	return groupsByUserId;
+}
+
+function readPermissions(state) {
+	
+	// export permissions
+	if (STATE_OVERVIEW === state || STATE_GROUP_MEMBERSHIP === state) {
+		if (rosterCurrentUserPermissions.rosterExport) {
+			$('#export_button').show();
+		} else {
+			$('#export_button').hide();
+		}
+	}
 }
 
 /* Original Roster functions */
