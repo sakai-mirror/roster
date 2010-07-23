@@ -261,7 +261,8 @@ function switchState(state, arg, searchQuery) {
 					{'membership':members, 'siteId':site.id,
 					'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 					'hideNames':hideNames,
-					'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					'viewProfile':rosterCurrentUserPermissions.viewProfile,
+					'viewPhoto':rosterCurrentUserPermissions.viewPhoto},
 					'roster_content');
 		} else {
 			

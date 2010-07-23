@@ -35,7 +35,7 @@ function RosterPermissions(data) {
 		} else if ('roster.viewhidden' === data[i]) {
 			this.viewHidden = true;
 		} else if ('roster.viewofficialphoto' === data[i]) {
-			this.viewOfficialPhoto = true;
+			this.viewPhoto = true;
 		} else if ('roster.viewprofile' === data[i]) {
 			this.viewProfile = true;
 		}
