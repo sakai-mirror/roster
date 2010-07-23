@@ -261,9 +261,13 @@ else
 					{/if}
 				</td>
 				<td>
-					<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-					${member.userDisplayId}
-					</a>
+					{if true === viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+							${member.userDisplayId}
+						</a>
+					{else}
+						${member.userDisplayId}
+					{/if}
 				</td>
 				{if true === viewEmailColumn}
 					<td><a href="mailto:${member.userEmail}">${member.userEmail}</a></td>
@@ -319,8 +323,13 @@ else
 					</div>
 				{/if}
 				<div>
-					<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId}"
-						title="${show_profile}">${member.userDisplayId}</a>
+					{if true === viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+							${member.userDisplayId}
+						</a>
+					{else}
+						${member.userDisplayId}
+					{/if}
 				</div>
 				{/for}
 			</tr>
@@ -344,8 +353,13 @@ else
 					</div>
 				{/if}
 				<div>
-					<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId}"
-						title="${show_profile}">${member.userDisplayId}</a>
+					{if true === viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+							${member.userDisplayId}
+						</a>
+					{else}
+						${member.userDisplayId}
+					{/if}
 				</div>
 			</td>
 		{if count % 5 === 0}
@@ -405,9 +419,13 @@ else
 										{/if}
 									</td>
 									<td>
-										<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+										{if true === viewProfile}
+											<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+												${member.userDisplayId}
+											</a>
+										{else}
 											${member.userDisplayId}
-										</a>
+										{/if}
 									</td>
 									<td>${member.memberRole}</td>
 									<td>${groupsByUserId[member.userId]}</td>
@@ -446,9 +464,13 @@ else
 					{/if}
 				</td>
 				<td>
-					<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+					{if true === viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+							${member.userDisplayId}
+						</a>
+					{else}
 						${member.userDisplayId}
-					</a>
+					{/if}
 				</td>
 				<td>${member.memberRole}</td>
 				<td>${groupsByUserId[member.userId]}</td>

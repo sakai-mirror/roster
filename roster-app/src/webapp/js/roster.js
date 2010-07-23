@@ -149,7 +149,7 @@ $.tablesorter.addParser({
 function switchState(state, arg, searchQuery) {
 
 	readPermissions(state);
-	
+		
 	// $('#cluetip').hide();
 		
 	var site = getSite();
@@ -190,7 +190,8 @@ function switchState(state, arg, searchQuery) {
 			SakaiUtils.renderTrimpathTemplate('roster_overview_template',
 					{'membership':members, 'siteId':site.id,
 					'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
-					'viewEmailColumn':viewEmailColumn},
+					'viewEmailColumn':viewEmailColumn,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		} else {
 			
@@ -259,7 +260,9 @@ function switchState(state, arg, searchQuery) {
 			SakaiUtils.renderTrimpathTemplate('roster_pics_template',
 					{'membership':members, 'siteId':site.id,
 					'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
-					'hideNames':hideNames},'roster_content');
+					'hideNames':hideNames,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					'roster_content');
 		} else {
 			
 			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_content');
@@ -335,7 +338,8 @@ function switchState(state, arg, searchQuery) {
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'membership':getMembership()['membership_collection'],
 					'groupsByUserId':groupsByUserId, 'siteGroups':site.siteGroups,
-					'rolesText':getRolesByGroupRoleFragments(site),'siteId':rosterSiteId},
+					'rolesText':getRolesByGroupRoleFragments(site),'siteId':rosterSiteId,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 			
 		} else {
@@ -346,7 +350,8 @@ function switchState(state, arg, searchQuery) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'membership':getMembership()['membership_collection'],
-					'groupsByUserId':groupsByUserId,'siteId':rosterSiteId},
+					'groupsByUserId':groupsByUserId,'siteId':rosterSiteId,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		}
 		
