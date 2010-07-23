@@ -164,8 +164,6 @@ function switchState(state, arg, searchQuery) {
 		var members = getMembers(site, searchQuery);
 		var roles = getRolesUsingMembers(site, members);
 		
-		var roles = getRolesUsingMembers(site, members);
-		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
 				{'siteTitle':site.title}, 'roster_header');
 		
