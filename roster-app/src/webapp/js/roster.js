@@ -18,6 +18,7 @@
  * Daniel Robinson (d.b.robinson@lancaster.ac.uk)
  * Adrian Fish (a.fish@lancaster.ac.uk)
  */
+var ADMIN = 'admin';
 
 var STATE_OVERVIEW = 'overview';
 var STATE_PICTURES = 'pics';
@@ -95,6 +96,8 @@ $.tablesorter.addParser({
 		return;
 	}
 	
+	getRosterCurrentUserPermissions();
+	
 	// process sakai.properties
 	if (arg.defaultSortColumn) {
 		defaultSortColumn = arg.defaultSortColumn;
@@ -114,9 +117,6 @@ $.tablesorter.addParser({
 		viewEmailColumn = arg.viewEmailColumn;
 	}
 	// end of sakai.properties
-	
-	rosterCurrentUserPermissions = new RosterPermissions(
-			SakaiUtils.getCurrentUserPermissions(rosterSiteId,'roster'));
 
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
@@ -667,6 +667,26 @@ function getSiteGroupsByUserId(site) {
 	}
 	
 	return groupsByUserId;
+}
+
+function getRosterCurrentUserPermissions() {
+		
+	if (rosterCurrentUser.id === ADMIN) {
+		
+		rosterCurrentUserPermissions = new RosterPermissions();
+		rosterCurrentUserPermissions.rosterExport = true;
+		rosterCurrentUserPermissions.viewAllMembers = true;
+		rosterCurrentUserPermissions.viewEnrollmentStatus = true;
+		rosterCurrentUserPermissions.viewGroup = true;
+		rosterCurrentUserPermissions.viewHidden = true;
+		rosterCurrentUserPermissions.viewPhoto = true;
+		rosterCurrentUserPermissions.viewProfile = true;
+		
+	} else {
+		rosterCurrentUserPermissions = new RosterPermissions(
+			SakaiUtils.getCurrentUserPermissions(rosterSiteId, 'roster'));
+	}
+	
 }
 
 function readPermissions(state) {
