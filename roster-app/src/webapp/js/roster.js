@@ -199,7 +199,13 @@ function switchState(state, arg, searchQuery) {
 		$(document).ready(function() {
 			
 			$('#export_button').bind('click', function(e) {
-				alert('export');
+				
+				e.preventDefault();
+				window.location.href="/direct/roster/" + rosterSiteId +
+					"/export-to-excel?facetName=" + facet_name +
+					"&facetUserId=" + facet_userId +
+					"&facetRole=" + facet_role +
+					"&facetGroups=" + facet_groups;
 			});
 			
 			if (site.siteGroups.length > 0) {
@@ -357,7 +363,13 @@ function switchState(state, arg, searchQuery) {
 		$(document).ready(function() {
 			
 			$('#export_button').bind('click', function(e) {
-				alert('export');
+				
+				e.preventDefault();
+				window.location.href="/direct/roster/" + rosterSiteId +
+					"/export-to-excel?facetName=" + facet_name +
+					"&facetUserId=" + facet_userId +
+					"&facetRole=" + facet_role +
+					"&facetGroups=" + facet_groups;
 			});
 			
 			$('#roster_form_group_choice').val(grouped);

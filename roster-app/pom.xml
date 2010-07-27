@@ -41,6 +41,18 @@
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-roster-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.edu-services.sections</groupId>
+      <artifactId>sections-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.edu-services.course-management</groupId>
+      <artifactId>coursemanagement-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
     <!-- dependencies added by DBR -->
     <dependency>
         <groupId>org.sakaiproject.entitybroker</groupId>
@@ -61,19 +73,12 @@
         <artifactId>commons-lang</artifactId>
         <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>3.6</version>
+    </dependency>
     <!-- end of dependencies added by DBR -->
-    <dependency>
-      <groupId>org.sakaiproject.edu-services.sections</groupId>
-      <artifactId>sections-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.edu-services.course-management</groupId>
-      <artifactId>coursemanagement-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-     </dependency>
   </dependencies>
   <build>
     <resources>
