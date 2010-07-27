@@ -198,40 +198,10 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
-			$('#export_button').bind('click', function(e) {
-				
-				e.preventDefault();
-				window.location.href="/direct/roster/" + rosterSiteId +
-					"/export-to-excel?facetName=" + facet_name +
-					"&facetUserId=" + facet_userId +
-					"&facetRole=" + facet_role +
-					"&facetGroups=" + facet_groups;
-			});
-			
-			if (site.siteGroups.length > 0) {
-				
-				$('#roster_form_section_filter').val(groupToViewText);
-				$('#roster_form_section_filter').change(function(e) {
-					groupToView = this.options[this.selectedIndex].value;
-					groupToViewText = this.options[this.selectedIndex].text;
-				
-					switchState('overview');
-				});
-			}
-			
-			$('#roster_form_search_button').bind('click', function(e) {
-				
-				if (roster_form_search_field.value != roster_search_text &&
-						roster_form_search_field.value != "") {
-					
-					searchQuery = roster_form_search_field.value.toLowerCase();
-					switchState('overview', null, searchQuery);
-				}
-			});
-			
-			$('#roster_form_clear_button').bind('click', function(e) {
-				switchState('overview');
-			});
+			readyExportButton();
+			readySearchButton(state);
+			readyClearButton(state);
+			readySectionFilter(site, state);
 			
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 		});
@@ -275,53 +245,12 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
-			if (site.siteGroups.length > 0) {
-				$('#roster_form_section_filter').val(groupToViewText);
-				$('#roster_form_section_filter').change(function(e) {
-					groupToView = this.options[this.selectedIndex].value;
-					groupToViewText = this.options[this.selectedIndex].text;
+			readySearchButton(state);
+			readyClearButton(state);
+			readySectionFilter(site, state);
 			
-					switchState('pics', null, searchQuery);
-				});
-			}
-			
-			// configure 'hide names' button
-			$('#roster_form_hide_names').bind('click', function(e) {
-				
-				if (hideNames) {
-					hideNames = false;
-				} else {
-					hideNames = true;
-				}
-				
-				switchState('pics', null, searchQuery);
-			});
-			
-			$('#roster_form_pics_view').bind('click', function(e) {
-				
-				if (viewSingleColumn) {
-					viewSingleColumn = false;
-				} else {
-					viewSingleColumn = true;
-				}
-				
-				switchState('pics', null, searchQuery);
-			});
-			
-			$('#roster_form_search_button').bind('click', function(e) {
-				
-				if (roster_form_search_field.value != roster_search_text &&
-						roster_form_search_field.value != "") {
-					
-					searchQuery = roster_form_search_field.value.toLowerCase();
-					switchState('pics', null, searchQuery);
-				}
-			});
-			
-			$('#roster_form_clear_button').bind('click', function(e) {
-				// lazy
-				switchState('pics');
-			});
+			readyHideNamesButton(state, searchQuery);
+			readyViewSingleColumnButton(state, searchQuery);
 		});
 		
 	} else if (STATE_GROUP_MEMBERSHIP === state) {
@@ -362,15 +291,7 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
-			$('#export_button').bind('click', function(e) {
-				
-				e.preventDefault();
-				window.location.href="/direct/roster/" + rosterSiteId +
-					"/export-to-excel?facetName=" + facet_name +
-					"&facetUserId=" + facet_userId +
-					"&facetRole=" + facet_role +
-					"&facetGroups=" + facet_groups;
-			});
+			readyExportButton();
 			
 			$('#roster_form_group_choice').val(grouped);
 			$('#roster_form_group_choice').change(function(e) {
@@ -679,6 +600,82 @@ function getSiteGroupsByUserId(site) {
 	}
 	
 	return groupsByUserId;
+}
+
+function readyClearButton(state) {
+	
+	$('#roster_form_clear_button').bind('click', function(e) {
+		switchState(state);
+	});
+}
+
+function readyExportButton() {
+	
+	$('#export_button').bind('click', function(e) {
+		
+		e.preventDefault();
+		window.location.href="/direct/roster/" + rosterSiteId +
+			"/export-to-excel?grouped=" + grouped + 
+			"&facetName=" + facet_name +
+			"&facetUserId=" + facet_userId +
+			"&facetRole=" + facet_role +
+			"&facetGroups=" + facet_groups;
+	});
+}
+
+function readySearchButton(state) {
+	
+	$('#roster_form_search_button').bind('click', function(e) {
+		
+		if (roster_form_search_field.value != roster_search_text &&
+				roster_form_search_field.value != "") {
+			
+			searchQuery = roster_form_search_field.value.toLowerCase();
+			switchState(state, null, searchQuery);
+		}
+	});
+}
+
+function readySectionFilter(site, state) {
+	
+	if (site.siteGroups.length > 0) {
+		
+		$('#roster_form_section_filter').val(groupToViewText);
+		$('#roster_form_section_filter').change(function(e) {
+			groupToView = this.options[this.selectedIndex].value;
+			groupToViewText = this.options[this.selectedIndex].text;
+		
+			switchState(state);
+		});
+	}
+}
+
+function readyHideNamesButton(state, searchQuery) {
+
+	$('#roster_form_hide_names').bind('click', function(e) {
+		
+		if (hideNames) {
+			hideNames = false;
+		} else {
+			hideNames = true;
+		}
+		
+		switchState(state, null, searchQuery);
+	});
+}
+
+function readyViewSingleColumnButton(state, searchQuery) {
+	
+	$('#roster_form_pics_view').bind('click', function(e) {
+		
+		if (viewSingleColumn) {
+			viewSingleColumn = false;
+		} else {
+			viewSingleColumn = true;
+		}
+		
+		switchState(state, null, searchQuery);
+	});
 }
 
 function getRosterCurrentUserPermissions() {
