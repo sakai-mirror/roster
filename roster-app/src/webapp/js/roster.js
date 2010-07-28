@@ -51,8 +51,8 @@ var viewEmailColumn = true;
 // end of sakai.properties
 
 var sortColumn = null;
-var overviewSortParams = {headers:{0: {sorter:'urls'}}, sortList:[[0,0]]};
-var groupSortParams = {headers:{0: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
+var overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
+var groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
 
 // tablesorter parser for URLs
 $.tablesorter.addParser({
@@ -121,26 +121,7 @@ $.tablesorter.addParser({
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
 	}
-	
-	if (SORT_NAME === sortColumn) {
-		overviewSortParams.sortList = [[0,0]];
-	} else if (SORT_USER_ID === sortColumn) {
-		overviewSortParams.sortList = [[1,0]];
-	} else if (SORT_EMAIL === sortColumn) {
 		
-		if (viewEmailColumn) {
-			overviewSortParams.sortList = [[2,0]];
-		}
-		
-	} else if (SORT_ROLE === sortColumn) {
-	
-		if (viewEmailColumn) {
-			overviewSortParams.sortList = [[2,0]];
-		} else {
-			overviewSortParams.sortList = [[3,0]];
-		}
-	}
-	
 	// Now switch into the requested state
 	switchState(arg.state, arg);
 
@@ -160,7 +141,9 @@ function switchState(state, arg, searchQuery) {
 	}
 		
 	if (STATE_OVERVIEW === state) {
-			
+		
+		configureOverviewTableSort();
+		
 		var members = getMembers(site, searchQuery);
 		var roles = getRolesUsingMembers(site, members);
 		
@@ -254,7 +237,9 @@ function switchState(state, arg, searchQuery) {
 		});
 		
 	} else if (STATE_GROUP_MEMBERSHIP === state) {
-			
+		
+		configureGroupMembershipTableSort();
+		
 		var roles = getRoles(site);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
@@ -707,6 +692,39 @@ function readPermissions(state) {
 		} else {
 			$('#export_button').hide();
 		}
+	}
+}
+
+function configureOverviewTableSort() {
+	
+	if (SORT_NAME === sortColumn) {
+		overviewSortParams.sortList = [[0,0]];
+	} else if (SORT_USER_ID === sortColumn) {
+		overviewSortParams.sortList = [[1,0]];
+	} else if (SORT_EMAIL === sortColumn) {
+		
+		if (viewEmailColumn) {
+			overviewSortParams.sortList = [[2,0]];
+		}
+		
+	} else if (SORT_ROLE === sortColumn) {
+	
+		if (viewEmailColumn) {
+			overviewSortParams.sortList = [[3,0]];
+		} else {
+			overviewSortParams.sortList = [[2,0]];
+		}
+	}
+}
+
+function configureGroupMembershipTableSort() {
+	
+	if (SORT_NAME === sortColumn) {
+		groupSortParams.sortList = [[0,0]];
+	} else if (SORT_USER_ID === sortColumn) {
+		groupSortParams.sortList = [[1,0]];
+	} else if (SORT_ROLE === sortColumn) {
+		groupSortParams.sortList = [[2,0]];
 	}
 }
 
