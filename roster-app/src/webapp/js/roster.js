@@ -667,14 +667,15 @@ function getRosterCurrentUserPermissions() {
 		
 	if (rosterCurrentUser.id === ADMIN) {
 		
-		rosterCurrentUserPermissions = new RosterPermissions();
-		rosterCurrentUserPermissions.rosterExport = true;
-		rosterCurrentUserPermissions.viewAllMembers = true;
-		rosterCurrentUserPermissions.viewEnrollmentStatus = true;
-		rosterCurrentUserPermissions.viewGroup = true;
-		rosterCurrentUserPermissions.viewHidden = true;
-		rosterCurrentUserPermissions.viewPhoto = true;
-		rosterCurrentUserPermissions.viewProfile = true;
+		var data = ['roster.export',
+				'roster.viewallmembers',
+				'roster.viewenrollmentstatus',
+				'roster.viewgroup',
+				'roster.viewhidden',
+				'roster.viewofficialphoto',
+				'roster.viewprofile'];
+
+		rosterCurrentUserPermissions = new RosterPermissions(data);
 		
 	} else {
 		rosterCurrentUserPermissions = new RosterPermissions(
