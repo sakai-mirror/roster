@@ -23,6 +23,7 @@ navbar_overview_tooltip="Overview of site members";
 navbar_pics="Pictures";
 navbar_pics_tooltip="View site members with pictures";
 navbar_status="Enrollment Status";
+navbar_status_tooltip="View site members organized by enrollment status"
 navbar_group_membership="Group Membership";
 navbar_group_membership_tooltip="View site members organized by group";
 
