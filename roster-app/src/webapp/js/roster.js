@@ -20,14 +20,21 @@
  */
 var ADMIN = 'admin';
 
+var DEFAULT_GROUP_ID = 'all';
+
 var STATE_OVERVIEW = 'overview';
 var STATE_PICTURES = 'pics';
 var STATE_GROUP_MEMBERSHIP = 'group_membership';
+var STATE_ENROLLMENT_STATUS = 'status'
 
 var SORT_NAME = 'sortName';
-var SORT_USER_ID = 'displayId';
+var SORT_DISPLAY_ID = 'displayId';
 var SORT_EMAIL = 'email';
 var SORT_ROLE = 'role';
+var SORT_STATUS	= "status";
+var SORT_CREDITS	= "credits";
+
+var columnSortFields = [];
 
 /* Stuff that we always expect to be setup */
 var rosterSiteId = null;
@@ -54,6 +61,11 @@ var sortColumn = null;
 var overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
 var groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
 
+// sortEnd is used to update this so we know which column and direction the
+// tables are sorted in when exporting
+var currentSortColumn = 0;
+var currentSortDirection = 0;
+
 // tablesorter parser for URLs
 $.tablesorter.addParser({
 	id: 'urls',is: function(s) { return false; },
@@ -79,6 +91,10 @@ $.tablesorter.addParser({
 
 	$('#navbar_group_membership_link').bind('click', function(e) {
 		return switchState('group_membership');
+	});
+	
+	$('#navbar_enrollment_status_link').bind('click', function(e) {
+		return switchState('status');
 	});
 		
 	var arg = SakaiUtils.getParameters();
@@ -130,10 +146,16 @@ $.tablesorter.addParser({
 function switchState(state, arg, searchQuery) {
 
 	readPermissions(state);
-		
+	
+	// for export to Excel
+	setColumnSortFields(state);
+	
 	// $('#cluetip').hide();
 		
 	var site = getSite();
+	
+	// TODO decide how to handle this
+	$('#navbar_enrollment_status_link').hide();
 	
 	// hide group membership link if there are no groups
 	if (site.siteGroups.length === 0) {
@@ -181,12 +203,17 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
-			readyExportButton();
+			readyExportButton(state);
 			readySearchButton(state);
 			readyClearButton(state);
 			readySectionFilter(site, state);
 			
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
+			
+			$('#roster_form_rosterTable').bind("sortEnd",function() {
+				currentSortColumn = this.config.sortList[0][0];
+				currentSortDirection = this.config.sortList[0][1];
+		    });
 		});
 		
 	} else if (STATE_PICTURES === state) {
@@ -276,7 +303,7 @@ function switchState(state, arg, searchQuery) {
 		
 		$(document).ready(function() {
 			
-			readyExportButton();
+			readyExportButton(state);
 			
 			$('#roster_form_group_choice').val(grouped);
 			$('#roster_form_group_choice').change(function(e) {
@@ -594,17 +621,36 @@ function readyClearButton(state) {
 	});
 }
 
-function readyExportButton() {
-	
+function readyExportButton(viewType) {
+		
 	$('#export_button').bind('click', function(e) {
+	
+		var groupId = null;
+		if (null != groupToView) {
+			groupId = groupToView;
+		} else {
+			groupId = DEFAULT_GROUP_ID;
+		}
+		
+		var byGroup = false;
+		if (grouped === roster_group_bygroup) {
+			byGroup = true;
+		}
 		
 		e.preventDefault();
 		window.location.href="/direct/roster/" + rosterSiteId +
-			"/export-to-excel?grouped=" + grouped + 
+			"/export-to-excel?groupId=" + groupId +
+			"&viewType=" + viewType +
+			"&sortField=" + columnSortFields[currentSortColumn] +
+			"&sortDirection=" + currentSortDirection +
+			"&byGroup=" + byGroup + 
 			"&facetName=" + facet_name +
 			"&facetUserId=" + facet_userId +
+			"&facetEmail=" + facet_email +
 			"&facetRole=" + facet_role +
-			"&facetGroups=" + facet_groups;
+			"&facetGroups=" + facet_groups +
+			"&facetStatus=" + facet_status +
+			"&facetCredits=" + facet_credits;
 	});
 }
 
@@ -700,7 +746,7 @@ function configureOverviewTableSort() {
 	
 	if (SORT_NAME === sortColumn) {
 		overviewSortParams.sortList = [[0,0]];
-	} else if (SORT_USER_ID === sortColumn) {
+	} else if (SORT_DISPLAY_ID === sortColumn) {
 		overviewSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
 		
@@ -722,11 +768,42 @@ function configureGroupMembershipTableSort() {
 	
 	if (SORT_NAME === sortColumn) {
 		groupSortParams.sortList = [[0,0]];
-	} else if (SORT_USER_ID === sortColumn) {
+	} else if (SORT_DISPLAY_ID === sortColumn) {
 		groupSortParams.sortList = [[1,0]];
 	} else if (SORT_ROLE === sortColumn) {
 		groupSortParams.sortList = [[2,0]];
 	}
+}
+
+// this computes the columns array which is used to determine the sortField
+// when exporting to Excel
+function setColumnSortFields(state) {
+	
+	columnSortFields[0] = SORT_NAME;
+	columnSortFields[1] = SORT_DISPLAY_ID;
+	
+	if (STATE_GROUP_MEMBERSHIP === state) {
+		columnSortFields[2] = SORT_ROLE;
+		// n.b. no sort by groups column
+	} else if (STATE_OVERVIEW === state) {
+		
+		if (viewEmailColumn) {
+			columnSortFields[2] = SORT_EMAIL;
+			columnSortFields[3] = SORT_ROLE;
+		} else {
+			columnSortFields[2] = SORT_ROLE;
+		}
+	} else if (STATE_ENROLLMENT_STATUS === state) {
+		
+		if (viewEmailColumn) {
+			columnSortFields[2] = SORT_EMAIL;
+			columnSortFields[3] = SORT_STATUS;
+			columnSortFields[4] = SORT_CREDITS;
+		} else {
+			columnSortFields[2] = SORT_STATUS;
+			columnSortFields[3] = SORT_CREDITS;
+		}
+	}	
 }
 
 /* Original Roster functions */

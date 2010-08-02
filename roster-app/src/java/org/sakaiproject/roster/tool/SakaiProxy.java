@@ -51,6 +51,8 @@ public class SakaiProxy {
 				.get(UserDirectoryService.class);
 		serverConfigurationService = (ServerConfigurationService) componentManager
 				.get(ServerConfigurationService.class);
+		
+		log.info("SakaiProxy initialized");
 	}
 	
 	public String getCurrentUserId() {
@@ -75,7 +77,7 @@ public class SakaiProxy {
 				.getString("roster.defaultSortColumn", DEFAULT_SORT_COLUMN);
 	}
 	
-	public Boolean getDisplayFirstNameLastName() {
+	public Boolean getFirstNameLastName() {
 
 		return serverConfigurationService.getBoolean(
 				"roster.display.firstNameLastName", DEFAULT_FIRST_NAME_LAST_NAME);

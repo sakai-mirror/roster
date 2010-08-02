@@ -39,10 +39,9 @@ public class RosterTool extends HttpServlet
 
 	private static final Log log = LogFactory.getLog(RosterTool.class);
 
-	private SakaiProxy sakaiProxy;
+	private SakaiProxy sakaiProxy = null;
 	
-	public void init(ServletConfig config) throws ServletException
-	{
+	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
 		if (log.isDebugEnabled()) {
@@ -58,7 +57,7 @@ public class RosterTool extends HttpServlet
 		if (log.isDebugEnabled()) {
 			log.debug("doGet()");
 		}
-
+		
 		if (sakaiProxy == null) {
 			throw new ServletException("sakaiProxy MUST be initialised.");
 		}
@@ -69,14 +68,16 @@ public class RosterTool extends HttpServlet
 			// We are not logged in
 			throw new ServletException("getCurrentUser returned null.");
 		}
-		
+
 		// pass siteId, language code and sakai.properties to the JQuery code
 		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + "pics"
 				+ "&siteId=" + sakaiProxy.getCurrentSiteId() + "&language="
 				+ (new ResourceLoader(userId)).getLocale().getLanguage()
 				+ "&defaultSortColumn=" + sakaiProxy.getDefaultSortColumn()
-				+ "&firstNameLastName=" + sakaiProxy.getDisplayFirstNameLastName()
-				+ "&hideSingleGroupFilter=" + sakaiProxy.getHideSingleGroupFilter()
-				+ "&viewEmailColumn=" + sakaiProxy.getViewEmailColumn());
+				+ "&firstNameLastName="
+				+ sakaiProxy.getFirstNameLastName()
+				+ "&hideSingleGroupFilter="
+				+ sakaiProxy.getHideSingleGroupFilter() + "&viewEmailColumn="
+				+ sakaiProxy.getViewEmailColumn());
 	}
 }
