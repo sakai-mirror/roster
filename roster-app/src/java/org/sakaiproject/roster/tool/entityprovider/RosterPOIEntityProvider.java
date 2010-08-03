@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import org.sakaiproject.entitybroker.entityprovider.extension.RequestGetter;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.roster.tool.SakaiProxy;
+import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.SessionManager;
@@ -261,17 +263,13 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		// may add this later on instead and style it (will need to change
 		// this depending on view type e.g. overview, group membership etc.
-		createSpreadsheetTitle(dataInRows, site, groupId);
+		createSpreadsheetTitle(dataInRows, site, groupId, viewType);
 
-		List<String> header = createSpreadsheetHeader(parameters, viewType);
-
-		dataInRows.add(header);
-		// blank line
-		dataInRows.add(new ArrayList<String>());
+		List<String> header = createColumnHeader(parameters, viewType);
 
 		Set<Member> members = getSiteOrGroupMembers(site, groupId);
 
-		List<RosterMember> rosterMembers = getRosterMembers(members);
+		List<RosterMember> rosterMembers = getRosterMembers(members, site);
 
 		Collections.sort(rosterMembers, new RosterMemberComparator(sortField,
 				sortDirection));
@@ -279,13 +277,14 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		// TODO roster.viewall? permission check for current user
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
-			addOverviewRows(dataInRows, rosterMembers);
+			addOverviewRows(dataInRows, rosterMembers, header);
 
 		} else if (VIEW_GROUP_MEMBERSHIP.equals(viewType)) {
+			
 			if (byGroup) {
-				// TODO implement SAK-18513 when coding this up.
+				addGroupMembershipByGroupRows(dataInRows, rosterMembers, site, header);
 			} else {
-
+				addGroupMembershipUngroupedRows(dataInRows, rosterMembers, header);
 			}
 		}
 
@@ -308,7 +307,12 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	}
 
 	private void addOverviewRows(List<List<String>> dataInRows,
-			List<RosterMember> rosterMembers) {
+			List<RosterMember> rosterMembers, List<String> header) {
+		
+		dataInRows.add(header);
+		// blank line
+		dataInRows.add(new ArrayList<String>());
+		
 		for (RosterMember member : rosterMembers) {
 
 			List<String> row = new ArrayList<String>();
@@ -322,6 +326,58 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 			row.add(member.role);
 			dataInRows.add(row);
+		}
+	}
+	
+	private void addGroupMembershipUngroupedRows(List<List<String>> dataInRows,
+			List<RosterMember> rosterMembers, List<String> header) {
+		
+		dataInRows.add(header);
+		// blank line
+		dataInRows.add(new ArrayList<String>());
+		
+		for (RosterMember member : rosterMembers) {
+
+			List<String> row = new ArrayList<String>();
+
+			row.add(member.name);
+			row.add(member.displayId);
+			row.add(member.role);
+			row.add(member.getGroupsToString());
+			
+			dataInRows.add(row);
+		}
+	}
+
+	private void addGroupMembershipByGroupRows(List<List<String>> dataInRows,
+			List<RosterMember> rosterMembers, Site site, List<String> header) {
+		
+		for (Group group : site.getGroups()) {
+			List<String> groupTitle = new ArrayList<String>();
+			groupTitle.add(group.getTitle());
+			
+			dataInRows.add(groupTitle);
+			// blank line
+			dataInRows.add(new ArrayList<String>());
+			
+			dataInRows.add(header);
+			// blank line
+			dataInRows.add(new ArrayList<String>());
+			
+			for (RosterMember member : rosterMembers) {
+				
+				if (null != member.groups.get(group.getId())) {
+					List<String> row = new ArrayList<String>();
+					row.add(member.name);
+					row.add(member.displayId);
+					row.add(member.role);
+					row.add(member.getGroupsToString());
+					dataInRows.add(row);
+				}
+			}
+			
+			// blank line
+			dataInRows.add(new ArrayList<String>());
 		}
 	}
 
@@ -373,8 +429,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		return null;
 	}
 
-	private List<String> createSpreadsheetHeader(
-			Map<String, Object> parameters, String viewType) {
+	private List<String> createColumnHeader(Map<String, Object> parameters,
+			String viewType) {
+		
 		List<String> header = new ArrayList<String>();
 		header.add(parameters.get(KEY_FACET_NAME) != null ? parameters.get(
 				KEY_FACET_NAME).toString() : DEFAULT_FACET_NAME);
@@ -413,28 +470,30 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			header.add(parameters.get(KEY_FACET_CREDITS) != null ? parameters
 					.get(KEY_FACET_CREDITS).toString() : DEFAULT_FACET_CREDITS);
 		}
-		
+
 		return header;
 	}
 	
 	private void createSpreadsheetTitle(List<List<String>> dataInRows,
-			Site site, String groupId) {
-		
+			Site site, String groupId, String viewType) {
+
 		List<String> title = new ArrayList<String>();
 		title.add(site.getTitle());
 		dataInRows.add(title);
 		// blank line
 		dataInRows.add(new ArrayList<String>());
-		
+
 		// SAK-18513
-		if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
-			
-			if (null != site.getGroup(groupId)) {
-				List<String> groupTitle = new ArrayList<String>();
-				groupTitle.add(site.getGroup(groupId).getTitle());
-				dataInRows.add(groupTitle);
-				// blank line
-				dataInRows.add(new ArrayList<String>());
+		if (VIEW_OVERVIEW.equals(viewType)) {
+			if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+
+				if (null != site.getGroup(groupId)) {
+					List<String> groupTitle = new ArrayList<String>();
+					groupTitle.add(site.getGroup(groupId).getTitle());
+					dataInRows.add(groupTitle);
+					// blank line
+					dataInRows.add(new ArrayList<String>());
+				}
 			}
 		}
 	}
@@ -452,7 +511,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		return members;
 	}
 
-	private List<RosterMember> getRosterMembers(Set<Member> members) {
+	private List<RosterMember> getRosterMembers(Set<Member> members, Site site) {
 		List<RosterMember> rosterMembers = new ArrayList<RosterMember>();
 		
 		for (Member member : members) {
@@ -478,6 +537,12 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 				rosterMember.role = member.getRole().getId();
 
+				for (Group group : site.getGroups()) {
+					if (null != group.getMember(member.getUserId())) {
+						rosterMember.groups.put(group.getId(), group.getTitle());
+					}
+				}
+				
 				rosterMembers.add(rosterMember);
 
 			} catch (UserNotDefinedException e) {
@@ -485,6 +550,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 				e.printStackTrace();
 			}
 		}
+		
 		return rosterMembers;
 	}
 
@@ -525,11 +591,25 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		public String status;
 		public String credits;
 		
-		// TODO
-		public String groups;
+		public Map<String, String> groups = new HashMap<String, String>();
 
 		public RosterMember() {
 			
+		}
+		
+		public String getGroupsToString() {
+			
+			StringBuilder groupsString = new StringBuilder();
+			
+			Iterator<String> iterator = groups.values().iterator();
+			while (iterator.hasNext()) {
+				groupsString.append(iterator.next());
+				
+				if (iterator.hasNext()) {
+					groupsString.append(", ");
+				}
+			}
+			return groupsString.toString();
 		}
 	}
 
