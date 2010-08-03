@@ -17,9 +17,12 @@ package org.sakaiproject.roster.tool.entityprovider;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +76,8 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String MSG_NO_SESSION		= "Must be logged in";
 	public final static String MSG_NO_SITE_ID		= "Must provide a site ID";
 	public final static String MSG_NO_PARAMETERS	= "Must provide parameters";
-
+	public final static String MSG_NO_FILE_CREATED	= "Error creating file";
+	
 	// roster views
 	public final static String VIEW_OVERVIEW			= "overview";
 	public final static String VIEW_GROUP_MEMBERSHIP	= "group_membership";
@@ -117,13 +121,14 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String DEFAULT_SORT_FIELD		= DEFAULT_FACET_NAME;
 	public final static int DEFAULT_SORT_DIRECTION		= 0;
 	public final static boolean DEFAULT_BY_GROUP		= false;
-		
+	
+	// misc
+	public final static String FILE_EXTENSION = ".xls";
+	
 	// parameters we get from SakaiProxy
 	private final boolean viewEmail;
 	private final boolean firstNameLastName;
-	
-	public final static String ERROR_CREATING_FILE	= "Error creating file";
-	
+		
 	private RequestGetter requestGetter;
 	
 	private CourseManagementService courseManagementService;
@@ -150,19 +155,19 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	@EntityCustomAction(action = "export-to-excel", viewKey = EntityView.VIEW_SHOW)
 	public void exportToExcel(OutputStream out, EntityReference reference,
 			Map<String, Object> parameters) {
-		
+
 		HttpServletResponse response = requestGetter.getResponse();
-		
+
 		if (null == sessionManager.getCurrentSessionUserId()) {
-			
+
 			writeOut(response, MSG_NO_SESSION);
 			return;
 		}
-		
+
 		String siteId = reference.getId();
 		if (StringUtils.isBlank(reference.getId())
 				|| DEFAULT_ID.equals(reference.getId())) {
-			
+
 			writeOut(response, MSG_NO_SITE_ID);
 			return;
 		}
@@ -171,27 +176,25 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			writeOut(response, MSG_NO_PARAMETERS);
 			return;
 		}
-		
-		response.addHeader("Content-Encoding", "base64");
-		response.addHeader("Content-Type", "application/vnd.ms-excel");
-		// TODO fix actual filename (change date to ISO -- need JIRA).
-		response.addHeader("Content-Disposition", "attachment; filename=file.xls");
 
 		try {
-			
+
 			Site site = siteService.getSite(siteId);
 
+			addResponseHeader(response, createFilename(site, parameters
+					.get(KEY_GROUP_ID).toString()));
+			
 			export(response.getOutputStream(), site, parameters);
 
 		} catch (IdUnusedException e) {
 
 			e.printStackTrace();
 			writeOut(response, MSG_INVALID_ID);
-			
+
 		} catch (IOException e) {
 
 			e.printStackTrace();
-			writeOut(response, ERROR_CREATING_FILE);
+			writeOut(response, MSG_NO_FILE_CREATED);
 		}
 	}
 	
@@ -202,6 +205,36 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void addResponseHeader(HttpServletResponse response, String filename) {
+		
+		response.addHeader("Content-Encoding", "base64");
+		response.addHeader("Content-Type", "application/vnd.ms-excel");
+		response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+	}
+	
+	private String createFilename(Site site, String groupId) {
+
+		String filename = site.getTitle();
+		
+		if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+			
+			if (null != site.getGroup(groupId)) {
+				filename += "_" + site.getGroup(groupId).getTitle();
+			}
+		}
+		
+		Date date = new Date();
+		// ISO formatted date
+		DateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		filename += '_' + isoFormat.format(date);
+		
+		filename = filename.replaceAll("\\W","_");
+		filename += FILE_EXTENSION;
+		
+		return filename;
 	}
 	
 	private void export(OutputStream out, Site site,
