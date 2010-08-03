@@ -123,7 +123,10 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static boolean DEFAULT_BY_GROUP		= false;
 	
 	// misc
-	public final static String FILE_EXTENSION = ".xls";
+	public final static String FILE_EXTENSION		= ".xls";
+	public final static String FILENAME_SEPARATOR	= "_";
+	public final static String FILENAME_BYGROUP		= "ByGroup";
+	public final static String FILENAME_UNGROUPED	= "Ungrouped";
 	
 	// parameters we get from SakaiProxy
 	private final boolean viewEmail;
@@ -180,11 +183,8 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		try {
 
 			Site site = siteService.getSite(siteId);
-
-			addResponseHeader(response, createFilename(site, parameters
-					.get(KEY_GROUP_ID).toString()));
 			
-			export(response.getOutputStream(), site, parameters);
+			export(response, site, parameters);
 
 		} catch (IdUnusedException e) {
 
@@ -214,30 +214,38 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		response.addHeader("Content-Disposition", "attachment; filename=" + filename);
 	}
 	
-	private String createFilename(Site site, String groupId) {
+	private String createFilename(Site site, String groupId, String viewType, boolean byGroup) {
 
 		String filename = site.getTitle();
 		
-		if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
-			
-			if (null != site.getGroup(groupId)) {
-				filename += "_" + site.getGroup(groupId).getTitle();
+		if (VIEW_OVERVIEW.equals(viewType)) {
+			if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+
+				if (null != site.getGroup(groupId)) {
+					filename += FILENAME_SEPARATOR + site.getGroup(groupId).getTitle();
+				}
+			}
+		} else if (VIEW_GROUP_MEMBERSHIP.equals(viewType)) {
+			if (true == byGroup) {
+				filename += FILENAME_SEPARATOR + FILENAME_BYGROUP;
+			} else {
+				filename += FILENAME_SEPARATOR + FILENAME_UNGROUPED;
 			}
 		}
-		
+
 		Date date = new Date();
 		// ISO formatted date
 		DateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
-		filename += '_' + isoFormat.format(date);
-		
-		filename = filename.replaceAll("\\W","_");
+
+		filename += FILENAME_SEPARATOR + isoFormat.format(date);
+
+		filename = filename.replaceAll("\\W", FILENAME_SEPARATOR);
 		filename += FILE_EXTENSION;
-		
+
 		return filename;
 	}
 	
-	private void export(OutputStream out, Site site,
+	private void export(HttpServletResponse response, Site site,
 			Map<String, Object> parameters) throws IOException {
 
 		String groupId = getGroupIdValue(parameters);
@@ -245,6 +253,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		boolean byGroup = getByGroupValue(parameters);
 		int sortDirection = getSortDirectionValue(parameters);
 		String sortField = getSortFieldValue(parameters);
+
+		addResponseHeader(response, createFilename(site, parameters.get(
+				KEY_GROUP_ID).toString(), viewType, byGroup));
 
 		List<List<String>> dataInRows = new ArrayList<List<String>>();
 
@@ -274,7 +285,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			if (byGroup) {
 				// TODO implement SAK-18513 when coding this up.
 			} else {
-				
+
 			}
 		}
 
@@ -292,8 +303,8 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			}
 		}
 
-		workBook.write(out);
-		out.close();
+		workBook.write(response.getOutputStream());
+		response.getOutputStream().close();
 	}
 
 	private void addOverviewRows(List<List<String>> dataInRows,
