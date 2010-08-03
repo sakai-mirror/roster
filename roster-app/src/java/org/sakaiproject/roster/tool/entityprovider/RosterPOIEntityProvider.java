@@ -207,19 +207,17 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	private void export(OutputStream out, Site site,
 			Map<String, Object> parameters) throws IOException {
 
-		String groupId		= getGroupIdValue(parameters);
-		String viewType		= getViewTypeValue(parameters);
-		boolean byGroup		= getByGroupValue(parameters);
-		int sortDirection	= getSortDirectionValue(parameters);
-		String sortField	= getSortFieldValue(parameters);
+		String groupId = getGroupIdValue(parameters);
+		String viewType = getViewTypeValue(parameters);
+		boolean byGroup = getByGroupValue(parameters);
+		int sortDirection = getSortDirectionValue(parameters);
+		String sortField = getSortFieldValue(parameters);
 
 		List<List<String>> dataInRows = new ArrayList<List<String>>();
 
-		// may add this later on instead and style it
-		List<String> title = createSpreadsheetTitle(site, groupId);
-		dataInRows.add(title);
-		// blank line
-		dataInRows.add(new ArrayList<String>());
+		// may add this later on instead and style it (will need to change
+		// this depending on view type e.g. overview, group membership etc.
+		createSpreadsheetTitle(dataInRows, site, groupId);
 
 		List<String> header = createSpreadsheetHeader(parameters, viewType);
 
@@ -237,29 +235,14 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		// TODO roster.viewall? permission check for current user
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
+			addOverviewRows(dataInRows, rosterMembers);
+
+		} else if (VIEW_GROUP_MEMBERSHIP.equals(viewType)) {
 			if (byGroup) {
 				// TODO implement SAK-18513 when coding this up.
 			} else {
-
-				for (RosterMember member : rosterMembers) {
-
-					List<String> row = new ArrayList<String>();
-
-					row.add(member.name);
-
-					row.add(member.displayId);
-
-					if (true == viewEmail) {
-						row.add(member.email);
-					}
-
-					row.add(member.role);
-
-					dataInRows.add(row);
-
-				}
+				
 			}
-
 		}
 
 		Workbook workBook = new HSSFWorkbook();
@@ -278,6 +261,24 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		workBook.write(out);
 		out.close();
+	}
+
+	private void addOverviewRows(List<List<String>> dataInRows,
+			List<RosterMember> rosterMembers) {
+		for (RosterMember member : rosterMembers) {
+
+			List<String> row = new ArrayList<String>();
+
+			row.add(member.name);
+			row.add(member.displayId);
+
+			if (true == viewEmail) {
+				row.add(member.email);
+			}
+
+			row.add(member.role);
+			dataInRows.add(row);
+		}
 	}
 
 	private String getSortFieldValue(Map<String, Object> parameters) {
@@ -372,18 +373,26 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		return header;
 	}
 	
-	private List<String> createSpreadsheetTitle(Site site, String groupId) {
+	private void createSpreadsheetTitle(List<List<String>> dataInRows,
+			Site site, String groupId) {
+		
 		List<String> title = new ArrayList<String>();
-
-		if (null == groupId || DEFAULT_GROUP_ID.equals(groupId)) {
-			title.add(site.getTitle());
-		} else {
+		title.add(site.getTitle());
+		dataInRows.add(title);
+		// blank line
+		dataInRows.add(new ArrayList<String>());
+		
+		// SAK-18513
+		if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+			
 			if (null != site.getGroup(groupId)) {
-				title.add(site.getTitle() + ": "
-						+ site.getGroup(groupId).getTitle());
+				List<String> groupTitle = new ArrayList<String>();
+				groupTitle.add(site.getGroup(groupId).getTitle());
+				dataInRows.add(groupTitle);
+				// blank line
+				dataInRows.add(new ArrayList<String>());
 			}
 		}
-		return title;
 	}
 
 	private Set<Member> getSiteOrGroupMembers(Site site, String groupId) {
