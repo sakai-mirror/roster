@@ -15,13 +15,8 @@
  */
 package org.sakaiproject.roster.tool.entityprovider;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
@@ -30,10 +25,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEnt
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
-import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.SakaiProxy;
-import org.sakaiproject.site.api.Site;
-import org.sakaiproject.user.api.User;
 
 /**
  * <code>EntityProvider</code> to allow Roster to access site, membership, and
@@ -48,7 +40,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 
 	private static final Log log = LogFactory.getLog(RosterSiteEntityProvider.class);
 	
-	public final static String ENTITY_PREFIX		= "roster-members";
+	public final static String ENTITY_PREFIX		= "roster-membership";
 	public final static String DEFAULT_ID			= ":ID:";
 	
 	public final static String ERROR_INVALID_SITE	= "Invalid site ID";
@@ -84,6 +76,16 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		}	
 		
 		return sakaiProxy.getRoleTypes(reference.getId());
+	}
+	
+	@EntityCustomAction(action = "get-site", viewKey = EntityView.VIEW_SHOW)
+	public Object getSite(EntityReference reference) {
+		
+		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
+			return ERROR_INVALID_SITE;
+		}
+		
+		return sakaiProxy.getSiteDetails(reference.getId());
 	}
 	
 	/**

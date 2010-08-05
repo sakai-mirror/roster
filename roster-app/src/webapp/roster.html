@@ -431,7 +431,7 @@ else
 						</tr>
 					</thead>
 					<tbody>
-					{for siteGroupUser in siteGroup.users}
+					{for siteGroupUser in siteGroup.userIds}
 						{for member in membership}
 							{if siteGroupUser === member.userId}
 								<tr>

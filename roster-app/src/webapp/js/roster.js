@@ -150,8 +150,8 @@ function switchState(state, arg, searchQuery) {
 	
 	// $('#cluetip').hide();
 		
-	var site = getSite();
-	
+	var site = getRosterSite();
+
 	// TODO decide how to handle this
 	$('#navbar_enrollment_status_link').hide();
 	
@@ -190,7 +190,7 @@ function switchState(state, arg, searchQuery) {
 	
 	
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
-				{'membership':members, 'siteId':site.id,
+				{'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
 				'viewEmailColumn':viewEmailColumn,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
@@ -236,7 +236,7 @@ function switchState(state, arg, searchQuery) {
 		
 
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
-				{'membership':members, 'siteId':site.id,
+				{'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile,
@@ -258,7 +258,7 @@ function switchState(state, arg, searchQuery) {
 		configureGroupMembershipTableSort();
 		
 		var members = getRosterMembership();
-		var roles = getRoles(site);
+		var roles = getRolesUsingRosterMembers(members);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
 				{'siteTitle':site.title}, 'roster_header');
@@ -270,7 +270,7 @@ function switchState(state, arg, searchQuery) {
 		if (roster_group_bygroup === grouped) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',
-					{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
+					{'arg':arg, 'siteId':rosterSiteId}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'membership':members, 'groupsByUserId':groupsByUserId,
@@ -281,7 +281,7 @@ function switchState(state, arg, searchQuery) {
 		} else {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_with_participants_template',
-					{'arg':arg, 'siteId':site.id,'roleFragments':getRoleFragments(roles),
+					{'arg':arg, 'siteId':rosterSiteId,'roleFragments':getRoleFragments(roles),
 				'participants':getCurrentlyDisplayingParticipants(roles)}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
@@ -313,12 +313,12 @@ function switchState(state, arg, searchQuery) {
 	}
 }
 
-function getSite() {
+function getRosterSite() {
 	
 	var site;
-	
+
 	jQuery.ajax({
-    	url : "/direct/site/" + rosterSiteId + ".json?includeGroups=true",
+    	url : "/direct/roster-membership/" + rosterSiteId + "/get-site.json",
       	dataType : "json",
        	async : false,
 		cache: false,
@@ -328,36 +328,20 @@ function getSite() {
 	});
 	
 	return site;
+	
 }
-
-/*function getMembership() {
-	
-	var membership;
-	
-	jQuery.ajax({
-    	url : "/direct/membership/site.json?siteId=" + rosterSiteId,
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-			membership = data;
-		}
-	});
-	
-	return membership;
-}*/
 
 function getRosterMembership() {
 	
 	var membership;
 	
 	jQuery.ajax({
-    	url : "/direct/roster-members/" + rosterSiteId + "/get-membership.json",
+    	url : "/direct/roster-membership/" + rosterSiteId + "/get-membership.json",
       	dataType : "json",
        	async : false,
 		cache: false,
 	   	success : function(data) {
-			membership = data['roster-members_collection'];
+			membership = data['roster-membership_collection'];
 		},
 		error : function() {
 			membership = new Array();
@@ -365,6 +349,23 @@ function getRosterMembership() {
 	});
 	
 	return membership;
+}
+
+function getRoleTypes() {
+	
+	var roleTypes;
+
+	jQuery.ajax({
+    	url : "/direct/roster-membership/" + rosterSiteId + "/get-roles.json",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+		roleTypes = data['roster-membership_collection'];
+		}
+	});
+	
+	return roleTypes;
 }
 
 function getCurrentlyDisplayingParticipants(roles) {
@@ -396,62 +397,6 @@ function getRoleFragments(roles) {
 	}	
 	return roleFragments;
 }
-
-// used by group membership view
-function getRoles(site) {
-	
-	var roles = new Array();
-	
-	for (var i = 0, j = site.userRoles.length; i < j; i++) {
-		
-		jQuery.ajax({
-	    	url : "/direct/membership.json?siteId=" + rosterSiteId + "&role=" + site.userRoles[i],
-	      	dataType : "json",
-	       	async : false,
-			cache: false,
-		   	success : function(data) {
-				roles[i] = { roleType: site.userRoles[i],
-						roleCount: data['membership_collection'].length};
-			}
-		});
-	}
-		
-	return roles;
-}
-
-// used by overview and pictures view
-/*function getRolesUsingMembers(site, members) {
-	
-	var roles = new Array();
-	
-	for (var i = 0, j = site.userRoles.length; i < j; i++) {
-		roles[i] = { roleType: site.userRoles[i], roleCount: 0 };
-	}
-		
-	for (var i = 0, j = members.length; i < j; i++) {
-		
-		for (var k = 0, l = roles.length; k < l; k++) {
-			
-			if (roles[k].roleType === members[i].memberRole) {
-				roles[k].roleCount++;
-				continue;
-			}
-		}
-	}
-	
-	// filter out roles with 0 members of that role type
-	var rolesToReturn = new Array();
-	var rolesCount = 0;
-	for (var i = 0, j = roles.length; i < j; i++) {
-		
-		if (roles[i].roleCount != 0) {
-			rolesToReturn[rolesCount] = roles[i];
-			rolesCount++;
-		}
-	}
-	
-	return rolesToReturn;
-}*/
 
 function getRolesUsingRosterMembers(members) {
 	
@@ -488,22 +433,7 @@ function getRolesUsingRosterMembers(members) {
 	return rolesToReturn;
 }
 
-function getRoleTypes() {
-	
-	var roleTypes;
-	
-	jQuery.ajax({
-    	url : "/direct/roster-members/" + rosterSiteId + "/get-roles.json",
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-		roleTypes = data['roster-members_collection'];
-		}
-	});
-	
-	return roleTypes;
-}
+
 
 function getRolesByGroup(site) {
 	
@@ -520,9 +450,9 @@ function getRolesByGroup(site) {
 		
 		for (var k = 0, l = members.length; k < l; k++) {
 			
-			for (var m = 0, n = site.siteGroups[i].users.length; m < n; m++) {
+			for (var m = 0, n = site.siteGroups[i].userIds.length; m < n; m++) {
 								
-				if (members[k].userId === site.siteGroups[i].users[m]) {
+				if (members[k].userId === site.siteGroups[i].userIds[m]) {
 					
 					var role = members[k].memberRole;
 					
@@ -590,10 +520,8 @@ function getRolesByGroupRoleFragments(site) {
 }
 
 function getMembers(site, searchQuery) {
-	
-	// TODO need to query rosterCurrentUserPermissions.viewAllMembers
-	
-	var members;
+		
+	var members;// = getRosterMembership();;
 	
 	// view all users
 	if (groupToViewText === roster_sections_all ||
@@ -604,7 +532,7 @@ function getMembers(site, searchQuery) {
 	} else {
 		members = getGroupMembers(site,groupToView);
 	}
-	
+
 	var membersToReturn = new Array();
 	var memberCount = 0;
 	
@@ -632,7 +560,7 @@ function getGroupMembers(site,groupId) {
 	var usersToRender;
 	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
 		if (site.siteGroups[i].id === groupToView) {
-			usersToRender = site.siteGroups[i].users;
+			usersToRender = site.siteGroups[i].userIds;
 			break;
 		}
 	}
@@ -657,9 +585,9 @@ function getSiteGroupsByUserId(site) {
 	var groupsByUserId = new Array();
 	
 	for (var i = 0, k = site.siteGroups.length; i < k; i++) {	
-		for (var j = 0, l = site.siteGroups[i].users.length; j < l; j++) {
+		for (var j = 0, l = site.siteGroups[i].userIds.length; j < l; j++) {
 		
-			var userId = site.siteGroups[i].users[j];
+			var userId = site.siteGroups[i].userIds[j];
 			
 			if (undefined === groupsByUserId[userId]) {
 				groupsByUserId[userId] = new Array();
