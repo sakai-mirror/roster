@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.component.api.ComponentManager;
+import org.sakaiproject.roster.api.SakaiProxy;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
@@ -33,8 +35,8 @@ import org.sakaiproject.util.ResourceLoader;
  * @author Daniel Robinson (d.b.robinson@lancaster.ac.uk)
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
  */
-public class RosterTool extends HttpServlet
-{
+public class RosterTool extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
 
 	private static final Log log = LogFactory.getLog(RosterTool.class);
@@ -48,7 +50,8 @@ public class RosterTool extends HttpServlet
 			log.debug("init");
 		}
 		
-		sakaiProxy = new SakaiProxy();
+        ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
+		sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
 	}
 
 	protected void doGet(HttpServletRequest request,

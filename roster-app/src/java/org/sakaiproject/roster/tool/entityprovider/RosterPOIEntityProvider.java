@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,8 +37,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.sakaiproject.authz.api.Member;
-import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
@@ -49,15 +46,10 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEnt
 import org.sakaiproject.entitybroker.entityprovider.capabilities.RequestAware;
 import org.sakaiproject.entitybroker.entityprovider.extension.RequestGetter;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
-import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.roster.tool.SakaiProxy;
+import org.sakaiproject.roster.api.RosterMember;
+import org.sakaiproject.roster.api.SakaiProxy;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
-import org.sakaiproject.site.api.SiteService;
-import org.sakaiproject.tool.api.SessionManager;
-import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.api.UserDirectoryService;
-import org.sakaiproject.user.api.UserNotDefinedException;
 
 /**
  * <code>EntityProvider</code> to allow Roster to export to Excel via Apache's
@@ -70,15 +62,16 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
     
 	private static final Log log = LogFactory.getLog(RosterPOIEntityProvider.class);
 	
-	public final static String ENTITY_PREFIX		= "roster";
+	public final static String ENTITY_PREFIX		= "roster-export";
 	public final static String DEFAULT_ID			= ":ID:";
 	
 	// error messages
-	public final static String MSG_INVALID_ID		= "Invalid site ID";
-	public final static String MSG_NO_SESSION		= "Must be logged in";
-	public final static String MSG_NO_SITE_ID		= "Must provide a site ID";
-	public final static String MSG_NO_PARAMETERS	= "Must provide parameters";
-	public final static String MSG_NO_FILE_CREATED	= "Error creating file";
+	public final static String MSG_INVALID_ID			= "Invalid site ID";
+	public final static String MSG_NO_SESSION			= "Must be logged in";
+	public final static String MSG_NO_SITE_ID			= "Must provide a site ID";
+	public final static String MSG_NO_PARAMETERS		= "Must provide parameters";
+	public final static String MSG_NO_FILE_CREATED		= "Error creating file";
+	public final static String MSG_NO_EXPORT_PERMISSION = "Current user does not have export permission";
 	
 	// roster views
 	public final static String VIEW_OVERVIEW			= "overview";
@@ -129,26 +122,17 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String FILENAME_SEPARATOR	= "_";
 	public final static String FILENAME_BYGROUP		= "ByGroup";
 	public final static String FILENAME_UNGROUPED	= "Ungrouped";
-	
-	// parameters we get from SakaiProxy
-	private final boolean viewEmail;
-	private final boolean firstNameLastName;
 		
+	private SakaiProxy sakaiProxy;
+	
 	private RequestGetter requestGetter;
 	
-	private CourseManagementService courseManagementService;
-	private SessionManager sessionManager;
-	private SiteService siteService;
-	private UserDirectoryService userDirectoryService;
+	//private UserDirectoryService userDirectoryService;
 	
 	public RosterPOIEntityProvider() {
-		
-		SakaiProxy sakaiProxy = new SakaiProxy();
-		
-		firstNameLastName = sakaiProxy.getFirstNameLastName();
-		viewEmail = sakaiProxy.getViewEmailColumn();
+				
 	}
-	
+		
 	/**
 	 * {@inheritDoc}
 	 */
@@ -163,7 +147,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		HttpServletResponse response = requestGetter.getResponse();
 
-		if (null == sessionManager.getCurrentSessionUserId()) {
+		// user must be logged in
+		String userId = sakaiProxy.getCurrentSessionUserId();
+		if (null == userId) {
 
 			writeOut(response, MSG_NO_SESSION);
 			return;
@@ -183,16 +169,21 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		}
 
 		try {
-
-			Site site = siteService.getSite(siteId);
 			
-			export(response, site, parameters);
+			if (sakaiProxy.hasUserPermission(userId,
+					RosterFunctions.ROSTER_FUNCTION_EXPORT, siteId)) {
 
-		} catch (IdUnusedException e) {
-
-			e.printStackTrace();
-			writeOut(response, MSG_INVALID_ID);
-
+				Site site = sakaiProxy.getSite(siteId);
+				if (null == site) {
+					
+				}
+				export(response, site, parameters);
+				
+			} else {
+								
+				writeOut(response, MSG_NO_EXPORT_PERMISSION);
+				return;
+			}
 		} catch (IOException e) {
 
 			e.printStackTrace();
@@ -256,8 +247,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		int sortDirection = getSortDirectionValue(parameters);
 		String sortField = getSortFieldValue(parameters);
 
-		addResponseHeader(response, createFilename(site, parameters.get(
-				KEY_GROUP_ID).toString(), viewType, byGroup));
+		addResponseHeader(response, createFilename(site, groupId, viewType, byGroup));
 
 		List<List<String>> dataInRows = new ArrayList<List<String>>();
 
@@ -267,14 +257,16 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		List<String> header = createColumnHeader(parameters, viewType);
 
-		Set<Member> members = getSiteOrGroupMembers(site, groupId);
-
-		List<RosterMember> rosterMembers = getRosterMembers(members, site);
+		List<RosterMember> rosterMembers;
+		if (DEFAULT_GROUP_ID.equals(groupId)) {
+			rosterMembers = sakaiProxy.getMembership(site.getId(), null);
+		} else {
+			rosterMembers = sakaiProxy.getMembership(site.getId(), groupId);
+		}
 
 		Collections.sort(rosterMembers, new RosterMemberComparator(sortField,
-				sortDirection));
+				sortDirection, sakaiProxy.getFirstNameLastName()));
 
-		// TODO roster.viewall? permission check for current user
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
 			addOverviewRows(dataInRows, rosterMembers, header);
@@ -317,14 +309,19 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 			List<String> row = new ArrayList<String>();
 
-			row.add(member.name);
-			row.add(member.displayId);
+			if (sakaiProxy.getFirstNameLastName()) {
+				row.add(member.getDisplayName());
+			} else {
+				row.add(member.getSortName());
+			}
+			
+			row.add(member.getDisplayId());
 
-			if (true == viewEmail) {
-				row.add(member.email);
+			if (true == sakaiProxy.getViewEmailColumn()) {
+				row.add(member.getEmail());
 			}
 
-			row.add(member.role);
+			row.add(member.getRole());
 			dataInRows.add(row);
 		}
 	}
@@ -340,9 +337,13 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 			List<String> row = new ArrayList<String>();
 
-			row.add(member.name);
-			row.add(member.displayId);
-			row.add(member.role);
+			if (sakaiProxy.getFirstNameLastName()) {
+				row.add(member.getDisplayName());
+			} else {
+				row.add(member.getSortName());
+			}
+			row.add(member.getDisplayId());
+			row.add(member.getRole());
 			row.add(member.getGroupsToString());
 			
 			dataInRows.add(row);
@@ -351,31 +352,37 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 	private void addGroupMembershipByGroupRows(List<List<String>> dataInRows,
 			List<RosterMember> rosterMembers, Site site, List<String> header) {
-		
+
 		for (Group group : site.getGroups()) {
 			List<String> groupTitle = new ArrayList<String>();
 			groupTitle.add(group.getTitle());
-			
+
 			dataInRows.add(groupTitle);
 			// blank line
 			dataInRows.add(new ArrayList<String>());
-			
+
 			dataInRows.add(header);
 			// blank line
 			dataInRows.add(new ArrayList<String>());
-			
+
 			for (RosterMember member : rosterMembers) {
-				
-				if (null != member.groups.get(group.getId())) {
+
+				if (null != member.getGroups().get(group.getId())) {
+
 					List<String> row = new ArrayList<String>();
-					row.add(member.name);
-					row.add(member.displayId);
-					row.add(member.role);
+
+					if (sakaiProxy.getFirstNameLastName()) {
+						row.add(member.getDisplayName());
+					} else {
+						row.add(member.getSortName());
+					}
+					row.add(member.getDisplayId());
+					row.add(member.getRole());
 					row.add(member.getGroupsToString());
 					dataInRows.add(row);
 				}
 			}
-			
+
 			// blank line
 			dataInRows.add(new ArrayList<String>());
 		}
@@ -440,7 +447,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
-			if (true == viewEmail) {
+			if (true == sakaiProxy.getViewEmailColumn()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);
@@ -458,7 +465,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
 
-			if (true == viewEmail) {
+			if (true == sakaiProxy.getViewEmailColumn()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);
@@ -498,62 +505,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		}
 	}
 
-	private Set<Member> getSiteOrGroupMembers(Site site, String groupId) {
-		Set<Member> members = null;
-		
-		if (null == groupId || DEFAULT_GROUP_ID.equals(groupId)) {
-			members = site.getMembers();
-		} else {
-			if (null != site.getGroup(groupId)) {
-				members = site.getGroup(groupId).getMembers();				
-			}
-		}
-		return members;
-	}
-
-	private List<RosterMember> getRosterMembers(Set<Member> members, Site site) {
-		List<RosterMember> rosterMembers = new ArrayList<RosterMember>();
-		
-		for (Member member : members) {
-
-			try {
-
-				User user = userDirectoryService.getUser(member.getUserId());
-
-				RosterMember rosterMember = new RosterMember();
-				rosterMember.displayId = member.getUserDisplayId();
-
-				if (true == firstNameLastName) {
-					rosterMember.name = user.getDisplayName();
-				} else {
-					rosterMember.name = user.getSortName();
-				}
-
-				if (true == viewEmail) {
-					rosterMember.email = user.getEmail();
-				} else {
-					rosterMember.email = null;
-				}
-
-				rosterMember.role = member.getRole().getId();
-
-				for (Group group : site.getGroups()) {
-					if (null != group.getMember(member.getUserId())) {
-						rosterMember.groups.put(group.getId(), group.getTitle());
-					}
-				}
-				
-				rosterMembers.add(rosterMember);
-
-			} catch (UserNotDefinedException e) {
-
-				e.printStackTrace();
-			}
-		}
-		
-		return rosterMembers;
-	}
-
+	@SuppressWarnings("unused")
 	private void logConfiguration(String groupId, String viewType,
 			boolean byGroup, int sortDirection, String sortField,
 			List<String> header) {
@@ -574,44 +526,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 				+ byGroup + "\n\tsortDirection=" + sortDirection
 				+ "\n\tsortField=" + sortField + "\n\theader=" + headerStr);
 	}
-	
-	/**
-	 * <code>RosterMember</code> wraps together fields from <code>User</code>,
-	 * <code>Member</code>, and <code>CourseManagementService</code> for each
-	 * site member.
-	 * 
-	 * @author d.b.robinson@lancaster.ac.uk
-	 */
-	private class RosterMember {
-
-		public String name;
-		public String displayId;
-		public String email;
-		public String role;
-		public String status;
-		public String credits;
-		
-		public Map<String, String> groups = new HashMap<String, String>();
-
-		public RosterMember() {
-			
-		}
-		
-		public String getGroupsToString() {
-			
-			StringBuilder groupsString = new StringBuilder();
-			
-			Iterator<String> iterator = groups.values().iterator();
-			while (iterator.hasNext()) {
-				groupsString.append(iterator.next());
-				
-				if (iterator.hasNext()) {
-					groupsString.append(", ");
-				}
-			}
-			return groupsString.toString();
-		}
-	}
 
 	/**
 	 * <code>Comparator</code> for <code>RosterMember</code>s.
@@ -622,10 +536,15 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		private String sortField;
 		private int sortDirection;
+		private boolean firstNameLastName;
 		
-		public RosterMemberComparator(String sortField, int sortDirection) {
+		public RosterMemberComparator(String sortField, int sortDirection,
+				boolean firstNameLastName) {
+			
 			this.sortField = sortField;
 			this.sortDirection = sortDirection;
+
+			this.firstNameLastName = firstNameLastName;
 		}
 		
 		public int compare(RosterMember a, RosterMember b) {
@@ -644,17 +563,27 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			}
 
 			if (SORT_NAME.equals(sortField)) {
-				return member1.name.compareToIgnoreCase(member2.name);
+				if (firstNameLastName) {
+					return member1.getDisplayName().compareToIgnoreCase(
+							member2.getDisplayName());
+				} else {
+					return member1.getSortName().compareToIgnoreCase(
+							member2.getSortName());
+				}
 			} else if (SORT_DISPLAY_ID.equals(sortField)) {
-				return member1.displayId.compareToIgnoreCase(member2.displayId);
+				return member1.getDisplayId().compareToIgnoreCase(
+						member2.getDisplayId());
 			} else if (SORT_EMAIL.equals(sortField)) {
-				return member1.email.compareToIgnoreCase(member2.email);
+				return member1.getEmail().compareToIgnoreCase(
+						member2.getEmail());
 			} else if (SORT_ROLE.equals(sortField)) {
-				return member1.role.compareToIgnoreCase(member2.role);
+				return member1.getRole().compareToIgnoreCase(member2.getRole());
 			} else if (SORT_STATUS.equals(sortField)) {
-				return member1.status.compareToIgnoreCase(member2.status);
+				return member1.getStatus().compareToIgnoreCase(
+						member2.getStatus());
 			} else if (SORT_CREDITS.equals(sortField)) {
-				return member1.credits.compareToIgnoreCase(member2.credits);
+				return member1.getCredits().compareToIgnoreCase(
+						member2.getCredits());
 			}
 
 			log.warn("members not sorted");
@@ -666,24 +595,10 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 	/* Spring injections */
 
-	public void setCourseManagementService(
-			CourseManagementService courseManagementService) {
-		this.courseManagementService = courseManagementService;
+	public void setSakaiProxy(SakaiProxy sakaiProxy) {
+		this.sakaiProxy = sakaiProxy;
 	}
-	
-	public void setSessionManager(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
-	}
-	
-	public void setSiteService(SiteService siteService) {
-		this.siteService = siteService;
-	}
-	
-	public void setUserDirectoryService(
-			UserDirectoryService userDirectoryService) {
-		this.userDirectoryService = userDirectoryService;
-	}
-
+		
 	/**
 	 * {@inheritDoc}
 	 */

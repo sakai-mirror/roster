@@ -7,7 +7,7 @@
     <version>2.8-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Sakai Roster List Tool</name>
+  <name>Sakai Roster Tool</name>
   <groupId>org.sakaiproject</groupId>
   <artifactId>sakai-roster-tool</artifactId>
   <organization>
@@ -32,10 +32,6 @@
     <dependency>
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-component-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.profile</groupId>
-      <artifactId>profile-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>

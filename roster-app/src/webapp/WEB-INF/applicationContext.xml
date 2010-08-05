@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<beans>
+<beans>	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.roster.tool.entityprovider.RosterPOIEntityProvider">
 		
-		<property name="courseManagementService" ref="org.sakaiproject.coursemanagement.api.CourseManagementService" />
-		<property name="sessionManager" ref="org.sakaiproject.tool.api.SessionManager" />
-		<property name="siteService" ref="org.sakaiproject.site.api.SiteService" />
-		<property name="userDirectoryService" ref="org.sakaiproject.user.api.UserDirectoryService" />
+		<property name="sakaiProxy" ref="org.sakaiproject.roster.api.SakaiProxy" />
+	</bean>
+	
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.roster.tool.entityprovider.RosterSiteEntityProvider">
+		
+		<property name="sakaiProxy" ref="org.sakaiproject.roster.api.SakaiProxy" />
 	</bean>
 </beans>

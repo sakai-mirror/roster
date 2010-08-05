@@ -144,8 +144,6 @@ $.tablesorter.addParser({
 })();
 
 function switchState(state, arg, searchQuery) {
-
-	readPermissions(state);
 	
 	// for export to Excel
 	setColumnSortFields(state);
@@ -167,12 +165,14 @@ function switchState(state, arg, searchQuery) {
 		configureOverviewTableSort();
 		
 		var members = getMembers(site, searchQuery);
-		var roles = getRolesUsingMembers(site, members);
+		var roles = getRolesUsingRosterMembers(members);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
-				{'siteTitle':site.title}, 'roster_header');
+				{'siteTitle':site.title,
+				'displayTitleMsg':rosterCurrentUserPermissions.viewAllMembers},
+				'roster_header');
 		
-		if (site.siteGroups.length > 0) {
+		if (site.siteGroups.length > 0 && members.length > 0) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
@@ -188,18 +188,13 @@ function switchState(state, arg, searchQuery) {
 				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_search');
 	
-		if (members.length > 0) {
-			
-			SakaiUtils.renderTrimpathTemplate('roster_overview_template',
-					{'membership':members, 'siteId':site.id,
-					'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
-					'viewEmailColumn':viewEmailColumn,
-					'viewProfile':rosterCurrentUserPermissions.viewProfile},
-					'roster_content');
-		} else {
-			
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_content');
-		}
+	
+		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
+				{'membership':members, 'siteId':site.id,
+				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
+				'viewEmailColumn':viewEmailColumn,
+				'viewProfile':rosterCurrentUserPermissions.viewProfile},
+				'roster_content');
 		
 		$(document).ready(function() {
 			
@@ -219,12 +214,12 @@ function switchState(state, arg, searchQuery) {
 	} else if (STATE_PICTURES === state) {
 		
 		var members = getMembers(site, searchQuery);
-		var roles = getRolesUsingMembers(site, members);
+		var roles = getRolesUsingRosterMembers(members);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
 				{'siteTitle':site.title}, 'roster_header');
 		
-		if (site.siteGroups.length > 0) {
+		if (site.siteGroups.length > 0 && members.length > 0) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
@@ -239,19 +234,14 @@ function switchState(state, arg, searchQuery) {
 				'participants':getCurrentlyDisplayingParticipants(roles)},
 				'roster_search');
 		
-		if (members.length > 0) {
-			
-			SakaiUtils.renderTrimpathTemplate('roster_pics_template',
-					{'membership':members, 'siteId':site.id,
-					'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
-					'hideNames':hideNames,
-					'viewProfile':rosterCurrentUserPermissions.viewProfile,
-					'viewPhoto':rosterCurrentUserPermissions.viewPhoto},
-					'roster_content');
-		} else {
-			
-			SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_content');
-		}
+
+		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
+				{'membership':members, 'siteId':site.id,
+				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
+				'hideNames':hideNames,
+				'viewProfile':rosterCurrentUserPermissions.viewProfile,
+				'viewPhoto':rosterCurrentUserPermissions.viewPhoto},
+				'roster_content');
 		
 		$(document).ready(function() {
 			
@@ -267,6 +257,7 @@ function switchState(state, arg, searchQuery) {
 		
 		configureGroupMembershipTableSort();
 		
+		var members = getRosterMembership();
 		var roles = getRoles(site);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
@@ -282,10 +273,9 @@ function switchState(state, arg, searchQuery) {
 					{'arg':arg, 'siteId':site.id}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
-					{'membership':getMembership()['membership_collection'],
-					'groupsByUserId':groupsByUserId, 'siteGroups':site.siteGroups,
-					'rolesText':getRolesByGroupRoleFragments(site),'siteId':rosterSiteId,
-					'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					{'membership':members, 'groupsByUserId':groupsByUserId,
+					'siteGroups':site.siteGroups, 'rolesText':getRolesByGroupRoleFragments(site),
+					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 			
 		} else {
@@ -295,9 +285,8 @@ function switchState(state, arg, searchQuery) {
 				'participants':getCurrentlyDisplayingParticipants(roles)}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
-					{'membership':getMembership()['membership_collection'],
-					'groupsByUserId':groupsByUserId,'siteId':rosterSiteId,
-					'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					{'membership':members, 'groupsByUserId':groupsByUserId,
+					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		}
 		
@@ -341,7 +330,7 @@ function getSite() {
 	return site;
 }
 
-function getMembership() {
+/*function getMembership() {
 	
 	var membership;
 	
@@ -352,6 +341,26 @@ function getMembership() {
 		cache: false,
 	   	success : function(data) {
 			membership = data;
+		}
+	});
+	
+	return membership;
+}*/
+
+function getRosterMembership() {
+	
+	var membership;
+	
+	jQuery.ajax({
+    	url : "/direct/roster-members/" + rosterSiteId + "/get-membership.json",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			membership = data['roster-members_collection'];
+		},
+		error : function() {
+			membership = new Array();
 		}
 	});
 	
@@ -411,7 +420,7 @@ function getRoles(site) {
 }
 
 // used by overview and pictures view
-function getRolesUsingMembers(site, members) {
+/*function getRolesUsingMembers(site, members) {
 	
 	var roles = new Array();
 	
@@ -442,11 +451,63 @@ function getRolesUsingMembers(site, members) {
 	}
 	
 	return rolesToReturn;
+}*/
+
+function getRolesUsingRosterMembers(members) {
+	
+	var roles = new Array();
+	
+	var roleTypes = getRoleTypes();
+	
+	for (var i = 0, j = roleTypes.length; i < j; i++) {
+		roles[i] = { roleType: roleTypes[i].data, roleCount: 0 };
+	}
+	
+	for (var i = 0, j = members.length; i < j; i++) {
+		
+		for (var k = 0, l = roles.length; k < l; k++) {
+			
+			if (roles[k].roleType === members[i].role) {
+				roles[k].roleCount++;
+				continue;
+			}
+		}
+	}
+	
+	// filter out roles with 0 members of that role type
+	var rolesToReturn = new Array();
+	var rolesCount = 0;
+	for (var i = 0, j = roles.length; i < j; i++) {
+		
+		if (roles[i].roleCount != 0) {
+			rolesToReturn[rolesCount] = roles[i];
+			rolesCount++;
+		}
+	}
+	
+	return rolesToReturn;
+}
+
+function getRoleTypes() {
+	
+	var roleTypes;
+	
+	jQuery.ajax({
+    	url : "/direct/roster-members/" + rosterSiteId + "/get-roles.json",
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+		roleTypes = data['roster-members_collection'];
+		}
+	});
+	
+	return roleTypes;
 }
 
 function getRolesByGroup(site) {
 	
-	var members = getMembership()['membership_collection'];
+	var members = getRosterMembership();
 	var rolesByGroup = new Array();
 	
 	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
@@ -538,7 +599,7 @@ function getMembers(site, searchQuery) {
 	if (groupToViewText === roster_sections_all ||
 			groupToViewText === roster_section_sep_line) {
 		
-		members = getMembership()['membership_collection'];			
+		members = getRosterMembership();			
 	// view a specific group (note: search is done within group if selected)
 	} else {
 		members = getGroupMembers(site,groupToView);
@@ -552,8 +613,8 @@ function getMembers(site, searchQuery) {
 		
 		for (var i = 0, j = members.length; i < j; i++) {
 							
-			if (members[i].userDisplayName.toLowerCase().indexOf(searchQuery) >= 0 ||
-					members[i].userDisplayId.toLowerCase().indexOf(searchQuery) >= 0) {
+			if (members[i].displayName.toLowerCase().indexOf(searchQuery) >= 0 ||
+					members[i].displayId.toLowerCase().indexOf(searchQuery) >= 0) {
 									
 				membersToReturn[memberCount] = members[i];
 				memberCount++;
@@ -567,9 +628,7 @@ function getMembers(site, searchQuery) {
 }
 
 function getGroupMembers(site,groupId) {
-	
-	// TODO need to query rosterCurrentUserPermissions.viewgroup?
-	
+		
 	var usersToRender;
 	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
 		if (site.siteGroups[i].id === groupToView) {
@@ -578,7 +637,7 @@ function getGroupMembers(site,groupId) {
 		}
 	}
 	
-	var members = getMembership()['membership_collection'];
+	var members = getRosterMembership();
 	var groupMembers = new Array();
 	
 	for (var i = 0, j = members.length; i < j; i++) {
@@ -638,7 +697,7 @@ function readyExportButton(viewType) {
 		}
 		
 		e.preventDefault();
-		window.location.href="/direct/roster/" + rosterSiteId +
+		window.location.href="/direct/roster-export/" + rosterSiteId +
 			"/export-to-excel?groupId=" + groupId +
 			"&viewType=" + viewType +
 			"&sortField=" + columnSortFields[currentSortColumn] +
@@ -652,6 +711,17 @@ function readyExportButton(viewType) {
 			"&facetStatus=" + facet_status +
 			"&facetCredits=" + facet_credits;
 	});
+		
+	// hide export button if necessary
+	if (STATE_OVERVIEW === viewType || STATE_GROUP_MEMBERSHIP === viewType || 
+			STATE_ENROLLMENT_STATUS === viewType) {
+		
+		if (rosterCurrentUserPermissions.rosterExport) {
+			$('#export_button').show();
+		} else {
+			$('#export_button').hide();
+		}
+	}
 }
 
 function readySearchButton(state) {
@@ -725,21 +795,9 @@ function getRosterCurrentUserPermissions() {
 		
 	} else {
 		rosterCurrentUserPermissions = new RosterPermissions(
-			SakaiUtils.getCurrentUserPermissions(rosterSiteId, 'roster'));
+			SakaiUtils.getCurrentUserPermissions(rosterSiteId, 'roster'));		
 	}
 	
-}
-
-function readPermissions(state) {
-	
-	// export permissions
-	if (STATE_OVERVIEW === state || STATE_GROUP_MEMBERSHIP === state) {
-		if (rosterCurrentUserPermissions.rosterExport) {
-			$('#export_button').show();
-		} else {
-			$('#export_button').hide();
-		}
-	}
 }
 
 function configureOverviewTableSort() {

@@ -157,7 +157,9 @@ else
 		</tr>
 	</tbody>
 </table>
+{if displayTitleMsg}
 <span class="instruction" style="display: block;">${title_msg}</span>
+{/if}
 -->
 </div>
 
@@ -253,30 +255,34 @@ else
 		</tr>
 	</thead>
 	<tbody>
+	{if membership.length == 0}
+		<tr><td>${no_participants}</td></tr>
+	{else}
 		{for member in membership}
 			<tr>
 				<td>
 					{if firstNameLastName}
-						${member.userDisplayName}
+						${member.displayName}
 					{else}
-						${member.userSortName}
+						${member.sortName}
 					{/if}
 				</td>
 				<td>
 					{if viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-							${member.userDisplayId}
+							${member.displayId}
 						</a>
 					{else}
-						${member.userDisplayId}
+						${member.displayId}
 					{/if}
 				</td>
 				{if viewEmailColumn}
-					<td><a href="mailto:${member.userEmail}">${member.userEmail}</a></td>
+					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
-				<td>${member.memberRole}</td>
+				<td>${member.role}</td>
 			</tr>
 		{/for}
+	{/if}
 	</tbody>
 </table>
 
@@ -285,6 +291,7 @@ else
 
 <div id="roster_pics_template" style="display:none"><!--
 <table class="rosterPicturesFilter">
+	{if membership.length > 0}
 	<tbody>
 		<tr>
 			<td class="rosterPageHeaderLeft">
@@ -303,27 +310,31 @@ else
 			</td>
 		</tr>
 	</tbody>
+	{/if}
 </table>
 <div class="instruction"></div>
 <table class="rosterPictures">
 	<tbody>
+	{if membership.length == 0}
+		<tr><td>${no_participants}</td></tr>
+	{else}
 		{if viewSingleColumn}
 			<tr>
 				{for member in membership}
 				<div>
 					{if viewPhoto}
 						<img class="rosterImage" src="/direct/profile/${member.userId}/image"
-							title="${profile_picture_alt} ${member.userDisplayName}" />
+							title="${profile_picture_alt} ${member.displayName}" />
 					{else}
 						<img class="rosterImage" src="/sakai-roster-tool/images/pictureUnavailable.jpg"
-							title="${member.userDisplayName}" />
+							title="${member.displayName}" />
 					{/if}
 				</div>
 				{if hideNames == false}
 					{if firstNameLastName}
-						{var memberName = member.userDisplayName}
+						{var memberName = member.displayName}
 					{else}
-						{var memberName = member.userSortName}
+						{var memberName = member.sortName}
 					{/if}
 					<div>
 						<span title="${memberName}">${memberName}</span>
@@ -332,10 +343,10 @@ else
 				<div>
 					{if viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-							${member.userDisplayId}
+							${member.displayId}
 						</a>
 					{else}
-						${member.userDisplayId}
+						${member.displayId}
 					{/if}
 				</div>
 				{/for}
@@ -348,17 +359,17 @@ else
 				<div>
 					{if viewPhoto}
 						<img class="rosterImage" src="/direct/profile/${member.userId}/image"
-							title="${profile_picture_alt} ${member.userDisplayName}" />
+							title="${profile_picture_alt} ${member.displayName}" />
 					{else}
 						<img class="rosterImage" src="/sakai-roster-tool/images/pictureUnavailable.jpg"
-							title="${member.userDisplayName}" />
+							title="${member.displayName}" />
 					{/if}
 				</div>
 				{if hideNames == false}
 					{if firstNameLastName}
-						{var memberName = member.userDisplayName}
+						{var memberName = member.displayName}
 					{else}
-						{var memberName = member.userSortName}
+						{var memberName = member.sortName}
 					{/if}
 					<div>
 						<span title="${memberName}">${memberName}</span>
@@ -367,10 +378,10 @@ else
 				<div>
 					{if viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-							${member.userDisplayId}
+							${member.displayId}
 						</a>
 					{else}
-						${member.userDisplayId}
+						${member.displayId}
 					{/if}
 				</div>
 			</td>
@@ -381,6 +392,7 @@ else
 		{/for}
 		</tr>
 		{/if}
+	{/if}
 	</tbody>
 </table>
  -->
@@ -425,21 +437,21 @@ else
 								<tr>
 									<td>
 										{if firstNameLastName}
-											${member.userDisplayName}
+											${member.displayName}
 										{else}
-											${member.userSortName}
+											${member.sortName}
 										{/if}
 									</td>
 									<td>
 										{if viewProfile}
 											<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-												${member.userDisplayId}
+												${member.displayId}
 											</a>
 										{else}
-											${member.userDisplayId}
+											${member.displayId}
 										{/if}
 									</td>
-									<td>${member.memberRole}</td>
+									<td>${member.role}</td>
 									<td>${groupsByUserId[member.userId]}</td>
 								</tr>
 							{/if}
@@ -470,21 +482,21 @@ else
 			<tr>
 				<td>
 					{if firstNameLastName}
-						${member.userDisplayName}
+						${member.displayName}
 					{else}
-						${member.userSortName}
+						${member.sortName}
 					{/if}
 				</td>
 				<td>
 					{if viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
-							${member.userDisplayId}
+							${member.displayId}
 						</a>
 					{else}
-						${member.userDisplayId}
+						${member.displayId}
 					{/if}
 				</td>
-				<td>${member.memberRole}</td>
+				<td>${member.role}</td>
 				<td>${groupsByUserId[member.userId]}</td>
 			</tr>
 		{/for}
