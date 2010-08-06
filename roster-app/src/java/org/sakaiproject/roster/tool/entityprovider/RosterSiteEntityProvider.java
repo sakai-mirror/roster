@@ -68,6 +68,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		return sakaiProxy.getMembership(reference.getId(), null);
 	}
 	
+	// TODO might roll this into get-site
 	@EntityCustomAction(action = "get-roles", viewKey = EntityView.VIEW_SHOW)
 	public Object getRoles(EntityReference reference) {
 		

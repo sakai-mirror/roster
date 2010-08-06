@@ -7,7 +7,7 @@
 		
 		<!-- <property name="authzGroupService" ref="org.sakaiproject.authz.api.AuthzGroupService" /> -->
 		<!-- <property name="courseManagementService" ref="org.sakaiproject.coursemanagement.api.CourseManagementService" /> -->
-		<property name="functionManager" ref="org.sakaiproject.authz.api.FunctionManager" />
+		<!-- <property name="functionManager" ref="org.sakaiproject.authz.api.FunctionManager" /> -->
 		<!-- <property name="securityService" ref="org.sakaiproject.authz.api.SecurityService" />-->
 		<property name="serverConfigurationService" ref="org.sakaiproject.component.api.ServerConfigurationService" />
 		<property name="sessionManager" ref="org.sakaiproject.tool.api.SessionManager" />

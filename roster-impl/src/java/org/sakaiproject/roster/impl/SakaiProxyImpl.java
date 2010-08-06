@@ -17,6 +17,7 @@ package org.sakaiproject.roster.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +26,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.RosterFunctions;
-import org.sakaiproject.authz.api.FunctionManager;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.component.api.ServerConfigurationService;
-import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.roster.api.RosterGroup;
 import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.RosterSite;
 import org.sakaiproject.roster.api.SakaiProxy;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
@@ -62,7 +60,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	
 	//private AuthzGroupService authzGroupService = null;
 	//private CourseManagementService courseManagementService;
-	private FunctionManager functionManager = null;
+	//private FunctionManager functionManager = null;
 	//private SecurityService securityService = null;
 	private ServerConfigurationService serverConfigurationService = null;
 	private SessionManager sessionManager = null;
@@ -144,22 +142,42 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		List<RosterMember> rosterMembers = new ArrayList<RosterMember>();
 
-		if (false == hasUserPermission(getCurrentUserId(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL, siteId)) {
-			
-			return rosterMembers;
-		}
+		String currentUserId = getCurrentUserId();
 
 		try {
 
 			Site site = siteService.getSite(siteId);
 
-			Set<Member> membership;
+			Set<Member> membership = new HashSet<Member>();
 
-			if (null == site.getGroup(groupId)) {
-				membership = site.getMembers();
+			if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+				if (null == groupId) {
+					// get all members
+					membership.addAll(site.getMembers());
+				} else if (null != site.getGroup(groupId)){
+					// get all members of requested groupId
+					membership.addAll(site.getGroup(groupId).getMembers());
+				} else {
+					// assume invalid groupId specified
+					return null;
+				}
 			} else {
-				membership = site.getGroup(groupId).getMembers();
+				if (null == groupId) {
+					// get all members of groups current user is allow
+					for (Group group : site.getGroups()) {
+						if (group.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+							membership.addAll(group.getMembers());
+						}
+					}
+				} else if (null != site.getGroup(groupId)){
+					// get all members of requested groupId if current user is member
+					if (site.getGroup(groupId).isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+						membership.addAll(site.getGroup(groupId).getMembers());
+					}
+				} else {
+					// assume invalid groupId specified or user not member
+					return null;
+				}
 			}
 
 			for (Member member : membership) {
@@ -182,7 +200,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 				while (groupIterator.hasNext()) {
 					Group group = groupIterator.next();
-					
+
 					rosterMember.addGroup(group.getId(), group.getTitle());
 				}
 
@@ -198,45 +216,55 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return rosterMembers;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public RosterSite getSiteDetails(String siteId) {
-		
+
 		String currentUserId = getCurrentSessionUserId();
 		if (null == currentUserId) {
 			return null;
 		}
-		
+
 		Site site = getSite(siteId);
 		// only if user is a site member
 		if (null == site.getMember(currentUserId)) {
 			return null;
 		}
-		
+
 		if (null == site) {
 			return null;
 		}
-		
+
 		RosterSite rosterSite = new RosterSite();
-		
+
 		rosterSite.setId(site.getId());
 		rosterSite.setTitle(site.getTitle());
-		
+
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
+
+		boolean viewAll = site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 		
 		for (Group group : site.getGroups()) {
-			RosterGroup rosterGroup = new RosterGroup();
-			rosterGroup.setId(group.getId());
-			rosterGroup.setTitle(group.getTitle());
-			
-			List<String> userIds = new ArrayList<String>();
-			for (Member member : group.getMembers()) {
-				userIds.add(member.getUserId());
+
+			if (viewAll ||  group.isAllowed(currentUserId,
+					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+				
+				RosterGroup rosterGroup = new RosterGroup();
+				rosterGroup.setId(group.getId());
+				rosterGroup.setTitle(group.getTitle());
+
+				List<String> userIds = new ArrayList<String>();
+				for (Member member : group.getMembers()) {
+					userIds.add(member.getUserId());
+				}
+
+				rosterGroup.setUserIds(userIds);
+
+				siteGroups.add(rosterGroup);
 			}
-			
-			rosterGroup.setUserIds(userIds);
-			
-			siteGroups.add(rosterGroup);
 		}
-		
+
 		rosterSite.setSiteGroups(siteGroups);
 		return rosterSite;
 	}
@@ -338,9 +366,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 //		this.courseManagementService = courseManagementService;
 //	}
 	
-	public void setFunctionManager(FunctionManager functionManager) {
-		this.functionManager = functionManager;
-	}
+//	public void setFunctionManager(FunctionManager functionManager) {
+//		this.functionManager = functionManager;
+//	}
 	
 //	public void setAuthzGroupService(AuthzGroupService authzGroupService) {
 //		this.authzGroupService = authzGroupService;
