@@ -152,7 +152,7 @@ function switchState(state, arg, searchQuery) {
 		
 	var site = getRosterSite();
 
-	// TODO decide how to handle this
+	// TODO handle this (check permission)
 	$('#navbar_enrollment_status_link').hide();
 	
 	// hide group membership link if there are no groups
@@ -165,7 +165,7 @@ function switchState(state, arg, searchQuery) {
 		configureOverviewTableSort();
 		
 		var members = getMembers(site, searchQuery);
-		var roles = getRolesUsingRosterMembers(members);
+		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
 				{'siteTitle':site.title,
@@ -214,7 +214,7 @@ function switchState(state, arg, searchQuery) {
 	} else if (STATE_PICTURES === state) {
 		
 		var members = getMembers(site, searchQuery);
-		var roles = getRolesUsingRosterMembers(members);
+		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
 				{'siteTitle':site.title}, 'roster_header');
@@ -258,7 +258,7 @@ function switchState(state, arg, searchQuery) {
 		configureGroupMembershipTableSort();
 		
 		var members = getRosterMembership();
-		var roles = getRolesUsingRosterMembers(members);
+		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
 				{'siteTitle':site.title}, 'roster_header');
@@ -324,6 +324,13 @@ function getRosterSite() {
 		cache: false,
 	   	success : function(data) {
 			site = data;
+			if (undefined == site.siteGroups) {
+				site.siteGroups = new Array();
+			}
+			
+			if (undefined == site.userRoles) {
+				site.userRoles = new Array();
+			}
 		}
 	});
 	
@@ -349,23 +356,6 @@ function getRosterMembership() {
 	});
 	
 	return membership;
-}
-
-function getRoleTypes() {
-	
-	var roleTypes;
-
-	jQuery.ajax({
-    	url : "/direct/roster-membership/" + rosterSiteId + "/get-roles.json",
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-		roleTypes = data['roster-membership_collection'];
-		}
-	});
-	
-	return roleTypes;
 }
 
 function getCurrentlyDisplayingParticipants(roles) {
@@ -398,14 +388,12 @@ function getRoleFragments(roles) {
 	return roleFragments;
 }
 
-function getRolesUsingRosterMembers(members) {
+function getRolesUsingRosterMembers(members, roleTypes) {
 	
 	var roles = new Array();
-	
-	var roleTypes = getRoleTypes();
-	
+		
 	for (var i = 0, j = roleTypes.length; i < j; i++) {
-		roles[i] = { roleType: roleTypes[i].data, roleCount: 0 };
+		roles[i] = { roleType: roleTypes[i], roleCount: 0 };
 	}
 	
 	for (var i = 0, j = members.length; i < j; i++) {

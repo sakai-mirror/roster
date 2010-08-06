@@ -265,7 +265,25 @@ public class SakaiProxyImpl implements SakaiProxy {
 			}
 		}
 
-		rosterSite.setSiteGroups(siteGroups);
+		if (0 == siteGroups.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setSiteGroups(null);
+		} else {
+			rosterSite.setSiteGroups(siteGroups);
+		}
+		
+		List<String> userRoles = new ArrayList<String>();
+		for (Role role : site.getRoles()) {
+			userRoles.add(role.getId());
+		}
+
+		if (0 == userRoles.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setUserRoles(null);
+		} else {
+			rosterSite.setUserRoles(userRoles);
+		}
+
 		return rosterSite;
 	}
 

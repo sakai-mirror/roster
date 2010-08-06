@@ -14,6 +14,7 @@ public class RosterSite {
 
 	private String id;
 	private String title;
+	private List<String> userRoles;
 	private List<RosterGroup> siteGroups;
 	
 	public RosterSite() {
@@ -31,6 +32,12 @@ public class RosterSite {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public List<String> getUserRoles() {
+		return userRoles;
+	}
+	public void setUserRoles(List<String> userRoles) {
+		this.userRoles = userRoles;
 	}
 	public List<RosterGroup> getSiteGroups() {
 		return siteGroups;

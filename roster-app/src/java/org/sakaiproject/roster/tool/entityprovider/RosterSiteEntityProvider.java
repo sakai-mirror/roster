@@ -67,18 +67,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		
 		return sakaiProxy.getMembership(reference.getId(), null);
 	}
-	
-	// TODO might roll this into get-site
-	@EntityCustomAction(action = "get-roles", viewKey = EntityView.VIEW_SHOW)
-	public Object getRoles(EntityReference reference) {
 		
-		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
-			return ERROR_INVALID_SITE;
-		}	
-		
-		return sakaiProxy.getRoleTypes(reference.getId());
-	}
-	
 	@EntityCustomAction(action = "get-site", viewKey = EntityView.VIEW_SHOW)
 	public Object getSite(EntityReference reference) {
 		
@@ -101,6 +90,5 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	public void setSakaiProxy(SakaiProxy sakaiProxy) {
 		this.sakaiProxy = sakaiProxy;
 	}
-    
 	
 }
