@@ -26,6 +26,7 @@ var STATE_OVERVIEW = 'overview';
 var STATE_PICTURES = 'pics';
 var STATE_GROUP_MEMBERSHIP = 'group_membership';
 var STATE_ENROLLMENT_STATUS = 'status'
+var STATE_VIEW_PROFILE = 'profile';
 
 var SORT_NAME = 'sortName';
 var SORT_DISPLAY_ID = 'displayId';
@@ -49,6 +50,9 @@ var hideNames = false;
 var viewSingleColumn = false;
 var groupToView = null;
 var groupToViewText = roster_sections_all;
+var enrollmentSetToView = null;
+var enrollmentSetToViewText = null;
+var enrollmentStatusToViewText = roster_enrollment_status_all;
 
 // sakai.properties
 var defaultSortColumn = SORT_NAME;
@@ -60,6 +64,7 @@ var viewEmailColumn = true;
 var sortColumn = null;
 var overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
 var groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
+var enrollmentSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
 
 // sortEnd is used to update this so we know which column and direction the
 // tables are sorted in when exporting
@@ -82,19 +87,19 @@ $.tablesorter.addParser({
 			'roster_navbar');
 	
 	$('#navbar_overview_link').bind('click', function(e) {
-		return switchState('overview');
+		return switchState(STATE_OVERVIEW);
 	});
 
 	$('#navbar_pics_link').bind('click', function(e) {
-		return switchState('pics');
+		return switchState(STATE_PICTURES);
 	});
 
 	$('#navbar_group_membership_link').bind('click', function(e) {
-		return switchState('group_membership');
+		return switchState(STATE_GROUP_MEMBERSHIP);
 	});
 	
 	$('#navbar_enrollment_status_link').bind('click', function(e) {
-		return switchState('status');
+		return switchState(STATE_ENROLLMENT_STATUS);
 	});
 		
 	var arg = SakaiUtils.getParameters();
@@ -152,8 +157,11 @@ function switchState(state, arg, searchQuery) {
 		
 	var site = getRosterSite();
 
-	// TODO handle this (check permission)
-	$('#navbar_enrollment_status_link').hide();
+	if (!rosterCurrentUserPermissions.viewEnrollmentStatus ||
+			site.siteEnrollmentSets.length === 0) {
+		
+		$('#navbar_enrollment_status_link').hide();
+	}
 	
 	// hide group membership link if there are no groups
 	if (site.siteGroups.length === 0) {
@@ -164,7 +172,7 @@ function switchState(state, arg, searchQuery) {
 		
 		configureOverviewTableSort();
 		
-		var members = getMembers(site, searchQuery);
+		var members = getMembers(searchQuery);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
@@ -172,7 +180,7 @@ function switchState(state, arg, searchQuery) {
 				'displayTitleMsg':rosterCurrentUserPermissions.viewAllMembers},
 				'roster_header');
 		
-		if (site.siteGroups.length > 0 && members.length > 0) {
+		if (site.siteGroups.length > 0/* && members.length > 0*/) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
@@ -213,13 +221,13 @@ function switchState(state, arg, searchQuery) {
 		
 	} else if (STATE_PICTURES === state) {
 		
-		var members = getMembers(site, searchQuery);
+		var members = getMembers(searchQuery);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
 				{'siteTitle':site.title}, 'roster_header');
 		
-		if (site.siteGroups.length > 0 && members.length > 0) {
+		if (site.siteGroups.length > 0/* && members.length > 0*/) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
@@ -261,20 +269,20 @@ function switchState(state, arg, searchQuery) {
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
-				{'siteTitle':site.title}, 'roster_header');
+				{'siteTitle':site.title,
+				'displayTitleMsg':rosterCurrentUserPermissions.viewAllMembers},
+				'roster_header');
 						
 		SakaiUtils.renderTrimpathTemplate('empty_template', {}, 'roster_search');
-				
-		var groupsByUserId = getSiteGroupsByUserId(site);
-		
+						
 		if (roster_group_bygroup === grouped) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_group_section_filter_template',
 					{'arg':arg, 'siteId':rosterSiteId}, 'roster_section_filter');
-			
+
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
-					{'membership':members, 'groupsByUserId':groupsByUserId,
-					'siteGroups':site.siteGroups, 'rolesText':getRolesByGroupRoleFragments(site),
+					{'membership':members,
+					'siteGroups':site.siteGroups, 'rolesText':getRolesByGroupRoleFragments(site, members),
 					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 			
@@ -285,8 +293,8 @@ function switchState(state, arg, searchQuery) {
 				'participants':getCurrentlyDisplayingParticipants(roles)}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
-					{'membership':members, 'groupsByUserId':groupsByUserId,
-					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					{'membership':members, 'siteId':rosterSiteId,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		}
 		
@@ -305,11 +313,46 @@ function switchState(state, arg, searchQuery) {
 			$('table').tablesorter(groupSortParams);
 		});
 		
-	} else if ('profile' === state) {
+	} else if (STATE_VIEW_PROFILE === state) {
 		
 		var profileMarkup = SakaiUtils.getProfileMarkup(arg.userId);
 				
 		$('#roster_content').html(profileMarkup);
+		
+	} else if (STATE_ENROLLMENT_STATUS === state) {
+				
+		configureEnrollmentStatusTableSort();
+		
+		if (null === enrollmentSetToView && null != site.siteEnrollmentSets[0]) {
+			enrollmentSetToView = site.siteEnrollmentSets[0].id;
+		}
+		
+		var enrollment = getEnrolledMembers();
+		
+		SakaiUtils.renderTrimpathTemplate('roster_enrollment_header_template',
+				{'siteTitle':site.title}, 'roster_header');
+		
+		SakaiUtils.renderTrimpathTemplate('roster_enrollment_section_filter_template',
+				{'enrollmentSets':site.siteEnrollmentSets,
+				'enrollmentStatusDescriptions':site.enrollmentStatusDescriptions},
+				'roster_section_filter');
+				
+		SakaiUtils.renderTrimpathTemplate('roster_search_with_students_template',
+				{'students':getCurrentlyDisplayingStudents(enrollment, null)},
+				'roster_search');
+		
+		SakaiUtils.renderTrimpathTemplate('roster_enrollment_status_template',
+				{'enrollment':enrollment, 'enrollmentStatus':enrollmentStatusToViewText,
+				'siteId':rosterSiteId, 'firstNameLastName':firstNameLastName,
+				'viewEmailColumn':viewEmailColumn,
+				'viewProfile':rosterCurrentUserPermissions.viewProfile},
+				'roster_content');
+				
+		$(document).ready(function() {
+			
+			readyExportButton(state);
+			readyEnrollmentFilters(site.siteEnrollmentSets.length);
+		});
 	}
 }
 
@@ -331,6 +374,10 @@ function getRosterSite() {
 			if (undefined == site.userRoles) {
 				site.userRoles = new Array();
 			}
+			
+			if (undefined == site.siteEnrollmentSets) {
+				site.siteEnrollmentSets = new Array();
+			}
 		}
 	});
 	
@@ -338,12 +385,17 @@ function getRosterSite() {
 	
 }
 
-function getRosterMembership() {
+function getRosterMembership(groupId) {
 	
 	var membership;
 	
+	var url = "/direct/roster-membership/" + rosterSiteId + "/get-membership.json";
+	if (groupId) {
+		url += "?groupId=" + groupId;
+	}
+	
 	jQuery.ajax({
-    	url : "/direct/roster-membership/" + rosterSiteId + "/get-membership.json",
+    	url : url,
       	dataType : "json",
        	async : false,
 		cache: false,
@@ -358,6 +410,52 @@ function getRosterMembership() {
 	return membership;
 }
 
+/*function getRosterEnrollments() {
+	
+	var enrollments;
+	
+	var url = "/direct/roster-membership/" + rosterSiteId + "/get-enrollments.json";
+	
+	jQuery.ajax({
+    	url : url,
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			enrollments = data['roster-membership_collection'];
+		},
+		error : function() {
+			enrollments = new Array();
+		}
+	});
+	
+	return enrollments;
+	
+}*/
+
+function getRosterEnrollment() {
+	
+	var enrollment;
+	
+	var url = "/direct/roster-membership/" + rosterSiteId + "/get-enrollment.json?enrollmentSetId=" + enrollmentSetToView;
+	
+	jQuery.ajax({
+    	url : url,
+      	dataType : "json",
+       	async : false,
+		cache: false,
+	   	success : function(data) {
+			enrollment = data['roster-membership_collection'];
+		},
+		error : function() {
+			enrollment = new Array();
+		}
+	});
+	
+	return enrollment;
+	
+}
+
 function getCurrentlyDisplayingParticipants(roles) {
 	
 	var participants = 0;
@@ -368,6 +466,21 @@ function getCurrentlyDisplayingParticipants(roles) {
 	}
 	
 	return currently_displaying_participants.replace(/\{0\}/, participants);
+}
+
+function getCurrentlyDisplayingStudents(enrollment, enrollmentType) {
+	
+	var currentEnrollments = enrollments_currently_displaying.replace(/\{0\}/,
+			enrollment.length);
+	
+	if (enrollmentType) {
+		currentEnrollments = currentEnrollments.replace(/\{1\}/, enrollmentType);
+	} else {
+		// do all needs no string		
+		currentEnrollments = currentEnrollments.replace(/\{1\}/, '');
+	}
+	
+	return currentEnrollments;
 }
 
 function getRoleFragments(roles) {
@@ -423,14 +536,14 @@ function getRolesUsingRosterMembers(members, roleTypes) {
 
 
 
-function getRolesByGroup(site) {
+function getRolesByGroup(site, members) {
 	
-	var members = getRosterMembership();
 	var rolesByGroup = new Array();
 	
 	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
 				
 		var groupId = site.siteGroups[i].id;
+
 		rolesByGroup[groupId] = new Object();
 		rolesByGroup[groupId].groupId = groupId;
 		rolesByGroup[groupId].groupTitle = site.siteGroups[i].title;
@@ -442,7 +555,7 @@ function getRolesByGroup(site) {
 								
 				if (members[k].userId === site.siteGroups[i].userIds[m]) {
 					
-					var role = members[k].memberRole;
+					var role = members[k].role;
 					
 					// if we haven't processed this type of role before, create it
 					if (undefined === rolesByGroup[groupId].roles[role]) {
@@ -459,9 +572,9 @@ function getRolesByGroup(site) {
 	return rolesByGroup;
 }
 
-function getRolesByGroupRoleFragments(site) {
+function getRolesByGroupRoleFragments(site, members) {
 
-	var rolesByGroup = getRolesByGroup(site);
+	var rolesByGroup = getRolesByGroup(site, members);
 	
 	var rolesByGroupRoleFragments = new Array();
 	
@@ -507,9 +620,9 @@ function getRolesByGroupRoleFragments(site) {
 	return rolesByGroupRoleFragments;
 }
 
-function getMembers(site, searchQuery) {
+function getMembers(searchQuery) {
 		
-	var members;// = getRosterMembership();;
+	var members;
 	
 	// view all users
 	if (groupToViewText === roster_sections_all ||
@@ -518,7 +631,7 @@ function getMembers(site, searchQuery) {
 		members = getRosterMembership();			
 	// view a specific group (note: search is done within group if selected)
 	} else {
-		members = getGroupMembers(site,groupToView);
+		members = getRosterMembership(groupToView);
 	}
 
 	var membersToReturn = new Array();
@@ -543,50 +656,13 @@ function getMembers(site, searchQuery) {
 	return membersToReturn;
 }
 
-function getGroupMembers(site,groupId) {
-		
-	var usersToRender;
-	for (var i = 0, j = site.siteGroups.length; i < j; i++) {
-		if (site.siteGroups[i].id === groupToView) {
-			usersToRender = site.siteGroups[i].userIds;
-			break;
-		}
-	}
+function getEnrolledMembers(searchQuery) {
 	
-	var members = getRosterMembership();
-	var groupMembers = new Array();
+	var enrollment = getRosterEnrollment();
 	
-	for (var i = 0, j = members.length; i < j; i++) {
-		for (var k = 0, l = usersToRender.length; k < l; k++) {
-			if (members[i].userId === usersToRender[k]) {
-				groupMembers[groupMembers.length] = members[i];
-				continue;
-			}
-		}
-	}
+	// TODO process search plus only results that match selected status
 	
-	return groupMembers;
-}
-
-function getSiteGroupsByUserId(site) {
-	
-	var groupsByUserId = new Array();
-	
-	for (var i = 0, k = site.siteGroups.length; i < k; i++) {	
-		for (var j = 0, l = site.siteGroups[i].userIds.length; j < l; j++) {
-		
-			var userId = site.siteGroups[i].userIds[j];
-			
-			if (undefined === groupsByUserId[userId]) {
-				groupsByUserId[userId] = new Array();
-			}
-			
-			groupsByUserId[userId][groupsByUserId[userId].length] = 
-				site.siteGroups[i].title;		
-		}
-	}
-	
-	return groupsByUserId;
+	return enrollment;
 }
 
 function readyClearButton(state) {
@@ -665,6 +741,29 @@ function readySectionFilter(site, state) {
 			switchState(state);
 		});
 	}
+}
+
+function readyEnrollmentFilters(numberOfEnrollmentSets) {
+			
+	if (numberOfEnrollmentSets > 0) {
+		
+		$('#roster_form_enrollment_set_filter').val(enrollmentSetToViewText);
+		$('#roster_form_enrollment_set_filter').change(function(e) {
+			enrollmentSetToView = this.options[this.selectedIndex].value;
+			enrollmentSetToViewText = this.options[this.selectedIndex].text;
+			
+			switchState(STATE_ENROLLMENT_STATUS);
+		});
+	}
+	
+	$('#roster_form_enrollment_status_filter').val(enrollmentStatusToViewText);
+	$('#roster_form_enrollment_status_filter').change(function(e) {
+		
+		enrollmentStatusToViewText = this.options[this.selectedIndex].text;
+				
+		switchState(STATE_ENROLLMENT_STATUS);
+	});
+	
 }
 
 function readyHideNamesButton(state, searchQuery) {
@@ -746,6 +845,35 @@ function configureGroupMembershipTableSort() {
 		groupSortParams.sortList = [[1,0]];
 	} else if (SORT_ROLE === sortColumn) {
 		groupSortParams.sortList = [[2,0]];
+	}
+}
+
+function configureEnrollmentStatusTableSort() {
+	
+	if (SORT_NAME === sortColumn) {
+		enrollmentSortParams.sortList = [[0,0]];
+	} else if (SORT_DISPLAY_ID === sortColumn) {
+		enrollmentSortParams.sortList = [[1,0]];
+	} else if (SORT_EMAIL === sortColumn) {
+		
+		if (viewEmailColumn) {
+			enrollmentSortParams.sortList = [[2,0]];
+		}
+		
+	} else if (SORT_STATUS === sortColumn) {
+	
+		if (viewEmailColumn) {
+			enrollmentSortParams.sortList = [[3,0]];
+		} else {
+			enrollmentSortParams.sortList = [[2,0]];
+		}
+	} else if (SORT_CREDITS === sortColumn) {
+		
+		if (viewEmailColumn) {
+			enrollmentSortParams.sortList = [[4,0]];
+		} else {
+			enrollmentSortParams.sortList = [[3,0]];
+		}
 	}
 }
 

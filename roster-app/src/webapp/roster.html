@@ -84,6 +84,79 @@ else
 -->
 </div>
 
+<div id="roster_overview_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_overview}: ${siteTitle}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="export_button" type="button" value="${export_}"/>
+				<input type="button" value="${print_}" onclick="window.print()" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+{if displayTitleMsg}
+<span class="instruction" style="display: block;">${title_msg}</span>
+{/if}
+-->
+</div>
+
+<div id="roster_pics_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_pictures}: ${siteTitle}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input type="button" value="${print_screen}" onclick="window.print()" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+-->
+</div>
+
+<div id="roster_groups_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_group_membership}: ${siteTitle}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="export_button" type="button" value="${export_}"/>
+				<input type="button" value="${print_}" onclick="window.print()"/>
+			</td>
+		</tr>
+	</tbody>
+</table>
+{if displayTitleMsg}
+<span class="instruction" style="display: block;">${title_msg_groups}</span>
+{/if}
+-->
+</div>
+
+<div id="roster_enrollment_header_template" style="display:none"><!--
+<table class="rosterPageHeader">
+	<tbody>
+		<tr>
+			<td class="rosterPageHeaderLeft">
+				<h3>${title_status}: ${siteTitle}</h3>
+			</td>
+			<td class="rosterPageHeaderRight">
+				<input id="export_button" type="button" value="${export_}"/>
+				<input type="button" value="${print_}" onclick="window.print()" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+-->
+</div>
+
 <div id="roster_section_filter_template" style="display:none"><!--
 <table>
 	<tr>
@@ -143,58 +216,43 @@ else
  -->
 </div>
 
-<div id="roster_overview_header_template" style="display:none"><!--
-<table class="rosterPageHeader">
+<div id="roster_enrollment_section_filter_template" style="display:none"><!--
+<table>
+	{if enrollmentSets.length > 0}
 	<tbody>
 		<tr>
-			<td class="rosterPageHeaderLeft">
-				<h3>${title_overview}: ${siteTitle}</h3>
+			<td><span class="filterLabel">${enrollment_status_filter}</span></td>
+			<td>
+				<span class="filterElement">
+					{if enrollmentSets.length == 1}
+						${enrollmentSets[0].title}
+					{else}
+					<select id="roster_form_enrollment_set_filter" size="1">
+						<option selected="selected" value="">${roster_enrollment_status_all}</option>
+						{for enrollmentSet in enrollmentSets}
+							<option value="${enrollmentSet}">${enrollmentSet.title}</option>
+						{/for}
+					</select>
+					{/if}
+				</span>
 			</td>
-			<td class="rosterPageHeaderRight">
-				<input id="export_button" type="button" value="${export_}"/>
-				<input type="button" value="${print_}" onclick="window.print()" />
+		</tr>
+		<tr>
+			<td><span class="filterLabel">${enrollment_status_filter_label}</span></td>
+			<td><span class="filterElement">
+					<select id="roster_form_enrollment_status_filter" size="1">
+						<option selected="selected" value="">${roster_enrollment_status_all}</option>
+						{for enrollmentStatusDescription in enrollmentStatusDescriptions}
+							<option value="${enrollmentStatusDescription}">${enrollmentStatusDescription}</option>
+						{/for}
+					</select>
+				</span>
 			</td>
 		</tr>
 	</tbody>
+	{/if}
 </table>
-{if displayTitleMsg}
-<span class="instruction" style="display: block;">${title_msg}</span>
-{/if}
--->
-</div>
-
-<div id="roster_pics_header_template" style="display:none"><!--
-<table class="rosterPageHeader">
-	<tbody>
-		<tr>
-			<td class="rosterPageHeaderLeft">
-				<h3>${title_pictures}: ${siteTitle}</h3>
-			</td>
-			<td class="rosterPageHeaderRight">
-				<input type="button" value="${print_screen}" onclick="window.print()" />
-			</td>
-		</tr>
-	</tbody>
-</table>
--->
-</div>
-
-<div id="roster_groups_header_template" style="display:none"><!--
-<table class="rosterPageHeader">
-	<tbody>
-		<tr>
-			<td class="rosterPageHeaderLeft">
-				<h3>${title_group_membership}: ${siteTitle}</h3>
-			</td>
-			<td class="rosterPageHeaderRight">
-				<input id="export_button" type="button" value="${export_}"/>
-				<input type="button" value="${print_}" onclick="window.print()"/>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<span class="instruction" style="display: block;">${title_msg_groups}</span>
--->
+ -->
 </div>
 
 <div id="roster_search_with_participants_template" style="display:none"><!--
@@ -221,6 +279,33 @@ else
 							${frag}
 						{/for}
 					</div>
+				</span>
+			</td>
+		</tr>
+	</tbody>
+</table>
+ -->
+</div>
+
+<div id="roster_search_with_students_template" style="display:none"><!--
+<table id="roster_form:search_group" class="searchFilter">
+	<tbody>
+		<tr>
+			<td>
+				<div id="roster_form:search_filter" class="act">
+					<input id="roster_form_search_field" type="text" value="${roster_search_text}"
+						onfocus="clearIfDefaultString(this, roster_search_text)"
+						onkeypress="return handleEnterKey(this, event)"
+						name="roster_form_search" />
+					<input id="roster_form_search_button" class="active" type="button"
+						value="${roster_search_button}" name="roster_form:search_button" />
+					<input id="roster_form_clear_button" type="button"
+						value="${roster_clear_button}" name="roster_form:clear_button" />
+				</div>
+			</td>
+			<td>
+				<span class="instruction">
+					<div style="padding-top: 10px;padding-left: 10px;">${students}</div>
 				</span>
 			</td>
 		</tr>
@@ -452,7 +537,7 @@ else
 										{/if}
 									</td>
 									<td>${member.role}</td>
-									<td>${groupsByUserId[member.userId]}</td>
+									<td>${member.groupsToString}</td>
 								</tr>
 							{/if}
 						{/for}
@@ -497,11 +582,63 @@ else
 					{/if}
 				</td>
 				<td>${member.role}</td>
-				<td>${groupsByUserId[member.userId]}</td>
+				<td>${member.groupsToString}</td>
 			</tr>
 		{/for}
 	</tbody>
 </table>
+-->
+</div>
+
+<div id="roster_enrollment_status_template" style="display:none"><!--
+<table cellspacing="0" cellpadding="0" class="listHier rosterTable" id="roster_form_rosterTable">
+	<thead>
+		<tr>
+			<th width="45%"><a href="#">${facet_name}</a></th>
+			<th width="10%"><a href="#">${facet_userId}</a></th>
+			{if viewEmailColumn }
+				<th width="25%"><a href="#">${facet_email}</a></th>
+			{/if}
+			<th width="10%"><a href="#">${facet_status}</a></th>
+			<th width="10%"><a href="#">${facet_credits}</a></th>
+		</tr>
+	</thead>
+	<tbody>
+	{if enrollment.length == 0}
+		<tr><td>${no_participants}</td></tr>
+	{else}
+		{for member in enrollment}
+			{if enrollmentStatus === roster_enrollment_status_all ||
+				member.status === enrollmentStatus}
+			<tr>
+				<td>
+					{if firstNameLastName}
+						${member.displayName}
+					{else}
+						${member.sortName}
+					{/if}
+				</td>
+				<td>
+					{if viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+							${member.displayId}
+						</a>
+					{else}
+						${member.displayId}
+					{/if}
+				</td>
+				{if viewEmailColumn}
+					<td><a href="mailto:${member.email}">${member.email}</a></td>
+				{/if}
+				<td>${member.status}</td>
+				<td>${member.credits}</td>
+			</tr>
+			{/if}
+		{/for}
+	{/if}
+	</tbody>
+</table>
+
 -->
 </div>
 

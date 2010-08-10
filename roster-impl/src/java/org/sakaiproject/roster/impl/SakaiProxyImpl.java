@@ -17,19 +17,29 @@ package org.sakaiproject.roster.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.app.roster.RosterFunctions;
+import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.component.api.ServerConfigurationService;
+import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.coursemanagement.api.Enrollment;
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.roster.api.RosterEnrollment;
 import org.sakaiproject.roster.api.RosterGroup;
 import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.RosterSite;
@@ -59,7 +69,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
 	
 	//private AuthzGroupService authzGroupService = null;
-	//private CourseManagementService courseManagementService;
+	private CourseManagementService courseManagementService;
 	//private FunctionManager functionManager = null;
 	//private SecurityService securityService = null;
 	private ServerConfigurationService serverConfigurationService = null;
@@ -139,81 +149,151 @@ public class SakaiProxyImpl implements SakaiProxy {
 	 * {@inheritDoc}
 	 */
 	public List<RosterMember> getMembership(String siteId, String groupId) {
-
+		
 		List<RosterMember> rosterMembers = new ArrayList<RosterMember>();
-
-		String currentUserId = getCurrentUserId();
-
+		
+		Site site = null;
 		try {
-
-			Site site = siteService.getSite(siteId);
-
-			Set<Member> membership = new HashSet<Member>();
-
-			if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
-				if (null == groupId) {
-					// get all members
-					membership.addAll(site.getMembers());
-				} else if (null != site.getGroup(groupId)){
-					// get all members of requested groupId
-					membership.addAll(site.getGroup(groupId).getMembers());
-				} else {
-					// assume invalid groupId specified
-					return null;
-				}
-			} else {
-				if (null == groupId) {
-					// get all members of groups current user is allow
-					for (Group group : site.getGroups()) {
-						if (group.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
-							membership.addAll(group.getMembers());
-						}
-					}
-				} else if (null != site.getGroup(groupId)){
-					// get all members of requested groupId if current user is member
-					if (site.getGroup(groupId).isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
-						membership.addAll(site.getGroup(groupId).getMembers());
-					}
-				} else {
-					// assume invalid groupId specified or user not member
-					return null;
-				}
-			}
-
-			for (Member member : membership) {
-
-				String userId = member.getUserId();
-
-				RosterMember rosterMember = new RosterMember();
-				rosterMember.setUserId(userId);
-				rosterMember.setDisplayId(member.getUserDisplayId());
-				rosterMember.setRole(member.getRole().getId());
-
-				User user = userDirectoryService.getUser(userId);
-
-				rosterMember.setEmail(user.getEmail());
-				rosterMember.setDisplayName(user.getDisplayName());
-				rosterMember.setSortName(user.getSortName());
-
-				Collection<Group> groups = site.getGroupsWithMember(userId);
-				Iterator<Group> groupIterator = groups.iterator();
-
-				while (groupIterator.hasNext()) {
-					Group group = groupIterator.next();
-
-					rosterMember.addGroup(group.getId(), group.getTitle());
-				}
-
-				rosterMembers.add(rosterMember);
-			}
-
+			site = siteService.getSite(siteId);
 		} catch (IdUnusedException e) {
 			e.printStackTrace();
-		} catch (UserNotDefinedException e) {
+		}
+		
+		if (null == site) {
+			return null;
+		}
+		
+		// permissions are handled inside this method call
+		Set<Member> membership = getMembership(groupId, getCurrentUserId(), site);
+		if (null == membership) {
+			return null;
+		}
+		
+		for (Member member : membership) {
+
+			try {
+
+				RosterMember rosterMember = getRosterMember(member, site);
+
+				rosterMembers.add(rosterMember);
+
+			} catch (UserNotDefinedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (rosterMembers.size() == 0) {
+			return null;
+		}
+		
+		return rosterMembers;
+		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Map<String, RosterMember> getMembershipMapped(String siteId,
+			String groupId) {
+
+		Map<String, RosterMember> rosterMembers = new HashMap<String, RosterMember>();
+
+		Site site = null;
+		try {
+			site = siteService.getSite(siteId);
+		} catch (IdUnusedException e) {
 			e.printStackTrace();
 		}
 
+		if (null == site) {
+			return null;
+		}
+
+		// permissions are handled inside this method call
+		Set<Member> membership = getMembership(groupId, getCurrentUserId(), site);
+		if (null == membership) {
+			return null;
+		}
+
+		for (Member member : membership) {
+
+			try {
+
+				RosterMember rosterMember = getRosterMember(member, site);
+
+				rosterMembers.put(rosterMember.getEid(), rosterMember);
+
+			} catch (UserNotDefinedException e) {
+				e.printStackTrace();
+			}
+		}
+
 		return rosterMembers;
+	}
+
+	private Set<Member> getMembership(String groupId, String currentUserId,
+			Site site) {
+		
+		Set<Member> membership = new HashSet<Member>();
+
+		if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+			if (null == groupId) {
+				// get all members
+				membership.addAll(site.getMembers());
+			} else if (null != site.getGroup(groupId)){
+				// get all members of requested groupId
+				membership.addAll(site.getGroup(groupId).getMembers());
+			} else {
+				// assume invalid groupId specified
+				return null;
+			}
+		} else {
+			if (null == groupId) {
+				// get all members of groups current user is allow
+				for (Group group : site.getGroups()) {
+					if (group.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+						membership.addAll(group.getMembers());
+					}
+				}
+			} else if (null != site.getGroup(groupId)){
+				// get all members of requested groupId if current user is member
+				if (site.getGroup(groupId).isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+					membership.addAll(site.getGroup(groupId).getMembers());
+				}
+			} else {
+				// assume invalid groupId specified or user not member
+				return null;
+			}
+		}
+		return membership;
+	}
+	
+	private RosterMember getRosterMember(Member member, Site site)
+			throws UserNotDefinedException {
+		
+		String userId = member.getUserId();
+
+		User user = userDirectoryService.getUser(userId);
+
+		RosterMember rosterMember = new RosterMember(userId);
+		rosterMember.setEid(user.getEid());
+		rosterMember.setDisplayId(member.getUserDisplayId());
+		rosterMember.setRole(member.getRole().getId());
+
+		rosterMember.setEmail(user.getEmail());
+		rosterMember.setDisplayName(user.getDisplayName());
+		rosterMember.setSortName(user.getSortName());
+
+		Collection<Group> groups = site.getGroupsWithMember(userId);
+		Iterator<Group> groupIterator = groups.iterator();
+
+		while (groupIterator.hasNext()) {
+			Group group = groupIterator.next();
+
+			rosterMember.addGroup(group.getId(), group.getTitle());
+		}
+
+		return rosterMember;
 	}
 	
 	/**
@@ -243,18 +323,21 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
 
-		boolean viewAll = site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL);
-		
+		boolean viewAll = site.isAllowed(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+
 		for (Group group : site.getGroups()) {
 
-			if (viewAll ||  group.isAllowed(currentUserId,
-					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
-				
+			if (viewAll
+					|| group.isAllowed(currentUserId,
+							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+
 				RosterGroup rosterGroup = new RosterGroup();
 				rosterGroup.setId(group.getId());
 				rosterGroup.setTitle(group.getTitle());
 
 				List<String> userIds = new ArrayList<String>();
+
 				for (Member member : group.getMembers()) {
 					userIds.add(member.getUserId());
 				}
@@ -271,7 +354,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		} else {
 			rosterSite.setSiteGroups(siteGroups);
 		}
-		
+
 		List<String> userRoles = new ArrayList<String>();
 		for (Role role : site.getRoles()) {
 			userRoles.add(role.getId());
@@ -284,17 +367,118 @@ public class SakaiProxyImpl implements SakaiProxy {
 			rosterSite.setUserRoles(userRoles);
 		}
 
+		GroupProvider groupProvider = (GroupProvider) ComponentManager
+				.get(GroupProvider.class);
+
+		Map<String, String> statusCodes = courseManagementService
+				.getEnrollmentStatusDescriptions(Locale.getDefault());
+
+		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(statusCodes.values()));
+		
+		if (null == groupProvider) {
+			log.warn("no group provider installed");
+		} else {
+			String[] sectionIds = groupProvider.unpackId(getSite(siteId)
+					.getProviderGroupId());
+
+			List<RosterEnrollment> siteEnrollmentSets = new ArrayList<RosterEnrollment>();
+
+			// avoid duplicates
+			List<String> enrollmentSetIdsProcessed = new ArrayList<String>();
+
+			for (String sectionId : sectionIds) {
+
+				Section section = courseManagementService.getSection(sectionId);
+				if (null == section) {
+					continue;
+				}
+
+				EnrollmentSet enrollmentSet = section.getEnrollmentSet();
+				if (null == enrollmentSet) {
+					continue;
+				}
+
+				if (enrollmentSetIdsProcessed.contains(enrollmentSet.getEid())) {
+					continue;
+				}
+
+				RosterEnrollment rosterEnrollmentSet = new RosterEnrollment();
+				rosterEnrollmentSet.setId(enrollmentSet.getEid());
+				rosterEnrollmentSet.setTitle(enrollmentSet.getTitle());
+				siteEnrollmentSets.add(rosterEnrollmentSet);
+
+				enrollmentSetIdsProcessed.add(enrollmentSet.getEid());
+			}
+
+			if (0 == siteEnrollmentSets.size()) {
+				// to avoid IndexOutOfBoundsException in EB code
+				rosterSite.setSiteEnrollmentSets(null);
+			} else {
+				rosterSite.setSiteEnrollmentSets(siteEnrollmentSets);
+			}
+		}
 		return rosterSite;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-//	public List<RosterMember> getMembershipByGroup(String siteId) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	public List<RosterMember> getEnrolledMembership(String siteId,
+			String enrollmentSetId) {
 
+		try {
+			Site site = siteService.getSite(siteId);
+
+			if (false == site.isAllowed(getCurrentUserId(),
+					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
+				return null;
+			}
+		} catch (IdUnusedException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		List<RosterMember> enrolledMembers = new ArrayList<RosterMember>();
+
+		// TODO fix how to get the Locale
+		Map<String, String> statusCodes = courseManagementService
+				.getEnrollmentStatusDescriptions(Locale.getDefault());
+
+		Map<String, RosterMember> membership = getMembershipMapped(siteId, null);
+
+		EnrollmentSet enrollmentSet = courseManagementService
+				.getEnrollmentSet(enrollmentSetId);
+
+		if (null == enrollmentSet) {
+			return null;
+		}
+
+		for (Enrollment enrollment : courseManagementService
+				.getEnrollments(enrollmentSet.getEid())) {
+
+			RosterMember member = membership.get(enrollment.getUserId());
+
+			RosterMember enrolledMember = new RosterMember(member.getUserId());
+			enrolledMember.setCredits(enrollment.getCredits());
+			enrolledMember.setDisplayId(member.getDisplayId());
+			enrolledMember.setDisplayName(member.getDisplayName());
+			enrolledMember.setEid(member.getEid());
+			enrolledMember.setEmail(member.getEmail());
+			enrolledMember.setRole(member.getRole());
+			enrolledMember.setSortName(member.getSortName());
+			enrolledMember.setStatus(statusCodes.get(enrollment
+					.getEnrollmentStatus()));
+
+			enrolledMembers.add(enrolledMember);
+		}
+
+		if (0 == enrolledMembers.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			return null;
+		}
+		return enrolledMembers;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -379,10 +563,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 	
 	/* Spring injections */
 	
-//	public void setCourseManagementService(
-//			CourseManagementService courseManagementService) {
-//		this.courseManagementService = courseManagementService;
-//	}
+	public void setCourseManagementService(
+			CourseManagementService courseManagementService) {
+		this.courseManagementService = courseManagementService;
+	}
 	
 //	public void setFunctionManager(FunctionManager functionManager) {
 //		this.functionManager = functionManager;

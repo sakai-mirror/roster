@@ -15,6 +15,8 @@
  */
 package org.sakaiproject.roster.tool.entityprovider;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.entitybroker.EntityReference;
@@ -45,12 +47,16 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	
 	public final static String ERROR_INVALID_SITE	= "Invalid site ID";
 	
+	// key passed as parameters
+	public final static String KEY_GROUP_ID				= "groupId";
+	public final static String KEY_ENROLLMENT_SET_ID	= "enrollmentSetId";
+	
 	private SakaiProxy sakaiProxy;
-		
+	
 	public RosterSiteEntityProvider() {
 		
 	}
-	
+		
 	/**
 	 * {@inheritDoc}
 	 */
@@ -59,13 +65,18 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	}
 	
 	@EntityCustomAction(action = "get-membership", viewKey = EntityView.VIEW_SHOW)
-	public Object getMembership(EntityReference reference) {
-		
+	public Object getMembership(EntityReference reference, Map<String, Object> parameters) {
+
 		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
 			return ERROR_INVALID_SITE;
 		}
 		
-		return sakaiProxy.getMembership(reference.getId(), null);
+		String groupId = null;
+		if (parameters != null && parameters.containsKey(KEY_GROUP_ID)) {
+			groupId = parameters.get(KEY_GROUP_ID).toString();
+		}
+		
+		return sakaiProxy.getMembership(reference.getId(), groupId);
 	}
 		
 	@EntityCustomAction(action = "get-site", viewKey = EntityView.VIEW_SHOW)
@@ -76,6 +87,21 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		}
 		
 		return sakaiProxy.getSiteDetails(reference.getId());
+	}
+		
+	@EntityCustomAction(action = "get-enrollment", viewKey = EntityView.VIEW_SHOW)
+	public Object getEnrollment(EntityReference reference, Map<String, Object> parameters) {
+		
+		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
+			return ERROR_INVALID_SITE;
+		}
+		
+		String enrollmentSetId = null;
+		if (parameters != null && parameters.containsKey(KEY_ENROLLMENT_SET_ID)) {
+			enrollmentSetId = parameters.get(KEY_ENROLLMENT_SET_ID).toString();
+		}
+		
+		return sakaiProxy.getEnrolledMembership(reference.getId(), enrollmentSetId);
 	}
 	
 	/**

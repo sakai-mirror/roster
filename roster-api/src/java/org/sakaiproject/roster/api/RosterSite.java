@@ -16,6 +16,8 @@ public class RosterSite {
 	private String title;
 	private List<String> userRoles;
 	private List<RosterGroup> siteGroups;
+	private List<RosterEnrollment> siteEnrollmentSets;
+	private List<String> enrollmentStatusDescriptions;
 	
 	public RosterSite() {
 		
@@ -44,5 +46,21 @@ public class RosterSite {
 	}
 	public void setSiteGroups(List<RosterGroup> siteGroups) {
 		this.siteGroups = siteGroups;
+	}
+
+	public List<RosterEnrollment> getSiteEnrollmentSets() {
+		return siteEnrollmentSets;
+	}
+
+	public void setSiteEnrollmentSets(List<RosterEnrollment> siteEnrollmentSets) {
+		this.siteEnrollmentSets = siteEnrollmentSets;
+	}
+	
+	public List<String> getEnrollmentStatusDescriptions() {
+		return enrollmentStatusDescriptions;
+	}
+	
+	public void setEnrollmentStatusDescriptions(List<String> enrollmentStatusDescriptions) {
+		this.enrollmentStatusDescriptions = enrollmentStatusDescriptions;
 	}
 }

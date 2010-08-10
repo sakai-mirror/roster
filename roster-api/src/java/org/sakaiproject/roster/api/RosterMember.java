@@ -13,7 +13,8 @@ import java.util.Map;
  */
 public class RosterMember {
 	
-	private String userId;
+	private String eId;
+	private final String userId;
 	private String displayId;
 	private String displayName;
 	private String sortName;
@@ -24,8 +25,13 @@ public class RosterMember {
 	
 	private Map<String, String> groups = new HashMap<String, String>();
 	
-	public RosterMember() {
+	public RosterMember(String userId) {
 		
+		if (null == userId) {
+			throw new IllegalArgumentException("must supply userId");
+		}
+		
+		this.userId = userId;
 	}
 	
 	public void addGroup(String groupId, String groupTitle) {
@@ -56,12 +62,20 @@ public class RosterMember {
 		return groupsString.toString();
 	}
 
+	public String getEid() {
+		if (null == eId) {
+			return userId;
+		}
+		
+		return eId;
+	}
+	
 	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setEid(String eId) {
+		this.eId = eId;
 	}
 
 	public String getDisplayId() {

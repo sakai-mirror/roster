@@ -3,23 +3,21 @@
  */
 package org.sakaiproject.roster.api;
 
-import java.util.List;
 
 /**
- * Container for a group.
+ * Container for an enrollment set.
  * 
  * @author d.b.robinson@lancaster.ac.uk
  */
-public class RosterGroup {
-
+public class RosterEnrollment {
+	
 	private String id;
 	private String title;
-	private List<String> userIds;
 	
-	public RosterGroup() {
+	public RosterEnrollment() {
 		
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -35,14 +33,5 @@ public class RosterGroup {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
-	public List<String> getUserIds() {
-		return userIds;
-	}
-
-	public void setUserIds(List<String> userIds) {
-		this.userIds = userIds;
-	}
-	
 	
 }

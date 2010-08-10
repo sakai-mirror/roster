@@ -16,6 +16,7 @@
 package org.sakaiproject.roster.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.user.api.User;
@@ -44,7 +45,7 @@ public interface SakaiProxy {
 	public Site getSite(String siteId);
 	
 	/**
-	 * Returns a list of <code>RosterMember</code>s for the specified site
+	 * Returns a map of <code>RosterMember</code>s for the specified site
 	 * group. Set <code>groupId</code> to <code>null</code> to retrieve all
 	 * members for a site.
 	 * 
@@ -52,9 +53,13 @@ public interface SakaiProxy {
 	 * @param groupId
 	 * @return
 	 */
-	public List<RosterMember> getMembership(String siteId, String groupId);
+	public Map<String, RosterMember> getMembershipMapped(String siteId, String groupId);
 
+	public List<RosterMember> getMembership(String siteId, String groupId);
+	
 	public RosterSite getSiteDetails(String siteId);
+	
+	public List<RosterMember> getEnrolledMembership(String siteId, String enrollmentSetId);
 	
 	public String getCurrentSessionUserId();
 	
@@ -62,6 +67,4 @@ public interface SakaiProxy {
 	
 	public Boolean hasUserPermission(String userId, String permission, String siteId);
 	
-//	public List<CourseSection> getViewableSectionsForCurrentUser();
-//	public List<CourseSection> getViewableEnrollmentStatusSectionsForCurrentUser();
 }
