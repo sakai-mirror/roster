@@ -423,7 +423,7 @@ function getRosterMembership(groupId) {
 function getRosterEnrollment() {
 	
 	var enrollment;
-	
+	// TODO pass enrollment status required?
 	var url = "/direct/roster-membership/" + rosterSiteId + "/get-enrollment.json?enrollmentSetId=" + enrollmentSetToView;
 	
 	jQuery.ajax({
@@ -629,7 +629,7 @@ function getMembers(searchQuery) {
 }
 
 function getEnrolledMembers(searchQuery) {
-	
+	// TODO pass enrollment status required?
 	var enrollment = getRosterEnrollment();
 		
 	if (searchQuery) {

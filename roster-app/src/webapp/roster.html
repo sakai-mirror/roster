@@ -333,10 +333,12 @@ else
 		<tr>
 			<th width="25%"><a href="#">${facet_name}</a></th>
 			<th width="10%"><a href="#">${facet_userId}</a></th>
-			{if viewEmailColumn }
+			{if true === viewEmailColumn}
 				<th width="15%"><a href="#">${facet_email}</a></th>
+				<th width="50%"><a href="#">${facet_role}</a></th>
+			{else}
+				<th width="65%"><a href="#">${facet_role}</a></th>
 			{/if}
-			<th width="50%"><a href="#">${facet_role}</a></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -368,7 +370,7 @@ else
 						${member.displayId}
 					{/if}
 				</td>
-				{if viewEmailColumn}
+				{if true === viewEmailColumn}
 					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
 				<td>${member.role}</td>
@@ -612,11 +614,14 @@ else
 		<tr>
 			<th width="45%"><a href="#">${facet_name}</a></th>
 			<th width="10%"><a href="#">${facet_userId}</a></th>
-			{if viewEmailColumn }
-				<th width="25%"><a href="#">${facet_email}</a></th>
+			{if true === viewEmailColumn}
+				<th width="20%"><a href="#">${facet_email}</a></th>
+				<th width="12.5%"><a href="#">${facet_status}</a></th>
+				<th width="12.5%"><a href="#">${facet_credits}</a></th>
+			{else}
+				<th width="22.5%"><a href="#">${facet_status}</a></th>
+				<th width="22.5%"><a href="#">${facet_credits}</a></th>
 			{/if}
-			<th width="10%"><a href="#">${facet_status}</a></th>
-			<th width="10%"><a href="#">${facet_credits}</a></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -651,7 +656,7 @@ else
 						${member.displayId}
 					{/if}
 				</td>
-				{if viewEmailColumn}
+				{if true === viewEmailColumn}
 					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
 				<td>${member.status}</td>
