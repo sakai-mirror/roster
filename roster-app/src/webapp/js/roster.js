@@ -327,7 +327,7 @@ function switchState(state, arg, searchQuery) {
 			enrollmentSetToView = site.siteEnrollmentSets[0].id;
 		}
 		
-		var enrollment = getEnrolledMembers();
+		var enrollment = getEnrolledMembers(searchQuery);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_enrollment_header_template',
 				{'siteTitle':site.title}, 'roster_header');
@@ -352,6 +352,9 @@ function switchState(state, arg, searchQuery) {
 			
 			readyExportButton(state);
 			readyEnrollmentFilters(site.siteEnrollmentSets.length);
+			
+			readySearchButton(state);
+			readyClearButton(state);
 			
 			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
 			
@@ -416,29 +419,6 @@ function getRosterMembership(groupId) {
 	
 	return membership;
 }
-
-/*function getRosterEnrollments() {
-	
-	var enrollments;
-	
-	var url = "/direct/roster-membership/" + rosterSiteId + "/get-enrollments.json";
-	
-	jQuery.ajax({
-    	url : url,
-      	dataType : "json",
-       	async : false,
-		cache: false,
-	   	success : function(data) {
-			enrollments = data['roster-membership_collection'];
-		},
-		error : function() {
-			enrollments = new Array();
-		}
-	});
-	
-	return enrollments;
-	
-}*/
 
 function getRosterEnrollment() {
 	
@@ -641,35 +621,41 @@ function getMembers(searchQuery) {
 		members = getRosterMembership(groupToView);
 	}
 
-	var membersToReturn = new Array();
-	var memberCount = 0;
-	
-	// search is performed against all members or selected group
 	if (searchQuery) {
-		
-		for (var i = 0, j = members.length; i < j; i++) {
-							
-			if (members[i].displayName.toLowerCase().indexOf(searchQuery) >= 0 ||
-					members[i].displayId.toLowerCase().indexOf(searchQuery) >= 0) {
-									
-				membersToReturn[memberCount] = members[i];
-				memberCount++;
-			}
-		}
+		return getMembersFromSearchQuery(members, searchQuery);		
 	} else {
-		membersToReturn = members;
+		return members;
 	}
-	
-	return membersToReturn;
 }
 
 function getEnrolledMembers(searchQuery) {
 	
 	var enrollment = getRosterEnrollment();
+		
+	if (searchQuery) {
+		return getMembersFromSearchQuery(enrollment, searchQuery);		
+	} else {
+		return enrollment;
+	}
+
+}
+
+function getMembersFromSearchQuery(members, searchQuery) {
 	
-	// TODO process search plus only results that match selected status
+	var membersToReturn = new Array();
+	var memberCount = 0;
 	
-	return enrollment;
+	for (var i = 0, j = members.length; i < j; i++) {
+						
+		if (members[i].displayName.toLowerCase().indexOf(searchQuery) >= 0 ||
+				members[i].displayId.toLowerCase().indexOf(searchQuery) >= 0) {
+								
+			membersToReturn[memberCount] = members[i];
+			memberCount++;
+		}
+	}
+	
+	return membersToReturn;
 }
 
 function readyClearButton(state) {
