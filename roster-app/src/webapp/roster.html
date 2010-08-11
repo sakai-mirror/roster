@@ -341,7 +341,14 @@ else
 	</thead>
 	<tbody>
 	{if membership.length == 0}
-		<tr><td>${no_participants}</td></tr>
+		<tr>
+			<td>${no_participants}</td>
+			<td></td>
+			{if viewEmailColumn}
+				<td></td>
+			{/if}
+			<td></td>
+		</tr>
 	{else}
 		{for member in membership}
 			<tr>
@@ -516,32 +523,41 @@ else
 						</tr>
 					</thead>
 					<tbody>
-					{for siteGroupUser in siteGroup.userIds}
-						{for member in membership}
-							{if siteGroupUser === member.userId}
-								<tr>
-									<td>
-										{if firstNameLastName}
-											${member.displayName}
-										{else}
-											${member.sortName}
-										{/if}
-									</td>
-									<td>
-										{if viewProfile}
-											<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+					{if siteGroup.userIds.length == 0}
+						<tr>
+							<td>${no_participants}</td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					{else}
+						{for siteGroupUser in siteGroup.userIds}
+							{for member in membership}
+								{if siteGroupUser === member.userId}
+									<tr>
+										<td>
+											{if firstNameLastName}
+												${member.displayName}
+											{else}
+												${member.sortName}
+											{/if}
+										</td>
+										<td>
+											{if viewProfile}
+												<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${navigator.language}&userId=${member.userId} "title="${show_profile}">
+													${member.displayId}
+												</a>
+											{else}
 												${member.displayId}
-											</a>
-										{else}
-											${member.displayId}
-										{/if}
-									</td>
-									<td>${member.role}</td>
-									<td>${member.groupsToString}</td>
-								</tr>
-							{/if}
+											{/if}
+										</td>
+										<td>${member.role}</td>
+										<td>${member.groupsToString}</td>
+									</tr>
+								{/if}
+							{/for}
 						{/for}
-					{/for}
+					{/if}
 					</tbody>
 				</table>
 			</td>
@@ -605,7 +621,15 @@ else
 	</thead>
 	<tbody>
 	{if enrollment.length == 0}
-		<tr><td>${no_participants}</td></tr>
+		<tr>
+			<td>${no_participants}</td>
+			<td></td>
+			{if viewEmailColumn}
+				<td></td>
+			{/if}
+			<td></td>
+			<td></td>
+		</tr>
 	{else}
 		{for member in enrollment}
 			{if enrollmentStatus === roster_enrollment_status_all ||

@@ -735,10 +735,14 @@ function readySectionFilter(site, state) {
 		
 		$('#roster_form_section_filter').val(groupToViewText);
 		$('#roster_form_section_filter').change(function(e) {
-			groupToView = this.options[this.selectedIndex].value;
-			groupToViewText = this.options[this.selectedIndex].text;
+			
+			if (this.options[this.selectedIndex].value != roster_section_sep_line) {
+				
+				groupToView = this.options[this.selectedIndex].value;
+				groupToViewText = this.options[this.selectedIndex].text;
 		
-			switchState(state);
+				switchState(state);
+			}
 		});
 	}
 }
