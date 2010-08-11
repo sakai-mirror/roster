@@ -64,7 +64,7 @@ var viewEmailColumn = true;
 var sortColumn = null;
 var overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
 var groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
-var enrollmentSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
+var enrollmentSortParams = {headers:{1: {sorter:'urls'}, 2: {sorter:'urls'}}, sortList:[[0,0]]};
 
 // sortEnd is used to update this so we know which column and direction the
 // tables are sorted in when exporting
@@ -352,6 +352,13 @@ function switchState(state, arg, searchQuery) {
 			
 			readyExportButton(state);
 			readyEnrollmentFilters(site.siteEnrollmentSets.length);
+			
+			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
+			
+			$('#roster_form_rosterTable').bind("sortEnd",function() {
+				currentSortColumn = this.config.sortList[0][0];
+				currentSortDirection = this.config.sortList[0][1];
+		    });
 		});
 	}
 }
@@ -854,7 +861,8 @@ function configureGroupMembershipTableSort() {
 
 function configureEnrollmentStatusTableSort() {
 	
-	if (SORT_NAME === sortColumn) {
+	// enrollment table doesn't have role, so use name as default sort column
+	if (SORT_NAME === sortColumn || SORT_ROLE === sortColumn) {
 		enrollmentSortParams.sortList = [[0,0]];
 	} else if (SORT_DISPLAY_ID === sortColumn) {
 		enrollmentSortParams.sortList = [[1,0]];
