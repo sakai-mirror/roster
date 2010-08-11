@@ -34,14 +34,6 @@
       <artifactId>sakai-component-manager</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-roster-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.edu-services.sections</groupId>
-      <artifactId>sections-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.sakaiproject.edu-services.course-management</groupId>
       <artifactId>coursemanagement-api</artifactId>
     </dependency>

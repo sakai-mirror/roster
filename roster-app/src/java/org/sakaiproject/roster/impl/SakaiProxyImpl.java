@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.api.app.roster.RosterFunctions;
+import org.sakaiproject.authz.api.FunctionManager;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
@@ -40,6 +40,7 @@ import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.roster.api.RosterEnrollment;
+import org.sakaiproject.roster.api.RosterFunctions;
 import org.sakaiproject.roster.api.RosterGroup;
 import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.RosterSite;
@@ -68,22 +69,84 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
 	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
 	
-	//private AuthzGroupService authzGroupService = null;
 	private CourseManagementService courseManagementService;
-	//private FunctionManager functionManager = null;
-	//private SecurityService securityService = null;
+	private FunctionManager functionManager = null;
 	private ServerConfigurationService serverConfigurationService = null;
 	private SessionManager sessionManager = null;
 	private SiteService siteService;
 	private ToolManager toolManager = null;
 	private UserDirectoryService userDirectoryService = null;
 	
+	private static SakaiProxyImpl instance = null;
+	
+	/**
+	 * Returns an instance of <code>SakaiProxyImpl</code>.
+	 * 
+	 * @return an instance of <code>SakaiProxyImpl</code>.
+	 */
+	public static SakaiProxyImpl instance() {
+		
+		if (null == instance) {
+			instance = new SakaiProxyImpl();
+		}
+		return instance;
+	}
+	
 	/**
 	 * Creates a new instance of <code>SakaiProxyImpl</code>
 	 */
-	public SakaiProxyImpl() {
+	private SakaiProxyImpl() {
 
-		log.info("SakaiProxy initialized");
+		org.sakaiproject.component.api.ComponentManager componentManager = 
+			org.sakaiproject.component.cover.ComponentManager.getInstance();
+
+		courseManagementService = (CourseManagementService) componentManager.get(CourseManagementService.class);
+		functionManager = (FunctionManager) componentManager.get(FunctionManager.class);
+		serverConfigurationService = (ServerConfigurationService) componentManager.get(ServerConfigurationService.class);
+		sessionManager = (SessionManager) componentManager.get(SessionManager.class);
+		siteService = (SiteService) componentManager.get(SiteService.class);
+		toolManager = (ToolManager) componentManager.get(ToolManager.class);
+		userDirectoryService = (UserDirectoryService) componentManager.get(UserDirectoryService.class);
+		
+		init();
+		
+		log.info("org.sakaiproject.roster.api.SakaiProxy initialized");
+	}	
+	
+	private void init() {
+		
+		log.info("org.sakaiproject.roster.api.SakaiProxy init()");
+		
+		List<String> registered = functionManager.getRegisteredFunctions();
+		
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_EXPORT)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_EXPORT);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS);
+        }
+
+        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWPROFILE)) {
+            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWPROFILE);
+        }
+        
 	}
 	
 	/**
@@ -559,47 +622,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 		
 		return false;
-	}
-	
-	/* Spring injections */
-	
-	public void setCourseManagementService(
-			CourseManagementService courseManagementService) {
-		this.courseManagementService = courseManagementService;
-	}
-	
-//	public void setFunctionManager(FunctionManager functionManager) {
-//		this.functionManager = functionManager;
-//	}
-	
-//	public void setAuthzGroupService(AuthzGroupService authzGroupService) {
-//		this.authzGroupService = authzGroupService;
-//	}
-	
-//	public void setSecurityService(SecurityService securityService) {
-//		this.securityService = securityService;
-//	}
-	
-	public void setSessionManager(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
-	}
-	
-	public void setServerConfigurationService(
-			ServerConfigurationService serverConfigurationService) {
-		this.serverConfigurationService = serverConfigurationService;
-	}
-	
-	public void setSiteService(SiteService siteService) {
-		this.siteService = siteService;
-	}
-	
-	public void setToolManager(ToolManager toolManager) {
-		this.toolManager = toolManager;
-	}
-	
-	public void setUserDirectoryService(
-			UserDirectoryService userDirectoryService) {
-		this.userDirectoryService = userDirectoryService;
 	}
 	
 }

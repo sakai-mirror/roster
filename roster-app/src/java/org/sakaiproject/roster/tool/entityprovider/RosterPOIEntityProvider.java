@@ -37,7 +37,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.sakaiproject.api.app.roster.RosterFunctions;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
@@ -46,8 +45,10 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEnt
 import org.sakaiproject.entitybroker.entityprovider.capabilities.RequestAware;
 import org.sakaiproject.entitybroker.entityprovider.extension.RequestGetter;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
+import org.sakaiproject.roster.api.RosterFunctions;
 import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.SakaiProxy;
+import org.sakaiproject.roster.impl.SakaiProxyImpl;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 
@@ -126,11 +127,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	private SakaiProxy sakaiProxy;
 	
 	private RequestGetter requestGetter;
-	
-	//private UserDirectoryService userDirectoryService;
-	
+		
 	public RosterPOIEntityProvider() {
-				
+		sakaiProxy = SakaiProxyImpl.instance();
 	}
 		
 	/**
@@ -591,12 +590,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			return 0;
 		}
 		
-	}
-
-	/* Spring injections */
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
 	}
 		
 	/**

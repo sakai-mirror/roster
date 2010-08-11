@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.sakaiproject.api.app.roster;
+package org.sakaiproject.roster.api;
 
 public interface RosterFunctions {
    public static final String ROSTER_FUNCTION_PREFIX = "roster.";

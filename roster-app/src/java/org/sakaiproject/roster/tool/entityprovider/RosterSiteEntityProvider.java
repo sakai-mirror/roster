@@ -28,6 +28,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.roster.api.SakaiProxy;
+import org.sakaiproject.roster.impl.SakaiProxyImpl;
 
 /**
  * <code>EntityProvider</code> to allow Roster to access site, membership, and
@@ -54,7 +55,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	private SakaiProxy sakaiProxy;
 	
 	public RosterSiteEntityProvider() {
-		
+		sakaiProxy = SakaiProxyImpl.instance();
 	}
 		
 	/**
@@ -110,11 +111,5 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	public String[] getHandledOutputFormats() {
 		return new String[] { Formats.JSON };
 	}
-	
-	/* Spring injections */
-	
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
-	}
-	
+		
 }
