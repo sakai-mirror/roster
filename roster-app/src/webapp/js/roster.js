@@ -21,6 +21,7 @@
 var ADMIN = 'admin';
 
 var DEFAULT_GROUP_ID = 'all';
+var DEFAULT_ENROLLMENT_STATUS = 'All';
 
 var STATE_OVERVIEW = 'overview';
 var STATE_PICTURES = 'pics';
@@ -127,15 +128,28 @@ $.tablesorter.addParser({
 	sortColumn = defaultSortColumn;
 	
 	if (arg.firstNameLastName) {
-		firstNameLastName = arg.firstNameLastName;
+		if ('true' == arg.firstNameLastName) {
+			firstNameLastName = true;
+		} else {
+			firstNameLastName = false;
+		}
 	}
 			
 	if (arg.hideSingleGroupFilter) {
-		hideSingleGroupFilter = arg.hideSingleGroupFilter;
+		if ('true' == arg.hideSingleGroupFilter) {
+			hideSingleGroupFilter = true;
+		} else {
+			hideSingleGroupFilter = false;
+		}
 	}
 	
 	if (arg.viewEmailColumn) {
-		viewEmailColumn = arg.viewEmailColumn;
+		if ('true' == arg.viewEmailColumn) {
+			viewEmailColumn = true;
+		} else {
+			viewEmailColumn = false;
+		}
+		
 	}
 	// end of sakai.properties
 
@@ -681,6 +695,13 @@ function readyExportButton(viewType) {
 			byGroup = true;
 		}
 		
+		var enrollmentStatus = null;
+		if (enrollmentStatusToViewText == roster_enrollment_status_all) {
+			enrollmentStatus = DEFAULT_ENROLLMENT_STATUS;
+		} else {
+			enrollmentStatus = enrollmentStatusToViewText;
+		}
+		
 		e.preventDefault();
 		window.location.href="/direct/roster-export/" + rosterSiteId +
 			"/export-to-excel?groupId=" + groupId +
@@ -688,6 +709,8 @@ function readyExportButton(viewType) {
 			"&sortField=" + columnSortFields[currentSortColumn] +
 			"&sortDirection=" + currentSortDirection +
 			"&byGroup=" + byGroup + 
+			"&enrollmentSetId=" + enrollmentSetToView +
+			"&enrollmentStatus=" + enrollmentStatus +
 			"&facetName=" + facet_name +
 			"&facetUserId=" + facet_userId +
 			"&facetEmail=" + facet_email +
@@ -767,7 +790,7 @@ function readyHideNamesButton(state, searchQuery) {
 
 	$('#roster_form_hide_names').bind('click', function(e) {
 		
-		if (hideNames) {
+		if (true === hideNames) {
 			hideNames = false;
 		} else {
 			hideNames = true;
@@ -781,7 +804,7 @@ function readyViewSingleColumnButton(state, searchQuery) {
 	
 	$('#roster_form_pics_view').bind('click', function(e) {
 		
-		if (viewSingleColumn) {
+		if (true === viewSingleColumn) {
 			viewSingleColumn = false;
 		} else {
 			viewSingleColumn = true;
@@ -887,7 +910,7 @@ function setColumnSortFields(state) {
 		// n.b. no sort by groups column
 	} else if (STATE_OVERVIEW === state) {
 		
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			columnSortFields[2] = SORT_EMAIL;
 			columnSortFields[3] = SORT_ROLE;
 		} else {
@@ -895,7 +918,7 @@ function setColumnSortFields(state) {
 		}
 	} else if (STATE_ENROLLMENT_STATUS === state) {
 		
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			columnSortFields[2] = SORT_EMAIL;
 			columnSortFields[3] = SORT_STATUS;
 			columnSortFields[4] = SORT_CREDITS;
