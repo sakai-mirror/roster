@@ -820,13 +820,13 @@ function configureOverviewTableSort() {
 		overviewSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
 		
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			overviewSortParams.sortList = [[2,0]];
 		}
 		
 	} else if (SORT_ROLE === sortColumn) {
 	
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			overviewSortParams.sortList = [[3,0]];
 		} else {
 			overviewSortParams.sortList = [[2,0]];
@@ -854,20 +854,20 @@ function configureEnrollmentStatusTableSort() {
 		enrollmentSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
 		
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			enrollmentSortParams.sortList = [[2,0]];
 		}
 		
 	} else if (SORT_STATUS === sortColumn) {
 	
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			enrollmentSortParams.sortList = [[3,0]];
 		} else {
 			enrollmentSortParams.sortList = [[2,0]];
 		}
 	} else if (SORT_CREDITS === sortColumn) {
 		
-		if (viewEmailColumn) {
+		if (true === viewEmailColumn) {
 			enrollmentSortParams.sortList = [[4,0]];
 		} else {
 			enrollmentSortParams.sortList = [[3,0]];
