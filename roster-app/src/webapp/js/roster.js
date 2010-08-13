@@ -157,10 +157,10 @@ $.tablesorter.addParser({
 				SORT_STATUS == arg.defaultSortColumn ||
 				SORT_CREDITS == arg.defaultSortColumn) {
 			
-			defaultSortColumn = arg.defaultColumn;
+			defaultSortColumn = arg.defaultSortColumn;
 		} else if (SORT_EMAIL == arg.defaultSortColumn && true == viewEmailColumn) {
 			// if chosen sort is email, check that email column is viewable
-			defaultSortColumn = arg.defaultColumn;
+			defaultSortColumn = arg.defaultSortColumn;
 		}
 	}
 	
