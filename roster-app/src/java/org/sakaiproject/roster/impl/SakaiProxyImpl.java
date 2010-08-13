@@ -32,6 +32,7 @@ import org.sakaiproject.authz.api.FunctionManager;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
+import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
@@ -71,6 +72,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	
 	private CourseManagementService courseManagementService;
 	private FunctionManager functionManager = null;
+	private SecurityService securityService = null;
 	private ServerConfigurationService serverConfigurationService = null;
 	private SessionManager sessionManager = null;
 	private SiteService siteService;
@@ -102,6 +104,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		courseManagementService = (CourseManagementService) componentManager.get(CourseManagementService.class);
 		functionManager = (FunctionManager) componentManager.get(FunctionManager.class);
+		securityService = (SecurityService) componentManager.get(SecurityService.class);
 		serverConfigurationService = (ServerConfigurationService) componentManager.get(ServerConfigurationService.class);
 		sessionManager = (SessionManager) componentManager.get(SessionManager.class);
 		siteService = (SiteService) componentManager.get(SiteService.class);
@@ -370,12 +373,12 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		Site site = getSite(siteId);
-		// only if user is a site member
-		if (null == site.getMember(currentUserId)) {
+		if (null == site) {
 			return null;
 		}
-
-		if (null == site) {
+		
+		// return null if user is not a site member and not an admin user
+		if (null == site.getMember(currentUserId) && !securityService.isSuperUser()) {
 			return null;
 		}
 
