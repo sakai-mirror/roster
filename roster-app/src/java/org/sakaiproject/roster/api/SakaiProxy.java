@@ -65,6 +65,6 @@ public interface SakaiProxy {
 	
 	public User getUser(String userId);
 	
-	public Boolean hasUserPermission(String userId, String permission, String siteId);
+	public Boolean hasUserPermission(String userId, String permission, String authzGroupId);
 	
 }

@@ -28,7 +28,10 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.authz.api.AuthzGroup;
+import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
+import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
@@ -70,6 +73,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
 	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
 	
+	private AuthzGroupService authzGroupService;
 	private CourseManagementService courseManagementService;
 	private FunctionManager functionManager = null;
 	private SecurityService securityService = null;
@@ -306,7 +310,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		
 		Set<Member> membership = new HashSet<Member>();
 
-		if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL) || isSuperUser()) {
+		if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId())) {
 			if (null == groupId) {
 				// get all members
 				membership.addAll(site.getMembers());
@@ -321,13 +325,13 @@ public class SakaiProxyImpl implements SakaiProxy {
 			if (null == groupId) {
 				// get all members of groups current user is allow
 				for (Group group : site.getGroups()) {
-					if (group.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+					if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
 						membership.addAll(group.getMembers());
 					}
 				}
 			} else if (null != site.getGroup(groupId)){
 				// get all members of requested groupId if current user is member
-				if (site.getGroup(groupId).isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+				if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, groupId)) {
 					membership.addAll(site.getGroup(groupId).getMembers());
 				}
 			} else {
@@ -394,19 +398,13 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
 
-		boolean viewAll;
-		if (isSuperUser()) {
-			viewAll = true;
-		} else {
-			viewAll = site.isAllowed(currentUserId,
-					RosterFunctions.ROSTER_FUNCTION_VIEWALL);
-		}
+		boolean viewAll = hasUserPermission(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId());
 
 		for (Group group : site.getGroups()) {
 
-			if (viewAll
-					|| group.isAllowed(currentUserId,
-							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
+			if (viewAll || hasUserPermission(currentUserId,
+					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
 
 				RosterGroup rosterGroup = new RosterGroup();
 				rosterGroup.setId(group.getId());
@@ -503,17 +501,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public List<RosterMember> getEnrolledMembership(String siteId,
 			String enrollmentSetId) {
 
-		try {
-			Site site = siteService.getSite(siteId);
-
-			if (false == site.isAllowed(getCurrentUserId(),
-					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)
-					|| !isSuperUser()) {
-				
-				return null;
-			}
-		} catch (IdUnusedException e) {
-			log.warn("site not found: " + e.getId());
+		if (!hasUserPermission(getCurrentUserId(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, siteId)) {
+			
 			return null;
 		}
 
@@ -622,18 +612,24 @@ public class SakaiProxyImpl implements SakaiProxy {
 	 * {@inheritDoc}
 	 */
 	public Boolean hasUserPermission(String userId, String permission,
-			String siteId) {
-
+			String authzGroupId) {
+		
 		try {
-			Site site = siteService.getSite(siteId);
-			Role userRole = site.getUserRole(userId);
+			
+			if (securityService.isSuperUser()) {
+				return true;
+			}
+			
+			AuthzGroup authzGroup = authzGroupService.getAuthzGroup(authzGroupId);
+			
+			Role userRole = authzGroup.getUserRole(userId);
 			
 			if (null != userRole && userRole.getAllowedFunctions().contains(permission)) {
 				return true;
 			}
 			
-		} catch (IdUnusedException e) {
-			log.warn("site not found: " + e.getId());
+		} catch (GroupNotDefinedException e) {
+			log.warn("AuthzGroup not found: " + e.getId());
 		}
 		
 		return false;
