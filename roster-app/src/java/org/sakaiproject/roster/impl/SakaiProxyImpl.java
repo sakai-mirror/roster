@@ -219,7 +219,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		try {
 			site = siteService.getSite(siteId);
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 		}
 		
 		if (null == site) {
@@ -241,7 +241,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				rosterMembers.add(rosterMember);
 
 			} catch (UserNotDefinedException e) {
-				e.printStackTrace();
+				log.warn("user not found: " + e.getId());
 			}
 		}
 		
@@ -265,7 +265,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		try {
 			site = siteService.getSite(siteId);
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 		}
 
 		if (null == site) {
@@ -287,7 +287,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				rosterMembers.put(rosterMember.getEid(), rosterMember);
 
 			} catch (UserNotDefinedException e) {
-				e.printStackTrace();
+				log.warn("user not found: " + e.getId());
 			}
 		}
 
@@ -497,7 +497,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				return null;
 			}
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 			return null;
 		}
 
@@ -550,7 +550,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		try {
 			return siteService.getSite(siteId);
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 			return null;
 		}
 	}
@@ -568,8 +568,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		try {
 			user = userDirectoryService.getUser(userId);
 		} catch (UserNotDefinedException e) {
-
-			e.printStackTrace();
+			log.warn("user not found: " + e.getId());
 		}
 		return user;
 	}
@@ -589,7 +588,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 			}
 			
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 		}
 
 		return roleTypes;
@@ -618,7 +617,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 			}
 			
 		} catch (IdUnusedException e) {
-			e.printStackTrace();
+			log.warn("site not found: " + e.getId());
 		}
 		
 		return false;
