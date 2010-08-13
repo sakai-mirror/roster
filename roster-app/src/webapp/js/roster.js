@@ -697,41 +697,54 @@ function readyExportButton(viewType) {
 		
 	$('#export_button').bind('click', function(e) {
 	
-		var groupId = null;
-		if (null != groupToView) {
-			groupId = groupToView;
-		} else {
-			groupId = DEFAULT_GROUP_ID;
-		}
-		
-		var byGroup = false;
-		if (grouped === roster_group_bygroup) {
-			byGroup = true;
-		}
-		
-		var enrollmentStatus = null;
-		if (enrollmentStatusToViewText == roster_enrollment_status_all) {
-			enrollmentStatus = DEFAULT_ENROLLMENT_STATUS;
-		} else {
-			enrollmentStatus = enrollmentStatusToViewText;
-		}
-		
 		e.preventDefault();
-		window.location.href="/direct/roster-export/" + rosterSiteId +
-			"/export-to-excel?groupId=" + groupId +
-			"&viewType=" + viewType +
+		
+		var baseUrl = "/direct/roster-export/" + rosterSiteId +
+			"/export-to-excel?viewType=" + viewType +
 			"&sortField=" + columnSortFields[currentSortColumn] +
-			"&sortDirection=" + currentSortDirection +
-			"&byGroup=" + byGroup + 
-			"&enrollmentSetId=" + enrollmentSetToView +
-			"&enrollmentStatus=" + enrollmentStatus +
-			"&facetName=" + facet_name +
+			"&sortDirection=" + currentSortDirection;
+		
+		var facetParams = "&facetName=" + facet_name +
 			"&facetUserId=" + facet_userId +
 			"&facetEmail=" + facet_email +
 			"&facetRole=" + facet_role +
 			"&facetGroups=" + facet_groups +
 			"&facetStatus=" + facet_status +
 			"&facetCredits=" + facet_credits;
+		
+		if (STATE_OVERVIEW === viewType) {
+			var groupId = null;
+			if (null != groupToView) {
+				groupId = groupToView;
+			} else {
+				groupId = DEFAULT_GROUP_ID;
+			}
+			
+			window.location.href = baseUrl + "&groupId=" + groupId + facetParams;
+
+		} else if (STATE_GROUP_MEMBERSHIP === viewType) {
+		
+			var byGroup = false;
+			if (grouped === roster_group_bygroup) {
+				byGroup = true;
+			}
+			
+			window.location.href = baseUrl + "&byGroup=" + byGroup + facetParams;
+			
+		} else if (STATE_ENROLLMENT_STATUS === viewType) {
+		
+			var enrollmentStatus = null;
+			if (enrollmentStatusToViewText == roster_enrollment_status_all) {
+				enrollmentStatus = DEFAULT_ENROLLMENT_STATUS;
+			} else {
+				enrollmentStatus = enrollmentStatusToViewText;
+			}
+			
+			window.location.href = baseUrl + 
+				"&enrollmentSetId=" + enrollmentSetToView +
+				"&enrollmentStatus=" + enrollmentStatus +
+				facetParams;
+		}
 	});
 		
 	// hide export button if necessary
