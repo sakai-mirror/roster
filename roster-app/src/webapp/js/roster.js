@@ -165,7 +165,6 @@ $.tablesorter.addParser({
 	}
 	
 	sortColumn = defaultSortColumn;
-	
 	// end of sakai.properties
 
 	if (window.frameElement) {
@@ -201,7 +200,7 @@ function switchState(state, arg, searchQuery) {
 		
 		configureOverviewTableSort();
 		
-		var members = getMembers(searchQuery);
+		var members = getMembers(searchQuery, false);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
@@ -250,7 +249,7 @@ function switchState(state, arg, searchQuery) {
 		
 	} else if (STATE_PICTURES === state) {
 		
-		var members = getMembers(searchQuery);
+		var members = getMembers(searchQuery, true);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
@@ -424,13 +423,13 @@ function getRosterSite() {
 	
 }
 
-function getRosterMembership(groupId) {
+function getRosterMembership(groupId, sorted, sortField, sortDirection) {
 	
 	var membership;
 	
-	var url = "/direct/roster-membership/" + rosterSiteId + "/get-membership.json";
+	var url = "/direct/roster-membership/" + rosterSiteId + "/get-membership.json?sorted=" + sorted;
 	if (groupId) {
-		url += "?groupId=" + groupId;
+		url += "&groupId=" + groupId;
 	}
 	
 	jQuery.ajax({
@@ -636,7 +635,7 @@ function getRolesByGroupRoleFragments(site, members) {
 	return rolesByGroupRoleFragments;
 }
 
-function getMembers(searchQuery) {
+function getMembers(searchQuery, sorted) {
 		
 	var members;
 	
@@ -644,10 +643,10 @@ function getMembers(searchQuery) {
 	if (groupToViewText === roster_sections_all ||
 			groupToViewText === roster_section_sep_line) {
 		
-		members = getRosterMembership();			
+		members = getRosterMembership(null, sorted, null, null);			
 	// view a specific group (note: search is done within group if selected)
 	} else {
-		members = getRosterMembership(groupToView);
+		members = getRosterMembership(groupToView, sorted, null, null);
 	}
 
 	if (searchQuery) {

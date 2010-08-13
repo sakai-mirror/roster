@@ -21,7 +21,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -49,6 +48,7 @@ import org.sakaiproject.roster.api.RosterEnrollment;
 import org.sakaiproject.roster.api.RosterFunctions;
 import org.sakaiproject.roster.api.RosterGroup;
 import org.sakaiproject.roster.api.RosterMember;
+import org.sakaiproject.roster.api.RosterMemberComparator;
 import org.sakaiproject.roster.api.RosterSite;
 import org.sakaiproject.roster.api.SakaiProxy;
 import org.sakaiproject.roster.impl.SakaiProxyImpl;
@@ -79,18 +79,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String VIEW_OVERVIEW			= "overview";
 	public final static String VIEW_GROUP_MEMBERSHIP	= "group_membership";
 	public final static String VIEW_ENROLLMENT_STATUS	= "status";
-	
-	// sort fields
-	public final static String SORT_NAME		= "sortName";
-	public final static String SORT_DISPLAY_ID	= "displayId";
-	public final static String SORT_EMAIL		= "email";
-	public final static String SORT_ROLE		= "role";
-	public final static String SORT_STATUS		= "status";
-	public final static String SORT_CREDITS		= "credits";
-	// sort directions
-	public final static int SORT_ASCENDING		= 0;
-	public final static int SORT_DESCENDING		= 1;
-	
+		
 	// key passed as parameters
 	public final static String KEY_GROUP_ID				= "groupId";
 	public final static String KEY_VIEW_TYPE			= "viewType";
@@ -118,8 +107,8 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String DEFAULT_GROUP_ID			= "all";
 	public final static String DEFAULT_ENROLLMENT_STATUS= "All";
 	public final static String DEFAULT_VIEW_TYPE		= VIEW_OVERVIEW;
-	public final static String DEFAULT_SORT_FIELD		= DEFAULT_FACET_NAME;
-	public final static int DEFAULT_SORT_DIRECTION		= 0;
+	public final static String DEFAULT_SORT_FIELD		= RosterMemberComparator.SORT_NAME;
+	public final static int DEFAULT_SORT_DIRECTION		= RosterMemberComparator.SORT_ASCENDING;
 	public final static boolean DEFAULT_BY_GROUP		= false;
 	
 	// misc
@@ -678,72 +667,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 				+ groupId + "\n\tviewType=" + viewType + "\n\tbyGroup="
 				+ byGroup + "\n\tsortDirection=" + sortDirection
 				+ "\n\tsortField=" + sortField + "\n\theader=" + headerStr);
-	}
-
-	/**
-	 * <code>Comparator</code> for <code>RosterMember</code>s.
-	 * 
-	 * @author d.b.robinson@lancaster.ac.uk
-	 */
-	private class RosterMemberComparator implements Comparator<RosterMember> {
-
-		private String sortField;
-		private int sortDirection;
-		private boolean firstNameLastName;
-		
-		public RosterMemberComparator(String sortField, int sortDirection,
-				boolean firstNameLastName) {
-			
-			this.sortField = sortField;
-			this.sortDirection = sortDirection;
-
-			this.firstNameLastName = firstNameLastName;
-		}
-		
-		public int compare(RosterMember a, RosterMember b) {
-
-			RosterMember member1;
-			RosterMember member2;
-
-			if (SORT_DESCENDING == sortDirection) {
-				member1 = b;
-				member2 = a;
-			}
-			// just sort ascending by default
-			else {
-				member1 = a;
-				member2 = b;
-			}
-
-			if (SORT_NAME.equals(sortField)) {
-				if (firstNameLastName) {
-					return member1.getDisplayName().compareToIgnoreCase(
-							member2.getDisplayName());
-				} else {
-					return member1.getSortName().compareToIgnoreCase(
-							member2.getSortName());
-				}
-			} else if (SORT_DISPLAY_ID.equals(sortField)) {
-				return member1.getDisplayId().compareToIgnoreCase(
-						member2.getDisplayId());
-			} else if (SORT_EMAIL.equals(sortField)) {
-				return member1.getEmail().compareToIgnoreCase(
-						member2.getEmail());
-			} else if (SORT_ROLE.equals(sortField)) {
-				return member1.getRole().compareToIgnoreCase(member2.getRole());
-			} else if (SORT_STATUS.equals(sortField)) {
-				return member1.getStatus().compareToIgnoreCase(
-						member2.getStatus());
-			} else if (SORT_CREDITS.equals(sortField)) {
-				return member1.getCredits().compareToIgnoreCase(
-						member2.getCredits());
-			}
-
-			log.warn("members not sorted");
-
-			return 0;
-		}
-		
 	}
 		
 	/**
