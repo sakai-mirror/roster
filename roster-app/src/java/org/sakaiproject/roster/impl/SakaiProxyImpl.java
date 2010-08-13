@@ -152,6 +152,10 @@ public class SakaiProxyImpl implements SakaiProxy {
         
 	}
 	
+	private boolean isSuperUser() {
+		return securityService.isSuperUser();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -302,7 +306,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		
 		Set<Member> membership = new HashSet<Member>();
 
-		if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
+		if (site.isAllowed(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL) || isSuperUser()) {
 			if (null == groupId) {
 				// get all members
 				membership.addAll(site.getMembers());
@@ -379,8 +383,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		// return null if user is not a site member and not an admin user
-		if (null == site.getMember(currentUserId)
-				&& !securityService.isSuperUser()) {
+		if (null == site.getMember(currentUserId) && !isSuperUser()) {
 			return null;
 		}
 
@@ -392,7 +395,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
 
 		boolean viewAll;
-		if (securityService.isSuperUser()) {
+		if (isSuperUser()) {
 			viewAll = true;
 		} else {
 			viewAll = site.isAllowed(currentUserId,
@@ -504,7 +507,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 			Site site = siteService.getSite(siteId);
 
 			if (false == site.isAllowed(getCurrentUserId(),
-					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
+					RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)
+					|| !isSuperUser()) {
+				
 				return null;
 			}
 		} catch (IdUnusedException e) {
@@ -633,5 +638,5 @@ public class SakaiProxyImpl implements SakaiProxy {
 		
 		return false;
 	}
-	
+		
 }
