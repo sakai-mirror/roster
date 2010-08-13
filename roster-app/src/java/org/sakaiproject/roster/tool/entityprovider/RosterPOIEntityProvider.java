@@ -210,8 +210,8 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
 			filename = site.getTitle();
-
-			if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+			
+			if (null != groupId && !DEFAULT_GROUP_ID.equals(groupId)) {
 
 				for (RosterGroup group : site.getSiteGroups()) {
 					if (group.getId().equals(groupId)) {
@@ -288,19 +288,23 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			List<RosterMember> rosterMembers = getMembership(site.getId(),
 					groupId, sortDirection, sortField);
 
-			addOverviewRows(dataInRows, rosterMembers, header);
+			if (null != rosterMembers) {
+				addOverviewRows(dataInRows, rosterMembers, header);
+			}
 
 		} else if (VIEW_GROUP_MEMBERSHIP.equals(viewType)) {
 
 			List<RosterMember> rosterMembers = getMembership(site.getId(),
 					groupId, sortDirection, sortField);
 
-			if (byGroup) {
-				addGroupMembershipByGroupRows(dataInRows, rosterMembers, site,
-						header);
-			} else {
-				addGroupMembershipUngroupedRows(dataInRows, rosterMembers,
-						header);
+			if (null != rosterMembers) {
+				if (byGroup) {
+					addGroupMembershipByGroupRows(dataInRows, rosterMembers,
+							site, header);
+				} else {
+					addGroupMembershipUngroupedRows(dataInRows, rosterMembers,
+							header);
+				}
 			}
 		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
 
@@ -308,8 +312,10 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 					.getId(), enrollmentSetId, sortDirection, sortField,
 					enrollmentStatus);
 
-			addEnrollmentStatusRows(dataInRows, rosterMembers, /*site,*/ header,
-					enrollmentSetTitle, enrollmentStatus);
+			if (null != rosterMembers) {
+				addEnrollmentStatusRows(dataInRows, rosterMembers, header,
+						enrollmentSetTitle, enrollmentStatus);
+			}
 		}
 
 		Workbook workBook = new HSSFWorkbook();
@@ -339,6 +345,10 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			rosterMembers = sakaiProxy.getMembership(siteId, null);
 		} else {
 			rosterMembers = sakaiProxy.getMembership(siteId, groupId);
+		}
+		
+		if (null == rosterMembers) {
+			return null;
 		}
 
 		Collections.sort(rosterMembers, new RosterMemberComparator(sortField,
@@ -626,7 +636,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		// SAK-18513
 		if (VIEW_OVERVIEW.equals(viewType)) {
-			if (null != groupId || !DEFAULT_GROUP_ID.equals(groupId)) {
+			if (null != groupId && !DEFAULT_GROUP_ID.equals(groupId)) {
 
 				// TODO look at using maps in RosterSite instead
 				for (RosterGroup group : site.getSiteGroups()) {
