@@ -121,16 +121,11 @@ $.tablesorter.addParser({
 	getRosterCurrentUserPermissions();
 	
 	// process sakai.properties
-	if (arg.defaultSortColumn) {
-		defaultSortColumn = arg.defaultSortColumn;
-	}
-	
-	sortColumn = defaultSortColumn;
-	
 	if (arg.firstNameLastName) {
 		if ('true' == arg.firstNameLastName) {
 			firstNameLastName = true;
 		} else {
+			// default = false
 			firstNameLastName = false;
 		}
 	}
@@ -139,18 +134,38 @@ $.tablesorter.addParser({
 		if ('true' == arg.hideSingleGroupFilter) {
 			hideSingleGroupFilter = true;
 		} else {
+			// default = false
 			hideSingleGroupFilter = false;
 		}
 	}
 	
 	if (arg.viewEmailColumn) {
-		if ('true' == arg.viewEmailColumn) {
-			viewEmailColumn = true;
-		} else {
+		if ('false' == arg.viewEmailColumn) {
 			viewEmailColumn = false;
+		} else {
+			// default = true
+			viewEmailColumn = true;
 		}
 		
 	}
+	
+	if (arg.defaultSortColumn) {
+		
+		if (SORT_NAME == arg.defaultSortColumn ||
+				SORT_DISPLAY_ID == arg.defaultSortColumn ||
+				SORT_ROLE == arg.defaultSortColumn ||
+				SORT_STATUS == arg.defaultSortColumn ||
+				SORT_CREDITS == arg.defaultSortColumn) {
+			
+			defaultSortColumn = arg.defaultColumn;
+		} else if (SORT_EMAIL == arg.defaultSortColumn && true == viewEmailColumn) {
+			// if chosen sort is email, check that email column is viewable
+			defaultSortColumn = arg.defaultColumn;
+		}
+	}
+	
+	sortColumn = defaultSortColumn;
+	
 	// end of sakai.properties
 
 	if (window.frameElement) {
