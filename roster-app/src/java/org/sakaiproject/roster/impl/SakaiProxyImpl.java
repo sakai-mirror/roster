@@ -365,6 +365,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
+	// TODO refactor this method
 	public RosterSite getSiteDetails(String siteId) {
 
 		String currentUserId = getCurrentSessionUserId();
@@ -376,9 +377,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 		if (null == site) {
 			return null;
 		}
-		
+
 		// return null if user is not a site member and not an admin user
-		if (null == site.getMember(currentUserId) && !securityService.isSuperUser()) {
+		if (null == site.getMember(currentUserId)
+				&& !securityService.isSuperUser()) {
 			return null;
 		}
 
@@ -389,8 +391,13 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
 
-		boolean viewAll = site.isAllowed(currentUserId,
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+		boolean viewAll;
+		if (securityService.isSuperUser()) {
+			viewAll = true;
+		} else {
+			viewAll = site.isAllowed(currentUserId,
+					RosterFunctions.ROSTER_FUNCTION_VIEWALL);
+		}
 
 		for (Group group : site.getGroups()) {
 
@@ -439,8 +446,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 		Map<String, String> statusCodes = courseManagementService
 				.getEnrollmentStatusDescriptions(Locale.getDefault());
 
-		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(statusCodes.values()));
-		
+		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(
+				statusCodes.values()));
+
 		if (null == groupProvider) {
 			log.warn("no group provider installed");
 		} else {
