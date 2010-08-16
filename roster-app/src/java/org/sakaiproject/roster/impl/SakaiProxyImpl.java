@@ -238,7 +238,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 		
 		// permissions are handled inside this method call
-		Set<Member> membership = getMembership(groupId, getCurrentUserId(), site);
+		Set<Member> membership = getFilteredMembers(groupId, getCurrentUserId(), site);
 		if (null == membership) {
 			return null;
 		}
@@ -265,7 +265,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
 	
 	private Map<String, RosterMember> getMembershipMapped(String siteId,
-			String groupId) {
+			String groupId, boolean filtered) {
 
 		Map<String, RosterMember> rosterMembers = new HashMap<String, RosterMember>();
 
@@ -281,7 +281,13 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		// permissions are handled inside this method call
-		Set<Member> membership = getMembership(groupId, getCurrentUserId(), site);
+		Set<Member> membership = null;
+		if (true == filtered) {
+			membership = getFilteredMembers(groupId, getCurrentUserId(), site);
+		} else {
+			membership = getUnfilteredMembers(groupId, getCurrentUserId(), site);
+		}
+		
 		if (null == membership) {
 			return null;
 		}
@@ -302,8 +308,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return rosterMembers;
 	}
 
-	private Set<Member> getMembership(String groupId, String currentUserId,
-			Site site) {
+	private Set<Member> getFilteredMembers(String groupId,
+			String currentUserId, Site site) {
 
 		Set<Member> membership = new HashSet<Member>();
 
@@ -327,7 +333,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 			if (null == groupId) {
 				// get all members of groups current user is allowed to view
 				for (Group group : site.getGroups()) {
-					
+
 					if (hasUserPermission(currentUserId,
 							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group
 									.getId())) {
@@ -367,6 +373,26 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		return filteredMembership;
+	}
+	
+	private Set<Member> getUnfilteredMembers(String groupId,
+			String currentUserId, Site site) {
+		
+		Set<Member> membership = new HashSet<Member>();
+
+		if (null == groupId) {
+			// get all members
+			membership.addAll(site.getMembers());
+		} else if (null != site.getGroup(groupId)) {
+			// get all members of requested groupId
+			membership.addAll(site.getGroup(groupId)
+						.getMembers());
+		} else {
+			// assume invalid groupId specified
+			return null;
+		}
+
+		return membership;
 	}
 	
 	private RosterMember getRosterMember(Member member, Site site)
@@ -528,18 +554,22 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public List<RosterMember> getEnrolledMembership(String siteId,
 			String enrollmentSetId) {
 
-		if (!hasUserPermission(getCurrentUserId(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, siteId)) {
-			
+		Site site = null;
+		try {
+			site = siteService.getSite(siteId);
+		} catch (IdUnusedException e) {
+			log.warn("site not found: " + e.getId());
+		}
+
+		if (null == site) {
 			return null;
 		}
 
-		List<RosterMember> enrolledMembers = new ArrayList<RosterMember>();
+		if (!hasUserPermission(getCurrentUserId(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, siteId)) {
 
-		Map<String, String> statusCodes = courseManagementService
-				.getEnrollmentStatusDescriptions(new ResourceLoader().getLocale());
-
-		Map<String, RosterMember> membership = getMembershipMapped(siteId, null);
+			return null;
+		}
 
 		EnrollmentSet enrollmentSet = courseManagementService
 				.getEnrollmentSet(enrollmentSetId);
@@ -548,23 +578,22 @@ public class SakaiProxyImpl implements SakaiProxy {
 			return null;
 		}
 
+		Map<String, String> statusCodes = courseManagementService
+				.getEnrollmentStatusDescriptions(new ResourceLoader()
+						.getLocale());
+
+		Map<String, RosterMember> membership = getMembershipMapped(siteId, null, false);
+
+		List<RosterMember> enrolledMembers = new ArrayList<RosterMember>();
+		
 		for (Enrollment enrollment : courseManagementService
 				.getEnrollments(enrollmentSet.getEid())) {
-
+			
 			RosterMember member = membership.get(enrollment.getUserId());
-
-			RosterMember enrolledMember = new RosterMember(member.getUserId());
-			enrolledMember.setCredits(enrollment.getCredits());
-			enrolledMember.setDisplayId(member.getDisplayId());
-			enrolledMember.setDisplayName(member.getDisplayName());
-			enrolledMember.setEid(member.getEid());
-			enrolledMember.setEmail(member.getEmail());
-			enrolledMember.setRole(member.getRole());
-			enrolledMember.setSortName(member.getSortName());
-			enrolledMember.setStatus(statusCodes.get(enrollment
-					.getEnrollmentStatus()));
-
-			enrolledMembers.add(enrolledMember);
+			member.setCredits(enrollment.getCredits());
+			member.setStatus(statusCodes.get(enrollment.getEnrollmentStatus()));
+			
+			enrolledMembers.add(member);
 		}
 
 		if (0 == enrolledMembers.size()) {
