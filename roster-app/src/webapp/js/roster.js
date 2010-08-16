@@ -178,6 +178,15 @@ $.tablesorter.addParser({
 
 function switchState(state, arg, searchQuery) {
 	
+	// get language
+	var language;
+	// test for IE
+	if (window.ActiveXObject) {
+		language = navigator.userLanguage;
+	} else {
+		language = navigator.language;
+	}
+	
 	// for export to Excel
 	setColumnSortFields(state);
 	
@@ -226,7 +235,7 @@ function switchState(state, arg, searchQuery) {
 	
 	
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
-				{'membership':members, 'siteId':rosterSiteId,
+				{'language':language, 'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
 				'viewEmailColumn':viewEmailColumn,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
@@ -272,7 +281,7 @@ function switchState(state, arg, searchQuery) {
 		
 
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
-				{'membership':members, 'siteId':rosterSiteId,
+				{'language':language, 'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile,
@@ -309,7 +318,7 @@ function switchState(state, arg, searchQuery) {
 					{'arg':arg, 'siteId':rosterSiteId}, 'roster_section_filter');
 
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
-					{'membership':members,
+					{'language':language, 'membership':members,
 					'siteGroups':site.siteGroups, 'rolesText':getRolesByGroupRoleFragments(site, members),
 					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
@@ -321,7 +330,7 @@ function switchState(state, arg, searchQuery) {
 				'participants':getCurrentlyDisplayingParticipants(roles)}, 'roster_section_filter');
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
-					{'membership':members, 'siteId':rosterSiteId,
+					{'language':language, 'membership':members, 'siteId':rosterSiteId,
 					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		}
@@ -370,7 +379,7 @@ function switchState(state, arg, searchQuery) {
 				'roster_search');
 		
 		SakaiUtils.renderTrimpathTemplate('roster_enrollment_status_template',
-				{'enrollment':enrollment, 'enrollmentStatus':enrollmentStatusToViewText,
+				{'language':language, 'enrollment':enrollment, 'enrollmentStatus':enrollmentStatusToViewText,
 				'siteId':rosterSiteId, 'firstNameLastName':firstNameLastName,
 				'viewEmailColumn':viewEmailColumn,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
