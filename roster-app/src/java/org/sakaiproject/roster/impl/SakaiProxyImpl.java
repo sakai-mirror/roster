@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,6 +56,7 @@ import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.util.ResourceLoader;
 
 /**
  * <code>SakaiProxy</code> acts as a proxy between Roster and Sakai components.
@@ -475,7 +475,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				.get(GroupProvider.class);
 
 		Map<String, String> statusCodes = courseManagementService
-				.getEnrollmentStatusDescriptions(Locale.getDefault());
+				.getEnrollmentStatusDescriptions(new ResourceLoader().getLocale());
 
 		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(
 				statusCodes.values()));
@@ -539,9 +539,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		List<RosterMember> enrolledMembers = new ArrayList<RosterMember>();
 
-		// TODO fix how to get the Locale
 		Map<String, String> statusCodes = courseManagementService
-				.getEnrollmentStatusDescriptions(Locale.getDefault());
+				.getEnrollmentStatusDescriptions(new ResourceLoader().getLocale());
 
 		Map<String, RosterMember> membership = getMembershipMapped(siteId, null);
 
