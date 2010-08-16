@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.authz.api.AuthzGroup;
@@ -160,19 +159,21 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return securityService.isSuperUser();
 	}
 	
+	private Site getSite(String siteId) {
+
+		try {
+			return siteService.getSite(siteId);
+		} catch (IdUnusedException e) {
+			log.warn("site not found: " + e.getId());
+			return null;
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public String getCurrentUserId() {
-		
-		// TODO should this be done via SessionManager instead?
-		
-		if (null == userDirectoryService.getCurrentUser()) {
-			log.warn("cannot retrieve current user");
-			return null;
-		}
-		
-		return userDirectoryService.getCurrentUser().getId();
+		return sessionManager.getCurrentSessionUserId();
 	}
 
 	/**
@@ -222,7 +223,18 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<RosterMember> getMembership(String siteId, String groupId) {
+	public List<RosterMember> getSiteMembership(String siteId) {
+		return getMembership(siteId, null);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<RosterMember> getGroupMembership(String siteId, String groupId) {
+		return getMembership(siteId, groupId);
+	}
+	
+	private List<RosterMember> getMembership(String siteId, String groupId) {
 		
 		List<RosterMember> rosterMembers = new ArrayList<RosterMember>();
 		
@@ -263,7 +275,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return rosterMembers;
 		
 	}
-	
+		
 	private Map<String, RosterMember> getMembershipMapped(String siteId,
 			String groupId, boolean filtered) {
 
@@ -426,132 +438,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
-	// TODO refactor this method
-	public RosterSite getSiteDetails(String siteId) {
-
-		String currentUserId = getCurrentSessionUserId();
-		if (null == currentUserId) {
-			return null;
-		}
-
-		Site site = getSite(siteId);
-		if (null == site) {
-			return null;
-		}
-
-		// return null if user is not a site member and not an admin user
-		if (null == site.getMember(currentUserId) && !isSuperUser()) {
-			return null;
-		}
-
-		RosterSite rosterSite = new RosterSite();
-
-		rosterSite.setId(site.getId());
-		rosterSite.setTitle(site.getTitle());
-
-		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
-
-		boolean viewAll = hasUserPermission(currentUserId,
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId());
-
-		for (Group group : site.getGroups()) {
-
-			if (viewAll || hasUserPermission(currentUserId,
-					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
-
-				RosterGroup rosterGroup = new RosterGroup();
-				rosterGroup.setId(group.getId());
-				rosterGroup.setTitle(group.getTitle());
-
-				List<String> userIds = new ArrayList<String>();
-
-				for (Member member : group.getMembers()) {
-					userIds.add(member.getUserId());
-				}
-
-				rosterGroup.setUserIds(userIds);
-
-				siteGroups.add(rosterGroup);
-			}
-		}
-
-		if (0 == siteGroups.size()) {
-			// to avoid IndexOutOfBoundsException in EB code
-			rosterSite.setSiteGroups(null);
-		} else {
-			rosterSite.setSiteGroups(siteGroups);
-		}
-
-		List<String> userRoles = new ArrayList<String>();
-		for (Role role : site.getRoles()) {
-			userRoles.add(role.getId());
-		}
-
-		if (0 == userRoles.size()) {
-			// to avoid IndexOutOfBoundsException in EB code
-			rosterSite.setUserRoles(null);
-		} else {
-			rosterSite.setUserRoles(userRoles);
-		}
-
-		GroupProvider groupProvider = (GroupProvider) ComponentManager
-				.get(GroupProvider.class);
-
-		Map<String, String> statusCodes = courseManagementService
-				.getEnrollmentStatusDescriptions(new ResourceLoader().getLocale());
-
-		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(
-				statusCodes.values()));
-
-		if (null == groupProvider) {
-			log.warn("no group provider installed");
-		} else {
-			String[] sectionIds = groupProvider.unpackId(getSite(siteId)
-					.getProviderGroupId());
-
-			List<RosterEnrollment> siteEnrollmentSets = new ArrayList<RosterEnrollment>();
-
-			// avoid duplicates
-			List<String> enrollmentSetIdsProcessed = new ArrayList<String>();
-
-			for (String sectionId : sectionIds) {
-
-				Section section = courseManagementService.getSection(sectionId);
-				if (null == section) {
-					continue;
-				}
-
-				EnrollmentSet enrollmentSet = section.getEnrollmentSet();
-				if (null == enrollmentSet) {
-					continue;
-				}
-
-				if (enrollmentSetIdsProcessed.contains(enrollmentSet.getEid())) {
-					continue;
-				}
-
-				RosterEnrollment rosterEnrollmentSet = new RosterEnrollment();
-				rosterEnrollmentSet.setId(enrollmentSet.getEid());
-				rosterEnrollmentSet.setTitle(enrollmentSet.getTitle());
-				siteEnrollmentSets.add(rosterEnrollmentSet);
-
-				enrollmentSetIdsProcessed.add(enrollmentSet.getEid());
-			}
-
-			if (0 == siteEnrollmentSets.size()) {
-				// to avoid IndexOutOfBoundsException in EB code
-				rosterSite.setSiteEnrollmentSets(null);
-			} else {
-				rosterSite.setSiteEnrollmentSets(siteEnrollmentSets);
-			}
-		}
-		return rosterSite;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<RosterMember> getEnrolledMembership(String siteId,
+	public List<RosterMember> getEnrollmentMembership(String siteId,
 			String enrollmentSetId) {
 
 		Site site = null;
@@ -606,61 +493,145 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Site getSite(String siteId) {
+	public RosterSite getRosterSite(String siteId) {
 
-		try {
-			return siteService.getSite(siteId);
-		} catch (IdUnusedException e) {
-			log.warn("site not found: " + e.getId());
+		String currentUserId = getCurrentUserId();
+		if (null == currentUserId) {
 			return null;
 		}
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public User getUser(String userId) {
-		
-		if (StringUtils.isBlank(userId)) {
+		Site site = getSite(siteId);
+		if (null == site) {
 			return null;
 		}
-		
-		User user = null;
-		try {
-			user = userDirectoryService.getUser(userId);
-		} catch (UserNotDefinedException e) {
-			log.warn("user not found: " + e.getId());
+
+		// return null if user is not a site member and not an admin user
+		if (null == site.getMember(currentUserId) && !isSuperUser()) {
+			return null;
 		}
-		return user;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<String> getRoleTypes(String siteId) {
+
+		RosterSite rosterSite = new RosterSite();
+
+		rosterSite.setId(site.getId());
+		rosterSite.setTitle(site.getTitle());
+
+		List<RosterGroup> siteGroups = getViewableSiteGroups(currentUserId,
+				site);
+
+		if (0 == siteGroups.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setSiteGroups(null);
+		} else {
+			rosterSite.setSiteGroups(siteGroups);
+		}
+
+		List<String> userRoles = new ArrayList<String>();
+		for (Role role : site.getRoles()) {
+			userRoles.add(role.getId());
+		}
+
+		if (0 == userRoles.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setUserRoles(null);
+		} else {
+			rosterSite.setUserRoles(userRoles);
+		}
+
+		GroupProvider groupProvider = (GroupProvider) ComponentManager
+				.get(GroupProvider.class);
+
+		Map<String, String> statusCodes = courseManagementService
+				.getEnrollmentStatusDescriptions(new ResourceLoader()
+						.getLocale());
+
+		rosterSite.setEnrollmentStatusDescriptions(new ArrayList<String>(
+				statusCodes.values()));
+
+		if (null == groupProvider) {
+			log.warn("no group provider installed");
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setSiteEnrollmentSets(null);
+			return rosterSite;
+
+		}
 		
-		List<String> roleTypes = new ArrayList<String>();
-		try {
-			Site site = siteService.getSite(siteId);
-			Set<Role> roles = site.getRoles();
-			
-			for (Role role : roles) {
-				roleTypes.add(role.getId());
+		List<RosterEnrollment> siteEnrollmentSets = getEnrollmentSets(siteId,
+				groupProvider);
+
+		if (0 == siteEnrollmentSets.size()) {
+			// to avoid IndexOutOfBoundsException in EB code
+			rosterSite.setSiteEnrollmentSets(null);
+		} else {
+			rosterSite.setSiteEnrollmentSets(siteEnrollmentSets);
+		}
+
+		return rosterSite;
+	}
+
+	private List<RosterGroup> getViewableSiteGroups(String currentUserId,
+			Site site) {
+		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
+
+		boolean viewAll = hasUserPermission(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId());
+
+		for (Group group : site.getGroups()) {
+
+			if (viewAll || hasUserPermission(currentUserId,
+					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
+
+				RosterGroup rosterGroup = new RosterGroup();
+				rosterGroup.setId(group.getId());
+				rosterGroup.setTitle(group.getTitle());
+
+				List<String> userIds = new ArrayList<String>();
+
+				for (Member member : group.getMembers()) {
+					userIds.add(member.getUserId());
+				}
+
+				rosterGroup.setUserIds(userIds);
+
+				siteGroups.add(rosterGroup);
 			}
-			
-		} catch (IdUnusedException e) {
-			log.warn("site not found: " + e.getId());
 		}
-
-		return roleTypes;
+		return siteGroups;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getCurrentSessionUserId() {
+	private List<RosterEnrollment> getEnrollmentSets(String siteId,
+			GroupProvider groupProvider) {
+		List<RosterEnrollment> siteEnrollmentSets = new ArrayList<RosterEnrollment>();
+
+		String[] sectionIds = groupProvider.unpackId(getSite(siteId)
+				.getProviderGroupId());
 		
-		return sessionManager.getCurrentSessionUserId();
+		// avoid duplicates
+		List<String> enrollmentSetIdsProcessed = new ArrayList<String>();
+
+		for (String sectionId : sectionIds) {
+
+			Section section = courseManagementService.getSection(sectionId);
+			if (null == section) {
+				continue;
+			}
+
+			EnrollmentSet enrollmentSet = section.getEnrollmentSet();
+			if (null == enrollmentSet) {
+				continue;
+			}
+
+			if (enrollmentSetIdsProcessed.contains(enrollmentSet.getEid())) {
+				continue;
+			}
+
+			RosterEnrollment rosterEnrollmentSet = new RosterEnrollment();
+			rosterEnrollmentSet.setId(enrollmentSet.getEid());
+			rosterEnrollmentSet.setTitle(enrollmentSet.getTitle());
+			siteEnrollmentSets.add(rosterEnrollmentSet);
+
+			enrollmentSetIdsProcessed.add(enrollmentSet.getEid());
+		}
+		return siteEnrollmentSets;
 	}
 	
 	/**

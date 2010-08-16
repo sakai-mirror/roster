@@ -79,22 +79,31 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	}
 	
 	@EntityCustomAction(action = "get-membership", viewKey = EntityView.VIEW_SHOW)
-	public Object getMembership(EntityReference reference, Map<String, Object> parameters) {
+	public Object getMembership(EntityReference reference,
+			Map<String, Object> parameters) {
 
 		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
 			return ERROR_INVALID_SITE;
 		}
-		
+
 		String groupId = null;
 		if (parameters.containsKey(KEY_GROUP_ID)) {
 			groupId = parameters.get(KEY_GROUP_ID).toString();
 		}
+
+		List<RosterMember> membership = null;
+		if (null == groupId) {
+			membership = sakaiProxy.getSiteMembership(reference.getId());
+		} else {
+			membership = sakaiProxy.getGroupMembership(reference.getId(), groupId);
+		}
 		
-		List<RosterMember> membership = sakaiProxy.getMembership(reference
-				.getId(), groupId);
+		if (null == membership) {
+			return null;
+		}
 
 		if (true == getSortedValue(parameters)) {
-			
+
 			Collections.sort(membership, new RosterMemberComparator(
 					getSortFieldValue(parameters),
 					getSortDirectionValue(parameters), sakaiProxy
@@ -111,7 +120,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 			return ERROR_INVALID_SITE;
 		}
 		
-		return sakaiProxy.getSiteDetails(reference.getId());
+		return sakaiProxy.getRosterSite(reference.getId());
 	}
 		
 	@EntityCustomAction(action = "get-enrollment", viewKey = EntityView.VIEW_SHOW)
@@ -126,7 +135,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 			enrollmentSetId = parameters.get(KEY_ENROLLMENT_SET_ID).toString();
 		}
 		
-		return sakaiProxy.getEnrolledMembership(reference.getId(), enrollmentSetId);
+		return sakaiProxy.getEnrollmentMembership(reference.getId(), enrollmentSetId);
 	}
 	
 	/**

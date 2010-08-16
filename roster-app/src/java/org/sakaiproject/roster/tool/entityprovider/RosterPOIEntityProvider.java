@@ -140,7 +140,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		HttpServletResponse response = requestGetter.getResponse();
 
 		// user must be logged in
-		String userId = sakaiProxy.getCurrentSessionUserId();
+		String userId = sakaiProxy.getCurrentUserId();
 		if (null == userId) {
 
 			writeOut(response, MSG_NO_SESSION);
@@ -166,7 +166,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 					RosterFunctions.ROSTER_FUNCTION_EXPORT, siteId)) {
 
 				//Site site = sakaiProxy.getSite(siteId);
-				RosterSite site = sakaiProxy.getSiteDetails(siteId);
+				RosterSite site = sakaiProxy.getRosterSite(siteId);
 				if (null == site) {
 					
 				}
@@ -342,9 +342,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		List<RosterMember> rosterMembers;
 		
 		if (DEFAULT_GROUP_ID.equals(groupId)) {
-			rosterMembers = sakaiProxy.getMembership(siteId, null);
+			rosterMembers = sakaiProxy.getSiteMembership(siteId);
 		} else {
-			rosterMembers = sakaiProxy.getMembership(siteId, groupId);
+			rosterMembers = sakaiProxy.getGroupMembership(siteId, groupId);
 		}
 		
 		if (null == rosterMembers) {
@@ -360,7 +360,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			String enrollmentSetId, int sortDirection, String sortField,
 			String enrollmentStatus) {
 
-		List<RosterMember> rosterMembers = sakaiProxy.getEnrolledMembership(
+		List<RosterMember> rosterMembers = sakaiProxy.getEnrollmentMembership(
 				siteId, enrollmentSetId);
 
 		// TODO filter here, but could perhaps have additional method in

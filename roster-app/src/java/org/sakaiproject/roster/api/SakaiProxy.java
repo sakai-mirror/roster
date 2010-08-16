@@ -17,9 +17,6 @@ package org.sakaiproject.roster.api;
 
 import java.util.List;
 
-import org.sakaiproject.site.api.Site;
-import org.sakaiproject.user.api.User;
-
 /**
  * Roster interface to Sakai functionality.
  * 
@@ -27,32 +24,100 @@ import org.sakaiproject.user.api.User;
  */
 public interface SakaiProxy {
 
+	/**
+	 * Returns the ID of the current user.
+	 * 
+	 * @return the ID of the current user.
+	 */
 	public String getCurrentUserId();
-	
+		
+	/**
+	 * Returns the ID of the current site.
+	 * 
+	 * @return the ID of the current site.
+	 */
 	public String getCurrentSiteId();
 	
+	/**
+	 * Returns the value of the <code>roster.defaultSortColumn</code> Sakai
+	 * property.
+	 * 
+	 * @return the value of the <code>roster.defaultSortColumn</code> Sakai
+	 * property.
+	 */
 	public String getDefaultSortColumn();
 	
+	/**
+	 * Returns the value of the <code>roster.display.firstNameLastName</code>
+	 * Sakai property.
+	 * 
+	 * @return the value of the <code>roster.display.firstNameLastName</code>
+	 *         Sakai property.
+	 */
 	public Boolean getFirstNameLastName();
 	
+	/**
+	 * Returns the value of the <code>roster.display.hideSingleGroupFilter</code>
+	 * Sakai property.
+	 * 
+	 * @return the value of the <code>roster.display.hideSingleGroupFilter</code>
+	 *         Sakai property.
+	 */
 	public Boolean getHideSingleGroupFilter();
 	
+	/**
+	 * Returns the value of the <code>roster_view_email</code> Sakai property.
+	 * 
+	 * @return the value of the <code>roster_view_email</code> Sakai property.
+	 */
 	public Boolean getViewEmailColumn();
+		
+	/**
+	 * Returns the list of viewable members from the specified site.
+	 * 
+	 * @param siteId the ID of the site.
+	 * @return the list of viewable members from the specified site.
+	 */
+	public List<RosterMember> getSiteMembership(String siteId);
 	
-	public List<String> getRoleTypes(String siteId);
+	/**
+	 * Returns the list of viewable members from the specified group.
+	 * 
+	 * @param siteId the ID of the site the group belongs to.
+	 * @param groupId the ID of the group.
+	 * @return the list of viewable members from the specified group.
+	 */
+	public List<RosterMember> getGroupMembership(String siteId, String groupId);
 	
-	public Site getSite(String siteId);
+	/**
+	 * Returns site information for the specified site.
+	 * 
+	 * @param siteId the ID of the site.
+	 * @return site information for the specified site.
+	 */
+	public RosterSite getRosterSite(String siteId);
 	
-	public List<RosterMember> getMembership(String siteId, String groupId);
+	/**
+	 * Returns the enrollment set members for the specified site and enrollment
+	 * set.
+	 * 
+	 * @param siteId the ID of the site.
+	 * @param enrollmentSetId the ID of the enrollment set.
+	 * @return the enrollment set members for the specified site and enrollment
+	 *         set.
+	 */
+	public List<RosterMember> getEnrollmentMembership(String siteId, String enrollmentSetId);
 	
-	public RosterSite getSiteDetails(String siteId);
-	
-	public List<RosterMember> getEnrolledMembership(String siteId, String enrollmentSetId);
-	
-	public String getCurrentSessionUserId();
-	
-	public User getUser(String userId);
-	
+	/**
+	 * Returns whether or not the specified user is allowed the specified
+	 * permission within the specified <code>AuthzGroup</code>.
+	 * 
+	 * @param userId the ID of the user.
+	 * @param permission the permission.
+	 * @param authzGroupId the ID of the <code>AuthzGroup</code>.
+	 * @return <code>true</code> if the user has permission, otherwise returns
+	 *         <code>false</code>.
+	 */
 	public Boolean hasUserPermission(String userId, String permission, String authzGroupId);
 	
 }
