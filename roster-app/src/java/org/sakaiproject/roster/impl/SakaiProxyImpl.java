@@ -264,10 +264,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	public Map<String, RosterMember> getMembershipMapped(String siteId,
+	private Map<String, RosterMember> getMembershipMapped(String siteId,
 			String groupId) {
 
 		Map<String, RosterMember> rosterMembers = new HashMap<String, RosterMember>();
