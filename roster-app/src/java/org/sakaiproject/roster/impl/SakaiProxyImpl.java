@@ -307,32 +307,47 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 	private Set<Member> getMembership(String groupId, String currentUserId,
 			Site site) {
-		
+
 		Set<Member> membership = new HashSet<Member>();
 
-		if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId())) {
+		if (hasUserPermission(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId())) {
+
 			if (null == groupId) {
 				// get all members
-				membership.addAll(site.getMembers());
-			} else if (null != site.getGroup(groupId)){
+				membership.addAll(filterHiddenMembers(site.getMembers(),
+						currentUserId, site.getId()));
+			} else if (null != site.getGroup(groupId)) {
 				// get all members of requested groupId
-				membership.addAll(site.getGroup(groupId).getMembers());
+				membership.addAll(filterHiddenMembers(site.getGroup(groupId)
+						.getMembers(), currentUserId, groupId));
 			} else {
 				// assume invalid groupId specified
 				return null;
 			}
+
 		} else {
 			if (null == groupId) {
-				// get all members of groups current user is allow
+				// get all members of groups current user is allowed to view
 				for (Group group : site.getGroups()) {
-					if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
-						membership.addAll(group.getMembers());
+					
+					if (hasUserPermission(currentUserId,
+							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group
+									.getId())) {
+
+						membership.addAll(filterHiddenMembers(group
+								.getMembers(), currentUserId, group.getId()));
 					}
 				}
-			} else if (null != site.getGroup(groupId)){
-				// get all members of requested groupId if current user is member
-				if (hasUserPermission(currentUserId, RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, groupId)) {
-					membership.addAll(site.getGroup(groupId).getMembers());
+			} else if (null != site.getGroup(groupId)) {
+				// get all members of requested groupId if current user is
+				// member
+				if (hasUserPermission(currentUserId,
+						RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, groupId)) {
+
+					membership.addAll(filterHiddenMembers(site
+							.getGroup(groupId).getMembers(), currentUserId,
+							groupId));
 				}
 			} else {
 				// assume invalid groupId specified or user not member
@@ -340,6 +355,21 @@ public class SakaiProxyImpl implements SakaiProxy {
 			}
 		}
 		return membership;
+	}
+	
+	private Set<Member> filterHiddenMembers(Set<Member> membership,
+			String currentUserId, String authzGroupId) {
+
+		Set<Member> filteredMembership = new HashSet<Member>();
+
+		for (Member member : membership) {
+			if (hasUserPermission(currentUserId,
+					RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, authzGroupId)) {
+				filteredMembership.add(member);
+			}
+		}
+
+		return filteredMembership;
 	}
 	
 	private RosterMember getRosterMember(Member member, Site site)
