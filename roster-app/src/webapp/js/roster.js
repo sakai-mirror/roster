@@ -39,6 +39,7 @@ var SORT_CREDITS	= "credits";
 var columnSortFields = [];
 
 /* Stuff that we always expect to be setup */
+var language = null;
 var rosterSiteId = null;
 var rosterCurrentUserPermissions = null;
 var rosterCurrentState = null;
@@ -118,6 +119,8 @@ $.tablesorter.addParser({
 		return;
 	}
 	
+	setLanguage(arg.language);
+	
 	getRosterCurrentUserPermissions();
 	
 	// process sakai.properties
@@ -177,16 +180,7 @@ $.tablesorter.addParser({
 })();
 
 function switchState(state, arg, searchQuery) {
-	
-	// get language
-	var language;
-	// test for IE
-	if (window.ActiveXObject) {
-		language = navigator.userLanguage;
-	} else {
-		language = navigator.language;
-	}
-	
+		
 	// for export to Excel
 	setColumnSortFields(state);
 	
@@ -963,6 +957,20 @@ function setColumnSortFields(state) {
 			columnSortFields[3] = SORT_CREDITS;
 		}
 	}	
+}
+
+function setLanguage(locale) {
+
+	if (locale) {
+		language = locale;
+	} else {
+		// test for IE
+		if (window.ActiveXObject) {
+			language = navigator.userLanguage;
+		} else {
+			language = navigator.language;
+		}
+	}
 }
 
 /* Original Roster functions */
