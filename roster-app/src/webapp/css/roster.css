@@ -48,11 +48,11 @@ table.rosterPictures {
 	width:45em;
 }
 
-
 table.rosterPictures td {
 	width:9em;
 	height:10em;
 	vertical-align:top;
+	word-wrap: break-word; /* work in IE, not other browsers */
 }
 
 @media print  { .noprint  { display: none; } }
