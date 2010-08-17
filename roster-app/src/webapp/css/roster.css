@@ -41,18 +41,25 @@ table.searchFilter {
 }
 
 table.rosterPicturesFilter {
-	width:45em;
+	width:60em;
 }
 
 table.rosterPictures {
-	width:45em;
+	width:60em;
 }
 
 table.rosterPictures td {
 	width:9em;
 	height:10em;
 	vertical-align:top;
-	word-wrap: break-word; /* work in IE, not other browsers */
+	word-wrap:break-word; /* works in IE, but not other browsers */
+}
+
+.rosterPicture {
+	border:1px solid #bbb;
+	width:expression(9 + "em"); /* used for IE */
+	max-width:9em;
+	max-height:10em;
 }
 
 @media print  { .noprint  { display: none; } }
