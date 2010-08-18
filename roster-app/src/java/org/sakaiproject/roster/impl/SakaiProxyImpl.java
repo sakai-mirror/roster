@@ -105,6 +105,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		org.sakaiproject.component.api.ComponentManager componentManager = 
 			org.sakaiproject.component.cover.ComponentManager.getInstance();
 
+		authzGroupService = (AuthzGroupService) componentManager.get(AuthzGroupService.class);
 		courseManagementService = (CourseManagementService) componentManager.get(CourseManagementService.class);
 		functionManager = (FunctionManager) componentManager.get(FunctionManager.class);
 		securityService = (SecurityService) componentManager.get(SecurityService.class);
