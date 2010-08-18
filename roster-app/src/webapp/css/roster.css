@@ -49,17 +49,18 @@ table.rosterPictures {
 }
 
 table.rosterPictures td {
-	width:9em;
-	height:10em;
+	width:10em;
+	height:11em;
 	vertical-align:top;
-	word-wrap:break-word; /* works in IE, but not other browsers */
+	word-break:break-all;
+	word-wrap:break-word;
 }
 
 .rosterPicture {
 	border:1px solid #bbb;
-	width:expression(9 + "em"); /* used for IE */
-	max-width:9em;
-	max-height:10em;
+	width:expression(10 + "em"); /* used for IE */
+	max-width:10em;
+	max-height:11em;
 }
 
 @media print  { .noprint  { display: none; } }
