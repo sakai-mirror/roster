@@ -138,10 +138,6 @@ public class SakaiProxyImpl implements SakaiProxy {
             functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN);
         }
 
-        if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO)) {
-            functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWOFFICIALPHOTO);
-        }
-
         if (!registered.contains(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
             functionManager.registerFunction(RosterFunctions.ROSTER_FUNCTION_VIEWGROUP);
         }

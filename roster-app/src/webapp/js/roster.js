@@ -278,8 +278,7 @@ function switchState(state, arg, searchQuery) {
 				{'language':language, 'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
-				'viewProfile':rosterCurrentUserPermissions.viewProfile,
-				'viewPhoto':rosterCurrentUserPermissions.viewPhoto},
+				'viewProfile':rosterCurrentUserPermissions.viewProfile},
 				'roster_content');
 		
 		$(document).ready(function() {
@@ -853,7 +852,6 @@ function getRosterCurrentUserPermissions() {
 				'roster.viewenrollmentstatus',
 				'roster.viewgroup',
 				'roster.viewhidden',
-				'roster.viewofficialphoto',
 				'roster.viewprofile'];
 
 		rosterCurrentUserPermissions = new RosterPermissions(data);
