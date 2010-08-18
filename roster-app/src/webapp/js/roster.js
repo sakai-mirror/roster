@@ -765,10 +765,11 @@ function readySearchButton(state) {
 	
 	$('#roster_form_search_button').bind('click', function(e) {
 		
-		if (roster_form_search_field.value != roster_search_text &&
-				roster_form_search_field.value != "") {
+		var searchFieldValue = document.forms['roster_form'].elements['roster_form_search_field'].value;
+
+		if (searchFieldValue != roster_search_text && searchFieldValue != "") {
 			
-			searchQuery = roster_form_search_field.value.toLowerCase();
+			searchQuery = searchFieldValue.toLowerCase();
 			switchState(state, null, searchQuery);
 		}
 	});
