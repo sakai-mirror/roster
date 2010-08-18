@@ -162,10 +162,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		try {
 			
-			if (sakaiProxy.hasUserPermission(userId,
+			if (sakaiProxy.hasUserSitePermission(userId,
 					RosterFunctions.ROSTER_FUNCTION_EXPORT, siteId)) {
 
-				//Site site = sakaiProxy.getSite(siteId);
 				RosterSite site = sakaiProxy.getRosterSite(siteId);
 				if (null == site) {
 					

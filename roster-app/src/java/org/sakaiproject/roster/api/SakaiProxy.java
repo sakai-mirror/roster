@@ -110,14 +110,27 @@ public interface SakaiProxy {
 	
 	/**
 	 * Returns whether or not the specified user is allowed the specified
-	 * permission within the specified <code>AuthzGroup</code>.
+	 * permission within the specified site.
 	 * 
 	 * @param userId the ID of the user.
 	 * @param permission the permission.
-	 * @param authzGroupId the ID of the <code>AuthzGroup</code>.
+	 * @param siteId the ID of the site to check.
 	 * @return <code>true</code> if the user has permission, otherwise returns
 	 *         <code>false</code>.
 	 */
-	public Boolean hasUserPermission(String userId, String permission, String authzGroupId);
+	public Boolean hasUserSitePermission(String userId, String permission, String siteId);
 	
+	/**
+	 * Returns whether or not the specified user is allowed the specified
+	 * permission within the specified site group.
+	 * 
+	 * @param userId the ID of the user.
+	 * @param permission the permission.
+	 * @param siteId the ID of the <code>Site</code> the group belongs to.
+	 * @param groupId the ID of th3e group.
+	 * @return <code>true</code> if the user has permission, otherwise returns
+	 *         <code>false</code>.
+	 */
+	public Boolean hasUserGroupPermission(String userId, String permission,
+			String siteId, String groupId);
 }

@@ -26,10 +26,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.api.privacy.PrivacyManager;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
-import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
@@ -72,9 +72,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
 	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
 	
-	private AuthzGroupService authzGroupService;
 	private CourseManagementService courseManagementService;
 	private FunctionManager functionManager = null;
+	private PrivacyManager privacyManager = null;
 	private SecurityService securityService = null;
 	private ServerConfigurationService serverConfigurationService = null;
 	private SessionManager sessionManager = null;
@@ -105,9 +105,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 		org.sakaiproject.component.api.ComponentManager componentManager = 
 			org.sakaiproject.component.cover.ComponentManager.getInstance();
 
-		authzGroupService = (AuthzGroupService) componentManager.get(AuthzGroupService.class);
 		courseManagementService = (CourseManagementService) componentManager.get(CourseManagementService.class);
 		functionManager = (FunctionManager) componentManager.get(FunctionManager.class);
+		privacyManager = (PrivacyManager) componentManager.get(PrivacyManager.class);
 		securityService = (SecurityService) componentManager.get(SecurityService.class);
 		serverConfigurationService = (ServerConfigurationService) componentManager.get(ServerConfigurationService.class);
 		sessionManager = (SessionManager) componentManager.get(SessionManager.class);
@@ -326,17 +326,18 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		Set<Member> membership = new HashSet<Member>();
 
-		if (hasUserPermission(currentUserId,
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId())) {
+		if (site.isAllowed(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL)) {
 
 			if (null == groupId) {
 				// get all members
 				membership.addAll(filterHiddenMembers(site.getMembers(),
-						currentUserId, site.getId()));
+						currentUserId, site.getId(), site));
 			} else if (null != site.getGroup(groupId)) {
 				// get all members of requested groupId
 				membership.addAll(filterHiddenMembers(site.getGroup(groupId)
-						.getMembers(), currentUserId, groupId));
+						.getMembers(), currentUserId, site.getId(), site
+						.getGroup(groupId)));
 			} else {
 				// assume invalid groupId specified
 				return null;
@@ -347,23 +348,23 @@ public class SakaiProxyImpl implements SakaiProxy {
 				// get all members of groups current user is allowed to view
 				for (Group group : site.getGroups()) {
 
-					if (hasUserPermission(currentUserId,
-							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group
-									.getId())) {
+					if (group.isAllowed(currentUserId,
+							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
 
 						membership.addAll(filterHiddenMembers(group
-								.getMembers(), currentUserId, group.getId()));
+								.getMembers(), currentUserId, site.getId(),
+								group));
 					}
 				}
 			} else if (null != site.getGroup(groupId)) {
 				// get all members of requested groupId if current user is
 				// member
-				if (hasUserPermission(currentUserId,
-						RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, groupId)) {
+				if (site.getGroup(groupId).isAllowed(currentUserId,
+						RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
 
 					membership.addAll(filterHiddenMembers(site
 							.getGroup(groupId).getMembers(), currentUserId,
-							groupId));
+							site.getId(), site.getGroup(groupId)));
 				}
 			} else {
 				// assume invalid groupId specified or user not member
@@ -373,14 +374,27 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return membership;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Set<Member> filterHiddenMembers(Set<Member> membership,
-			String currentUserId, String authzGroupId) {
+			String currentUserId, String siteId, AuthzGroup authzGroup) {
 
+		if (authzGroup.isAllowed(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN)) {
+			
+			return membership;
+		}
+			
 		Set<Member> filteredMembership = new HashSet<Member>();
 
+		Set<String> userIds = new HashSet<String>();
 		for (Member member : membership) {
-			if (hasUserPermission(currentUserId,
-					RosterFunctions.ROSTER_FUNCTION_VIEWHIDDEN, authzGroupId)) {
+			userIds.add(member.getUserEid());
+		}
+		
+		Set<String> hiddenUserIds = privacyManager.findHidden("/site/" + siteId, userIds);
+
+		for (Member member : membership) {
+			if (!hiddenUserIds.contains(member.getUserEid())) {
 				filteredMembership.add(member);
 			}
 		}
@@ -453,8 +467,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 			return null;
 		}
 
-		if (!hasUserPermission(getCurrentUserId(),
-				RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS, siteId)) {
+		if (!site.isAllowed(getCurrentUserId(),
+				RosterFunctions.ROSTER_FUNCTION_VIEWENROLLMENTSTATUS)) {
 
 			return null;
 		}
@@ -470,17 +484,18 @@ public class SakaiProxyImpl implements SakaiProxy {
 				.getEnrollmentStatusDescriptions(new ResourceLoader()
 						.getLocale());
 
-		Map<String, RosterMember> membership = getMembershipMapped(siteId, null, false);
+		Map<String, RosterMember> membership = getMembershipMapped(siteId,
+				null, false);
 
 		List<RosterMember> enrolledMembers = new ArrayList<RosterMember>();
-		
+
 		for (Enrollment enrollment : courseManagementService
 				.getEnrollments(enrollmentSet.getEid())) {
-			
+
 			RosterMember member = membership.get(enrollment.getUserId());
 			member.setCredits(enrollment.getCredits());
 			member.setStatus(statusCodes.get(enrollment.getEnrollmentStatus()));
-			
+
 			enrolledMembers.add(member);
 		}
 
@@ -573,13 +588,14 @@ public class SakaiProxyImpl implements SakaiProxy {
 			Site site) {
 		List<RosterGroup> siteGroups = new ArrayList<RosterGroup>();
 
-		boolean viewAll = hasUserPermission(currentUserId,
-				RosterFunctions.ROSTER_FUNCTION_VIEWALL, site.getId());
+		boolean viewAll = site.isAllowed(currentUserId,
+				RosterFunctions.ROSTER_FUNCTION_VIEWALL);
 
 		for (Group group : site.getGroups()) {
 
-			if (viewAll || hasUserPermission(currentUserId,
-					RosterFunctions.ROSTER_FUNCTION_VIEWGROUP, group.getId())) {
+			if (viewAll
+					|| group.isAllowed(currentUserId,
+							RosterFunctions.ROSTER_FUNCTION_VIEWGROUP)) {
 
 				RosterGroup rosterGroup = new RosterGroup();
 				rosterGroup.setId(group.getId());
@@ -638,28 +654,30 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Boolean hasUserPermission(String userId, String permission,
-			String authzGroupId) {
-		
-		try {
-			
-			if (securityService.isSuperUser()) {
-				return true;
-			}
-			
-			AuthzGroup authzGroup = authzGroupService.getAuthzGroup(authzGroupId);
-			
-			Role userRole = authzGroup.getUserRole(userId);
-			
-			if (null != userRole && userRole.getAllowedFunctions().contains(permission)) {
-				return true;
-			}
-			
-		} catch (GroupNotDefinedException e) {
-			log.warn("AuthzGroup not found: " + e.getId());
+	public Boolean hasUserSitePermission(String userId, String permission, String siteId) {
+		Site site = getSite(siteId);
+		if (null == site) {
+			return false;
+		} else {
+			return site.isAllowed(userId, permission);
 		}
-		
-		return false;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Boolean hasUserGroupPermission(String userId, String permission,
+			String siteId, String groupId) {
+		Site site = getSite(siteId);
+		if (null == site) {
+			return false;
+		} else {
+			if (null == site.getGroup(groupId)) {
+				return false;
+			} else {
+				return site.getGroup(groupId).isAllowed(userId, permission);
+			}
+		}
 	}
 		
 }
