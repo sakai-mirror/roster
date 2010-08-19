@@ -71,8 +71,15 @@ public class RosterTool extends HttpServlet {
 			throw new ServletException("getCurrentUser returned null.");
 		}
 
+		String defaultState = null;
+		if (sakaiProxy.getUsePicturesAsDefaultView()) {
+			defaultState = SakaiProxy.PICTURES_STATE;
+		} else {
+			defaultState = SakaiProxy.OVERVIEW_STATE;
+		}
+		
 		// pass siteId, language code and sakai.properties to the JQuery code
-		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + "pics"
+		response.sendRedirect("/sakai-roster-tool/roster.html?state=" + defaultState
 				+ "&siteId=" + sakaiProxy.getCurrentSiteId() + "&language="
 				+ (new ResourceLoader(userId)).getLocale().getLanguage()
 				+ "&defaultSortColumn=" + sakaiProxy.getDefaultSortColumn()

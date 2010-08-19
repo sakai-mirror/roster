@@ -24,6 +24,9 @@ import java.util.List;
  */
 public interface SakaiProxy {
 
+	public final static String OVERVIEW_STATE = "overview";
+	public final static String PICTURES_STATE = "pics";
+	
 	/**
 	 * Returns the ID of the current user.
 	 * 
@@ -71,6 +74,13 @@ public interface SakaiProxy {
 	 * @return the value of the <code>roster_view_email</code> Sakai property.
 	 */
 	public Boolean getViewEmailColumn();
+	
+	/**
+	 * Returns the value of the <code>roster.usePicturesAsDefaultView</code> Sakai property.
+	 * 
+	 * @return the value of the <code>roster.usePicturesAsDefaultView</code> Sakai property.
+	 */
+	public Boolean getUsePicturesAsDefaultView();
 		
 	/**
 	 * Returns the list of viewable members from the specified site.

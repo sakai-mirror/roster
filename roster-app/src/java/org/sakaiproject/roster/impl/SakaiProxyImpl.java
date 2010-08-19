@@ -70,6 +70,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static Boolean DEFAULT_FIRST_NAME_LAST_NAME = false;
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
 	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
+	public final static Boolean DEFAULT_USE_PICTURES_AS_DEFAULT_VIEW = false;
 	
 	private CourseManagementService courseManagementService;
 	private FunctionManager functionManager = null;
@@ -214,6 +215,14 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 		return serverConfigurationService.getBoolean("roster_view_email",
 				DEFAULT_VIEW_EMAIL_COLUMN);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Boolean getUsePicturesAsDefaultView() {
+		return serverConfigurationService.getBoolean(
+				"roster.usePicturesAsDefaultView", DEFAULT_USE_PICTURES_AS_DEFAULT_VIEW);
 	}
 	
 	/**
