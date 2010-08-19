@@ -431,18 +431,14 @@ else
 				{/if}
 				<div>
 					{if true == viewProfile}
-						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
-							${member.displayId}
-						</a>
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">${member.displayId}</a>
 					{else}
 						${member.displayId}
 					{/if}
 				</div>
 				{if true == viewEmailColumn && member.email.length > 0}
 					<div>
-						<a href="mailto:${member.email}" title="${profile_email} ${member.email}">
-							<img src="/library/image/silk/email.png" alt="${profile_email}">
-						</a>
+						<a href="mailto:${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a>
 					</div>
 				{/if}
 				{/for}
@@ -468,18 +464,14 @@ else
 				{/if}
 				<div>
 					{if true == viewProfile}
-						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
-							${member.displayId}
-						</a>
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">${member.displayId}</a>
 					{else}
 						${member.displayId}
 					{/if}
 				</div>
 				{if true == viewEmailColumn && member.email.length > 0}
 					<div>
-						<a href="mailto:${member.email}" title="${profile_email} ${member.email}">
-							<img src="/library/image/silk/email.png" alt="${profile_email}">
-						</a>
+						<a href="mailto:${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a>
 					</div>
 				{/if}
 			</td>
