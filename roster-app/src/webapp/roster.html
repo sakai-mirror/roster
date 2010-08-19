@@ -426,12 +426,11 @@ else
 				</div>
 				{if false == hideNames}
 					<div>
-						<span title="${memberName}">${facet_name}: ${memberName}</span>
+						<span title="${memberName}">${memberName}</span>
 					</div>
 				{/if}
 				<div>
 					{if true == viewProfile}
-						${facet_profile}:  
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
 							${member.displayId}
 						</a>
@@ -439,10 +438,11 @@ else
 						${member.displayId}
 					{/if}
 				</div>
-				{if true == viewEmailColumn}
+				{if true == viewEmailColumn && member.email.length > 0}
 					<div>
-						<span title="${profile_email} ${memberName}">${profile_email}: 
-							<a href="mailto:${member.email}">${member.email}</a></span>
+						<a href="mailto:${member.email}" title="${profile_email} ${member.email}">
+							<img src="/library/image/silk/email.png" alt="${profile_email}">
+						</a>
 					</div>
 				{/if}
 				{/for}
@@ -451,7 +451,7 @@ else
 		<tr>
 		{for member in membership}
 			{var count = +member_index + 1}
-			<td width="100px">
+			<td>
 				{if true == firstNameLastName}
 					{var memberName = member.displayName}
 				{else}
@@ -463,12 +463,11 @@ else
 				</div>
 				{if false == hideNames}
 					<div>
-						<span title="${memberName}">${facet_name}: ${memberName}</span>
+						<span title="${memberName}">${memberName}</span>
 					</div>
 				{/if}
 				<div>
 					{if true == viewProfile}
-						${facet_profile}: 
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
 							${member.displayId}
 						</a>
@@ -476,10 +475,11 @@ else
 						${member.displayId}
 					{/if}
 				</div>
-				{if true == viewEmailColumn}
+				{if true == viewEmailColumn && member.email.length > 0}
 					<div>
-						<span title="${profile_email} ${memberName}">${profile_email}: 
-							<a href="mailto:${member.email}">${member.email}</a></span>
+						<a href="mailto:${member.email}" title="${profile_email} ${member.email}">
+							<img src="/library/image/silk/email.png" alt="${profile_email}">
+						</a>
 					</div>
 				{/if}
 			</td>
