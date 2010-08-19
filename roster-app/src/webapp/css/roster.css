@@ -49,8 +49,8 @@ table.rosterPictures {
 }
 
 table.rosterPictures td {
-	width:10em;
-	height:11em;
+	width:13em;
+	height:14em;
 	vertical-align:top;
 	word-break:break-all;
 	word-wrap:break-word;
@@ -58,9 +58,9 @@ table.rosterPictures td {
 
 .rosterPicture {
 	border:1px solid #bbb;
-	width:expression(10 + "em"); /* used for IE */
-	max-width:10em;
-	max-height:11em;
+	width:expression(13 + "em"); /* used for IE */
+	max-width:13em;
+	max-height:14em;
 }
 
 @media print  { .noprint  { display: none; } }
