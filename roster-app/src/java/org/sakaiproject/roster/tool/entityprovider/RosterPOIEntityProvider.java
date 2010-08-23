@@ -403,7 +403,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			
 			row.add(member.getDisplayId());
 
-			if (true == sakaiProxy.getViewEmailColumn()) {
+			if (true == sakaiProxy.getViewEmail()) {
 				row.add(member.getEmail());
 			}
 
@@ -504,7 +504,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			}
 			row.add(member.getDisplayId());
 
-			if (sakaiProxy.getViewEmailColumn()) {
+			if (sakaiProxy.getViewEmail()) {
 				row.add(member.getEmail());
 			}
 			
@@ -590,7 +590,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
-			if (true == sakaiProxy.getViewEmailColumn()) {
+			if (true == sakaiProxy.getViewEmail()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);
@@ -608,7 +608,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
 
-			if (true == sakaiProxy.getViewEmailColumn()) {
+			if (true == sakaiProxy.getViewEmail()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);

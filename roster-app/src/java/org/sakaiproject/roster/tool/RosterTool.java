@@ -87,6 +87,6 @@ public class RosterTool extends HttpServlet {
 				+ sakaiProxy.getFirstNameLastName()
 				+ "&hideSingleGroupFilter="
 				+ sakaiProxy.getHideSingleGroupFilter() + "&viewEmailColumn="
-				+ sakaiProxy.getViewEmailColumn());
+				+ sakaiProxy.getViewEmail());
 	}
 }

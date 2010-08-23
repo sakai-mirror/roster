@@ -73,7 +73,7 @@ public interface SakaiProxy {
 	 * 
 	 * @return the value of the <code>roster_view_email</code> Sakai property.
 	 */
-	public Boolean getViewEmailColumn();
+	public Boolean getViewEmail();
 	
 	/**
 	 * Returns the value of the <code>roster.usePicturesAsDefaultView</code> Sakai property.

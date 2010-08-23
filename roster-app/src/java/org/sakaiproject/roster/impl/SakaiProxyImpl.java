@@ -211,7 +211,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Boolean getViewEmailColumn() {
+	public Boolean getViewEmail() {
 
 		return serverConfigurationService.getBoolean("roster_view_email",
 				DEFAULT_VIEW_EMAIL_COLUMN);
