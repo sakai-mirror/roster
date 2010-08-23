@@ -434,8 +434,11 @@ else
 					{var memberName = member.sortName}
 				{/if}
 				<div>
-					<img class="rosterPicture" src="/direct/profile/${member.userId}/image"
-						title="${profile_picture_alt} ${member.displayName}" />
+					{if false == viewUserDisplayId && true == viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}"><img class="rosterPicture" src="/direct/profile/${member.userId}/image" title="${show_profile}" /></a>
+					{else}
+						<img class="rosterPicture" src="/direct/profile/${member.userId}/image" title="${profile_picture_alt} ${member.displayName}" />
+					{/if}
 				</div>
 				{if false == hideNames}
 					<div>
@@ -469,8 +472,11 @@ else
 					{var memberName = member.sortName}
 				{/if}
 				<div>
-					<img class="rosterPicture" src="/direct/profile/${member.userId}/image"
-						title="${profile_picture_alt} ${member.displayName}" />
+					{if false == viewUserDisplayId && true == viewProfile}
+						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}"><img class="rosterPicture" src="/direct/profile/${member.userId}/image" title="${show_profile}" /></a>
+					{else}
+						<img class="rosterPicture" src="/direct/profile/${member.userId}/image" title="${profile_picture_alt} ${member.displayName}" />
+					{/if}
 				</div>
 				{if false == hideNames}
 					<div>
