@@ -67,13 +67,20 @@ public interface SakaiProxy {
 	 *         Sakai property.
 	 */
 	public Boolean getHideSingleGroupFilter();
-	
+		
 	/**
 	 * Returns the value of the <code>roster_view_email</code> Sakai property.
 	 * 
 	 * @return the value of the <code>roster_view_email</code> Sakai property.
 	 */
 	public Boolean getViewEmail();
+	
+	/**
+	 * Returns the value of the <code>roster.display.userDisplayId</code> Sakai property.
+	 * 
+	 * @return the value of the <code>roster.display.userDisplayId</code> Sakai property.
+	 */
+	public Boolean getViewUserDisplayId();
 	
 	/**
 	 * Returns the value of the <code>roster.usePicturesAsDefaultView</code> Sakai property.

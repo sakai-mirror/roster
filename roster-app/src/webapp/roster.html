@@ -331,13 +331,22 @@ else
 <table cellspacing="0" cellpadding="0" class="listHier rosterTable" id="roster_form_rosterTable">
 	<thead>
 		<tr>
-			<th width="25%"><a href="#">${facet_name}</a></th>
-			<th width="10%"><a href="#">${facet_userId}</a></th>
-			{if true == viewEmailColumn}
-				<th width="15%"><a href="#">${facet_email}</a></th>
-				<th width="50%"><a href="#">${facet_role}</a></th>
+			{if true == viewUserDisplayId && true == viewEmail}
+				<th width="35%"><a href="#">${facet_name}</a></th>
+				<th width="25%"><a href="#">${facet_userId}</a></th>
+				<th width="25%"><a href="#">${facet_email}</a></th>
+				<th width="15%"><a href="#">${facet_role}</a></th>
+			{elseif true == viewUserDisplayId}
+				<th width="40%"><a href="#">${facet_name}</a></th>
+				<th width="40%"><a href="#">${facet_userId}</a></th>
+				<th width="20%"><a href="#">${facet_role}</a></th>
+			{elseif true == viewEmail}
+				<th width="40%"><a href="#">${facet_name}</a></th>
+				<th width="40%"><a href="#">${facet_email}</a></th>
+				<th width="20%"><a href="#">${facet_role}</a></th>
 			{else}
-				<th width="65%"><a href="#">${facet_role}</a></th>
+				<th width="50%"><a href="#">${facet_name}</a></th>
+				<th width="50%"><a href="#">${facet_role}</a></th>
 			{/if}
 		</tr>
 	</thead>
@@ -345,8 +354,10 @@ else
 	{if membership.length == 0}
 		<tr>
 			<td>${no_participants}</td>
-			<td></td>
-			{if true == viewEmailColumn}
+			{if true == viewUserDisplayId}
+				<td></td>
+			{/if}
+			{if true == viewEmail}
 				<td></td>
 			{/if}
 			<td></td>
@@ -361,16 +372,18 @@ else
 						${member.sortName}
 					{/if}
 				</td>
-				<td>
-					{if true == viewProfile}
-						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
+				{if true == viewUserDisplayId}
+					<td>
+						{if true == viewProfile}
+							<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
+								${member.displayId}
+							</a>
+						{else}
 							${member.displayId}
-						</a>
-					{else}
-						${member.displayId}
-					{/if}
-				</td>
-				{if true == viewEmailColumn}
+						{/if}
+					</td>
+				{/if}
+				{if true == viewEmail}
 					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
 				<td>${member.role}</td>
@@ -429,6 +442,7 @@ else
 						<span title="${memberName}">${memberName}</span>
 					</div>
 				{/if}
+				{if true == viewUserDisplayId}
 				<div>
 					{if true == viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">${member.displayId}</a>
@@ -436,7 +450,8 @@ else
 						${member.displayId}
 					{/if}
 				</div>
-				{if true == viewEmailColumn && member.email.length > 0}
+				{/if}
+				{if true == viewEmail && member.email.length > 0}
 					<div>
 						<a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a>
 					</div>
@@ -462,6 +477,7 @@ else
 						<span title="${memberName}">${memberName}</span>
 					</div>
 				{/if}
+				{if true == viewUserDisplayId}
 				<div>
 					{if true == viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">${member.displayId}</a>
@@ -469,7 +485,8 @@ else
 						${member.displayId}
 					{/if}
 				</div>
-				{if true == viewEmailColumn && member.email.length > 0}
+				{/if}
+				{if true == viewEmail && member.email.length > 0}
 					<div>
 						<a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a>
 					</div>
@@ -514,8 +531,12 @@ else
 				<table cellpadding="0" cellspacing="0" class="listHier rosterTable">
 					<thead>
 						<tr>
-							<th width="25%"><a href="#">${facet_name}</a></th>
-							<th width="10%"><a href="#">${facet_userId}</a></th>
+							{if true == viewUserDisplayId}
+								<th width="25%"><a href="#">${facet_name}</a></th>
+								<th width="10%"><a href="#">${facet_userId}</a></th>
+							{else}
+								<th width="35%"><a href="#">${facet_name}</a></th>
+							{/if}
 							<th width="15%"><a href="#">${facet_role}</a></th>
 							<th width="50%">${facet_groups}</th>
 						</tr>
@@ -524,7 +545,9 @@ else
 					{if siteGroup.userIds.length == 0}
 						<tr>
 							<td>${no_participants}</td>
-							<td></td>
+							{if true == viewUserDisplayId}
+								<td></td>
+							{/if}
 							<td></td>
 							<td></td>
 						</tr>
@@ -540,6 +563,7 @@ else
 												${member.sortName}
 											{/if}
 										</td>
+										{if true == viewUserDisplayId}
 										<td>
 											{if true == viewProfile}
 												<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
@@ -549,6 +573,7 @@ else
 												${member.displayId}
 											{/if}
 										</td>
+										{/if}
 										<td>${member.role}</td>
 										<td>${member.groupsToString}</td>
 									</tr>
@@ -570,8 +595,12 @@ else
 <table cellspacing="0" cellpadding="0" class="listHier rosterTable" id="roster_form_rosterTable">
 	<thead>
 		<tr>
-			<th width="25%"><a href="#">${facet_name}</a></th>
-			<th width="10%"><a href="#">${facet_userId}</a></th>
+			{if true == viewUserDisplayId}
+				<th width="25%"><a href="#">${facet_name}</a></th>
+				<th width="10%"><a href="#">${facet_userId}</a></th>
+			{else}
+				<th width="35%"><a href="#">${facet_name}</a></th>
+			{/if}
 			<th width="15%"><a href="#">${facet_role}</a></th>
 			<th width="50%">${facet_groups}</th>
 		</tr>
@@ -586,6 +615,7 @@ else
 						${member.sortName}
 					{/if}
 				</td>
+				{if true == viewUserDisplayId}
 				<td>
 					{if true == viewProfile}
 						<a href="/sakai-roster-tool/roster.html?state=profile&siteId=${siteId}&language=${language}&userId=${member.userId} "title="${show_profile}">
@@ -595,6 +625,7 @@ else
 						${member.displayId}
 					{/if}
 				</td>
+				{/if}
 				<td>${member.role}</td>
 				<td>${member.groupsToString}</td>
 			</tr>
@@ -610,7 +641,7 @@ else
 		<tr>
 			<th width="45%"><a href="#">${facet_name}</a></th>
 			<th width="10%"><a href="#">${facet_userId}</a></th>
-			{if true == viewEmailColumn}
+			{if true == viewEmail}
 				<th width="20%"><a href="#">${facet_email}</a></th>
 				<th width="12.5%"><a href="#">${facet_status}</a></th>
 				<th width="12.5%"><a href="#">${facet_credits}</a></th>
@@ -625,7 +656,7 @@ else
 		<tr>
 			<td>${no_participants}</td>
 			<td></td>
-			{if true == viewEmailColumn}
+			{if true == viewEmail}
 				<td></td>
 			{/if}
 			<td></td>
@@ -652,7 +683,7 @@ else
 						${member.displayId}
 					{/if}
 				</td>
-				{if true == viewEmailColumn}
+				{if true == viewEmail}
 					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
 				<td>${member.status}</td>

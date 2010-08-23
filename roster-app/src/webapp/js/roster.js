@@ -22,6 +22,7 @@ var ADMIN = 'admin';
 
 var DEFAULT_GROUP_ID = 'all';
 var DEFAULT_ENROLLMENT_STATUS = 'All';
+var DEFAULT_SORT_LIST = [[0,0]];
 
 var STATE_OVERVIEW = 'overview';
 var STATE_PICTURES = 'pics';
@@ -60,13 +61,14 @@ var enrollmentStatusToViewText = roster_enrollment_status_all;
 var defaultSortColumn = SORT_NAME;
 var firstNameLastName = false;
 var hideSingleGroupFilter = false;
-var viewEmailColumn = true;
+var viewEmail = true;
+var viewUserDisplayId = true;
 // end of sakai.properties
 
 var sortColumn = null;
-var overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
-var groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:[[0,0]]};
-var enrollmentSortParams = {headers:{1: {sorter:'urls'}, 2: {sorter:'urls'}}, sortList:[[0,0]]};
+var overviewSortParams = null;
+var groupSortParams = null;
+var enrollmentSortParams = null;
 
 // sortEnd is used to update this so we know which column and direction the
 // tables are sorted in when exporting
@@ -142,14 +144,22 @@ $.tablesorter.addParser({
 		}
 	}
 	
-	if (arg.viewEmailColumn) {
-		if ('false' == arg.viewEmailColumn) {
-			viewEmailColumn = false;
+	if (arg.viewEmail) {
+		if ('false' == arg.viewEmail) {
+			viewEmail = false;
 		} else {
 			// default = true
-			viewEmailColumn = true;
+			viewEmail = true;
 		}
-		
+	}
+	
+	if (arg.viewUserDisplayId) {
+		if ('false' == arg.viewUserDisplayId) {
+			viewUserDisplayId = false;
+		} else {
+			// default = true
+			viewUserDisplayId = true;
+		}
 	}
 	
 	if (arg.defaultSortColumn) {
@@ -161,7 +171,7 @@ $.tablesorter.addParser({
 				SORT_CREDITS == arg.defaultSortColumn) {
 			
 			defaultSortColumn = arg.defaultSortColumn;
-		} else if (SORT_EMAIL == arg.defaultSortColumn && true == viewEmailColumn) {
+		} else if (SORT_EMAIL == arg.defaultSortColumn && true == viewEmail) {
 			// if chosen sort is email, check that email column is viewable
 			defaultSortColumn = arg.defaultSortColumn;
 		}
@@ -231,7 +241,7 @@ function switchState(state, arg, searchQuery) {
 		SakaiUtils.renderTrimpathTemplate('roster_overview_template',
 				{'language':language, 'membership':members, 'siteId':rosterSiteId,
 				'groupToView':groupToView, 'firstNameLastName':firstNameLastName,
-				'viewEmailColumn':viewEmailColumn,
+				'viewEmail':viewEmail, 'viewUserDisplayId':viewUserDisplayId,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
 				'roster_content');
 		
@@ -313,7 +323,8 @@ function switchState(state, arg, searchQuery) {
 			SakaiUtils.renderTrimpathTemplate('roster_grouped_template',
 					{'language':language, 'membership':members,
 					'siteGroups':site.siteGroups, 'rolesText':getRolesByGroupRoleFragments(site, members),
-					'siteId':rosterSiteId, 'viewProfile':rosterCurrentUserPermissions.viewProfile},
+					'siteId':rosterSiteId, 'viewUserDisplayId':viewUserDisplayId,
+					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 			
 		} else {
@@ -324,6 +335,7 @@ function switchState(state, arg, searchQuery) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_ungrouped_template',
 					{'language':language, 'membership':members, 'siteId':rosterSiteId,
+					'viewUserDisplayId':viewUserDisplayId, 
 					'viewProfile':rosterCurrentUserPermissions.viewProfile},
 					'roster_content');
 		}
@@ -374,7 +386,7 @@ function switchState(state, arg, searchQuery) {
 		SakaiUtils.renderTrimpathTemplate('roster_enrollment_status_template',
 				{'language':language, 'enrollment':enrollment, 'enrollmentStatus':enrollmentStatusToViewText,
 				'siteId':rosterSiteId, 'firstNameLastName':firstNameLastName,
-				'viewEmailColumn':viewEmailColumn,
+				'viewEmail':viewEmail,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
 				'roster_content');
 				
@@ -386,7 +398,7 @@ function switchState(state, arg, searchQuery) {
 			readySearchButton(state);
 			readyClearButton(state);
 			
-			$('#roster_form_rosterTable').tablesorter(overviewSortParams);
+			$('#roster_form_rosterTable').tablesorter(enrollmentSortParams);
 			
 			$('#roster_form_rosterTable').bind("sortEnd",function() {
 				currentSortColumn = this.config.sortList[0][0];
@@ -866,39 +878,94 @@ function getRosterCurrentUserPermissions() {
 
 function configureOverviewTableSort() {
 	
+	// user display ID has view profile URL attached to it
+	if (true === viewUserDisplayId) {
+		overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:DEFAULT_SORT_LIST};
+	} else {
+		overviewSortParams = {headers:{}, sortList:DEFAULT_SORT_LIST};
+	}
+	
+	// now set the initial sort column
 	if (SORT_NAME === sortColumn) {
 		overviewSortParams.sortList = [[0,0]];
 	} else if (SORT_DISPLAY_ID === sortColumn) {
-		overviewSortParams.sortList = [[1,0]];
+		
+		if (true === viewUserDisplayId) {
+			overviewSortParams.sortList = [[1,0]];
+		}
+		
 	} else if (SORT_EMAIL === sortColumn) {
 		
-		if (true === viewEmailColumn) {
-			overviewSortParams.sortList = [[2,0]];
+		if (true === viewEmail) {
+			
+			if (true === viewUserDisplayId) {
+				overviewSortParams.sortList = [[2,0]];
+			} else {
+				overviewSortParams.sortList = [[1,0]];
+			}
 		}
 		
 	} else if (SORT_ROLE === sortColumn) {
 	
-		if (true === viewEmailColumn) {
-			overviewSortParams.sortList = [[3,0]];
+		if (true === viewEmail) {
+			
+			if (true === viewUserDisplayId) {
+				overviewSortParams.sortList = [[3,0]];
+			} else {
+				overviewSortParams.sortList = [[2,0]];
+			}
 		} else {
-			overviewSortParams.sortList = [[2,0]];
+			
+			if (true === viewUserDisplayId) {
+				overviewSortParams.sortList = [[2,0]];
+			} else {
+				overviewSortParams.sortList = [[1,0]];
+			}
 		}
 	}
 }
 
 function configureGroupMembershipTableSort() {
 	
+	// group membership has user display ID but no email column
+	
+	// user display ID has view profile URL attached to it
+	if (true === viewUserDisplayId) {
+		groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:DEFAULT_SORT_LIST};
+	} else {
+		groupSortParams = {headers:{2: {sorter:false}}, sortList:DEFAULT_SORT_LIST};
+	}
+	
+	// now set the initial sort column
 	if (SORT_NAME === sortColumn) {
 		groupSortParams.sortList = [[0,0]];
 	} else if (SORT_DISPLAY_ID === sortColumn) {
-		groupSortParams.sortList = [[1,0]];
+		
+		if (true === viewUserDisplayId) {
+			groupSortParams.sortList = [[1,0]];
+		}
 	} else if (SORT_ROLE === sortColumn) {
-		groupSortParams.sortList = [[2,0]];
+		
+		if (true === viewUserDisplayId) {
+			groupSortParams.sortList = [[2,0]];
+		} else {
+			groupSortParams.sortList = [[1,0]];
+		}
 	}
 }
 
 function configureEnrollmentStatusTableSort() {
 	
+	// enrollment status has both user display ID and email column, but think
+	// we probably don't want to hide user display IDs on the enrollment table
+	
+	if (true == viewEmail) {
+		enrollmentSortParams = {headers:{1: {sorter:'urls'}, 2: {sorter:'urls'}}, sortList:[[0,0]]};
+	} else {
+		enrollmentSortParams = {headers:{1: {sorter:'urls'}}, sortList:[[0,0]]};
+	}
+	
+	// now set the initial sort column
 	// enrollment table doesn't have role, so use name as default sort column
 	if (SORT_NAME === sortColumn || SORT_ROLE === sortColumn) {
 		enrollmentSortParams.sortList = [[0,0]];
@@ -906,20 +973,20 @@ function configureEnrollmentStatusTableSort() {
 		enrollmentSortParams.sortList = [[1,0]];
 	} else if (SORT_EMAIL === sortColumn) {
 		
-		if (true === viewEmailColumn) {
+		if (true === viewEmail) {
 			enrollmentSortParams.sortList = [[2,0]];
 		}
 		
 	} else if (SORT_STATUS === sortColumn) {
 	
-		if (true === viewEmailColumn) {
+		if (true === viewEmail) {
 			enrollmentSortParams.sortList = [[3,0]];
 		} else {
 			enrollmentSortParams.sortList = [[2,0]];
 		}
 	} else if (SORT_CREDITS === sortColumn) {
 		
-		if (true === viewEmailColumn) {
+		if (true === viewEmail) {
 			enrollmentSortParams.sortList = [[4,0]];
 		} else {
 			enrollmentSortParams.sortList = [[3,0]];
@@ -932,22 +999,35 @@ function configureEnrollmentStatusTableSort() {
 function setColumnSortFields(state) {
 	
 	columnSortFields[0] = SORT_NAME;
-	columnSortFields[1] = SORT_DISPLAY_ID;
 	
-	if (STATE_GROUP_MEMBERSHIP === state) {
-		columnSortFields[2] = SORT_ROLE;
-		// n.b. no sort by groups column
-	} else if (STATE_OVERVIEW === state) {
+	if (STATE_OVERVIEW === state) {
 		
-		if (true === viewEmailColumn) {
+		if (true === viewUserDisplayId && true === viewEmail) {
+			columnSortFields[1] = SORT_DISPLAY_ID;
 			columnSortFields[2] = SORT_EMAIL;
 			columnSortFields[3] = SORT_ROLE;
-		} else {
+		} else if (true === viewUserDisplayId) {
+			columnSortFields[1] = SORT_DISPLAY_ID;
+			columnSortFields[2] = SORT_ROLE;
+		} else if (true === viewEmail) {
+			columnSortFields[1] = SORT_EMAIL;
 			columnSortFields[2] = SORT_ROLE;
 		}
+		
+	} else if (STATE_GROUP_MEMBERSHIP === state) {
+		
+		// n.b. no sort by groups column
+		
+		if (true === viewUserDisplayId) {
+			columnSortFields[1] = SORT_DISPLAY_ID;
+			columnSortFields[2] = SORT_ROLE;
+		} else {
+			columnSortFields[1] = SORT_ROLE;
+		}
+		
 	} else if (STATE_ENROLLMENT_STATUS === state) {
 		
-		if (true === viewEmailColumn) {
+		if (true === viewEmail) {
 			columnSortFields[2] = SORT_EMAIL;
 			columnSortFields[3] = SORT_STATUS;
 			columnSortFields[4] = SORT_CREDITS;

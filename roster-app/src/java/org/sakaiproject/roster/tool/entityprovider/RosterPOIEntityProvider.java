@@ -401,9 +401,11 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 				row.add(member.getSortName());
 			}
 			
-			row.add(member.getDisplayId());
+			if (sakaiProxy.getViewUserDisplayId()) {
+				row.add(member.getDisplayId());
+			}
 
-			if (true == sakaiProxy.getViewEmail()) {
+			if (sakaiProxy.getViewEmail()) {
 				row.add(member.getEmail());
 			}
 
@@ -428,7 +430,11 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			} else {
 				row.add(member.getSortName());
 			}
-			row.add(member.getDisplayId());
+			
+			if (sakaiProxy.getViewUserDisplayId()) {
+				row.add(member.getDisplayId());
+			}
+			
 			row.add(member.getRole());
 			row.add(member.getGroupsToString());
 			
@@ -462,7 +468,11 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 					} else {
 						row.add(member.getSortName());
 					}
-					row.add(member.getDisplayId());
+					
+					if (sakaiProxy.getViewUserDisplayId()) {
+						row.add(member.getDisplayId());
+					}
+					
 					row.add(member.getRole());
 					row.add(member.getGroupsToString());
 					dataInRows.add(row);
@@ -502,7 +512,10 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			} else {
 				row.add(member.getSortName());
 			}
-			row.add(member.getDisplayId());
+			
+			if (sakaiProxy.getViewUserDisplayId()) {
+				row.add(member.getDisplayId());
+			}
 
 			if (sakaiProxy.getViewEmail()) {
 				row.add(member.getEmail());
@@ -585,12 +598,15 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		List<String> header = new ArrayList<String>();
 		header.add(parameters.get(KEY_FACET_NAME) != null ? parameters.get(
 				KEY_FACET_NAME).toString() : DEFAULT_FACET_NAME);
-		header.add(parameters.get(KEY_FACET_USER_ID) != null ? parameters.get(
-				KEY_FACET_USER_ID).toString() : DEFAULT_FACET_USER_ID);
+		
+		if (sakaiProxy.getViewUserDisplayId()) {
+			header.add(parameters.get(KEY_FACET_USER_ID) != null ? parameters.get(
+					KEY_FACET_USER_ID).toString() : DEFAULT_FACET_USER_ID);
+		}
 
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
-			if (true == sakaiProxy.getViewEmail()) {
+			if (sakaiProxy.getViewEmail()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);
@@ -608,7 +624,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
 
-			if (true == sakaiProxy.getViewEmail()) {
+			if (sakaiProxy.getViewEmail()) {
 
 				header.add(parameters.get(KEY_FACET_EMAIL) != null ? parameters
 						.get(KEY_FACET_EMAIL).toString() : DEFAULT_FACET_EMAIL);

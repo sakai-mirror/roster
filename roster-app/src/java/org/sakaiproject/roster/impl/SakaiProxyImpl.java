@@ -69,7 +69,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public final static String DEFAULT_SORT_COLUMN = "sortName";
 	public final static Boolean DEFAULT_FIRST_NAME_LAST_NAME = false;
 	public final static Boolean DEFAULT_HIDE_SINGLE_GROUP_FILTER = false;
-	public final static Boolean DEFAULT_VIEW_EMAIL_COLUMN = true;
+	public final static Boolean DEFAULT_VIEW_EMAIL = true;
+	public final static Boolean DEFAULT_VIEW_USER_DISPLAY_ID = true;
 	public final static Boolean DEFAULT_USE_PICTURES_AS_DEFAULT_VIEW = false;
 	
 	private CourseManagementService courseManagementService;
@@ -207,14 +208,22 @@ public class SakaiProxyImpl implements SakaiProxy {
 				"roster.display.hideSingleGroupFilter",
 				DEFAULT_HIDE_SINGLE_GROUP_FILTER);
 	}
-	
+		
 	/**
 	 * {@inheritDoc}
 	 */
 	public Boolean getViewEmail() {
 
 		return serverConfigurationService.getBoolean("roster_view_email",
-				DEFAULT_VIEW_EMAIL_COLUMN);
+				DEFAULT_VIEW_EMAIL);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Boolean getViewUserDisplayId() {
+		return serverConfigurationService.getBoolean(
+				"roster.display.userDisplayId", DEFAULT_VIEW_USER_DISPLAY_ID);
 	}
 	
 	/**
