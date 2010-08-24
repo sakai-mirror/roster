@@ -183,10 +183,13 @@ $.tablesorter.addParser({
 	// end of sakai.properties
 	
 	// build root profile URL (the user ID is appended later for each user)
-	rosterProfileUrl = "/sakai-roster-tool/roster.html?state=profile&siteId=" + 
-		rosterSiteId + "&language="  + language + "&defaultSortColumn" + defaultSortColumn +
-		"&firstNameLastName=" + firstNameLastName + "&hideSingleGroupFilter=" + hideSingleGroupFilter +
-		"&viewUserDisplayId=" + viewUserDisplayId + "&viewEmail=" + viewEmail + "&userId=";
+	rosterProfileUrl = "/sakai-roster-tool/roster.html?state=profile&siteId=" +
+		rosterSiteId + "&language="  + language +
+		"&defaultSortColumn" + defaultSortColumn +
+		"&firstNameLastName=" + firstNameLastName +
+		"&hideSingleGroupFilter=" + hideSingleGroupFilter +
+		"&viewUserDisplayId=" + viewUserDisplayId +
+		"&viewEmail=" + viewEmail + "&userId=";
 
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
@@ -221,7 +224,7 @@ function switchState(state, arg, searchQuery) {
 		
 		configureOverviewTableSort();
 		
-		var members = getMembers(searchQuery, false);
+		var members = getMembers(searchQuery, false, state);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_overview_header_template',
@@ -270,7 +273,7 @@ function switchState(state, arg, searchQuery) {
 		
 	} else if (STATE_PICTURES === state) {
 		
-		var members = getMembers(searchQuery, true);
+		var members = getMembers(searchQuery, true, state);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
@@ -313,7 +316,7 @@ function switchState(state, arg, searchQuery) {
 		
 		configureGroupMembershipTableSort();
 		
-		var members = getRosterMembership();
+		var members = getRosterMembership(null, null, null, null, state);
 		var roles = getRolesUsingRosterMembers(members, site.userRoles);
 		
 		SakaiUtils.renderTrimpathTemplate('roster_groups_header_template',
@@ -445,7 +448,7 @@ function getRosterSite() {
 	
 }
 
-function getRosterMembership(groupId, sorted, sortField, sortDirection) {
+function getRosterMembership(groupId, sorted, sortField, sortDirection, state) {
 	
 	var membership;
 	
@@ -470,6 +473,12 @@ function getRosterMembership(groupId, sorted, sortField, sortDirection) {
 	// set the profile URLs for each user
 	for (var i = 0, j = membership.length; i < j; i++) {
 		membership[i].profileUrl = rosterProfileUrl + membership[i].userId
+	}
+	
+	if (STATE_PICTURES === state) {
+		for (var i = 0, j = membership.length; i < j; i++) {
+			membership[i].profileImageUrl = "/direct/profile/" + membership[i].userId + "/image";
+		}
 	}
 	
 	return membership;
@@ -667,7 +676,7 @@ function getRolesByGroupRoleFragments(site, members) {
 	return rolesByGroupRoleFragments;
 }
 
-function getMembers(searchQuery, sorted) {
+function getMembers(searchQuery, sorted, state) {
 		
 	var members;
 	
@@ -675,10 +684,10 @@ function getMembers(searchQuery, sorted) {
 	if (groupToViewText === roster_sections_all ||
 			groupToViewText === roster_section_sep_line) {
 		
-		members = getRosterMembership(null, sorted, null, null);			
+		members = getRosterMembership(null, sorted, null, null, state);			
 	// view a specific group (note: search is done within group if selected)
 	} else {
-		members = getRosterMembership(groupToView, sorted, null, null);
+		members = getRosterMembership(groupToView, sorted, null, null, state);
 	}
 
 	if (searchQuery) {
