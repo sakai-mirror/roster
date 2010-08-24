@@ -46,6 +46,8 @@ var rosterCurrentUserPermissions = null;
 var rosterCurrentState = null;
 var rosterCurrentUser = null;
 
+var rosterProfileUrl = null;
+
 // These are default behaviours, and are global so the tool remembers
 // the user's choices.
 var grouped = roster_group_ungrouped;
@@ -179,6 +181,12 @@ $.tablesorter.addParser({
 	
 	sortColumn = defaultSortColumn;
 	// end of sakai.properties
+	
+	// build root profile URL (the user ID is appended later for each user)
+	rosterProfileUrl = "/sakai-roster-tool/roster.html?state=profile&siteId=" + 
+		rosterSiteId + "&language="  + language + "&defaultSortColumn" + defaultSortColumn +
+		"&firstNameLastName=" + firstNameLastName + "&hideSingleGroupFilter=" + hideSingleGroupFilter +
+		"&viewUserDisplayId=" + viewUserDisplayId + "&viewEmail=" + viewEmail + "&userId=";
 
 	if (window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
@@ -459,6 +467,11 @@ function getRosterMembership(groupId, sorted, sortField, sortDirection) {
 		}
 	});
 	
+	// set the profile URLs for each user
+	for (var i = 0, j = membership.length; i < j; i++) {
+		membership[i].profileUrl = rosterProfileUrl + membership[i].userId
+	}
+	
 	return membership;
 }
 
@@ -480,6 +493,11 @@ function getRosterEnrollment() {
 			enrollment = new Array();
 		}
 	});
+	
+	// set the profile URLs for each user
+	for (var i = 0, j = enrollment.length; i < j; i++) {
+		enrollment[i].profileUrl = rosterProfileUrl + enrollment[i].userId
+	}
 	
 	return enrollment;
 	
