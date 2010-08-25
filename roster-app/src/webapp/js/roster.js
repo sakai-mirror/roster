@@ -297,6 +297,7 @@ function switchState(state, arg, searchQuery) {
 
 		SakaiUtils.renderTrimpathTemplate('roster_pics_template',
 				{'language':language, 'membership':members, 'siteId':rosterSiteId,
+				'currentUserId':rosterCurrentUser.id,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile},
@@ -478,9 +479,10 @@ function getRosterMembership(groupId, sorted, sortField, sortDirection, state) {
 	if (STATE_PICTURES === state) {
 		for (var i = 0, j = membership.length; i < j; i++) {
 			membership[i].profileImageUrl = "/direct/profile/" + membership[i].userId + "/image";
+			membership[i].friendStatus = friendStatus(rosterCurrentUser.id, membership[i].userId);
 		}
 	}
-	
+		
 	return membership;
 }
 

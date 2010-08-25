@@ -63,4 +63,8 @@ table.rosterPictures td {
 	max-height:14em;
 }
 
+.rosterIcons {
+	margin-top:0.5em;
+}
+
 @media print  { .noprint  { display: none; } }
