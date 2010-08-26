@@ -80,6 +80,7 @@ profile_connection_accept="Accept connection";
 profile_connection_add="Add connection";
 profile_connection_remove="Remove connection";
 profile_connection_requested="Connection requested";
+profile_connection_self="This is you!"
 //
 
 profile_first_name="First Name";
