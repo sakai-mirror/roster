@@ -126,7 +126,7 @@ $.tablesorter.addParser({
 	setLanguage(arg.language);
 	
 	getRosterCurrentUserPermissions();
-	
+		
 	// process sakai.properties
 	if (arg.firstNameLastName) {
 		if ('true' == arg.firstNameLastName) {
@@ -300,7 +300,8 @@ function switchState(state, arg, searchQuery) {
 				'currentUserId':rosterCurrentUser.id,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
-				'viewProfile':rosterCurrentUserPermissions.viewProfile},
+				'viewProfile':rosterCurrentUserPermissions.viewProfile,
+				'viewConnections':(undefined != window.friendStatus)},
 				'roster_content');
 		
 		$(document).ready(function() {
@@ -479,7 +480,11 @@ function getRosterMembership(groupId, sorted, sortField, sortDirection, state) {
 	if (STATE_PICTURES === state) {
 		for (var i = 0, j = membership.length; i < j; i++) {
 			membership[i].profileImageUrl = "/direct/profile/" + membership[i].userId + "/image";
-			membership[i].friendStatus = friendStatus(rosterCurrentUser.id, membership[i].userId);
+			
+			// do we have Profile2 1.4?
+			if (undefined != window.friendStatus) {
+				membership[i].friendStatus = friendStatus(rosterCurrentUser.id, membership[i].userId);
+			}
 		}
 	}
 		
