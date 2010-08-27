@@ -63,7 +63,11 @@ table.rosterPictures td {
 	max-height:14em;
 }
 
-.rosterIcons {
+.rosterActionAlignment {
+	vertical-align:top;
+}
+
+.rosterActions {
 	margin-top:0.5em;
 }
 

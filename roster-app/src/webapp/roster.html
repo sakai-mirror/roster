@@ -454,9 +454,9 @@ else
 					{/if}
 				</div>
 				{/if}
-				<div class="rosterIcons">
+				<div class="rosterActions">
 					{if true == viewEmail && member.email.length > 0}
-						<span><a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a></span>
+						<span><a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img class="rosterActionAlignment" src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a></span>
 					{/if}
 					{if true == viewConnections}
 						{if currentUserId == member.userId}
@@ -477,7 +477,7 @@ else
 								<span id=${divId}>
 									<a href="javascript:;" onclick="return confirmFriendRequest('${currentUserId}','${member.userId}')"><img src="/library/image/silk/accept.png"></a>
 									<a href="javascript:;" onclick="return ignoreFriendRequest('${currentUserId}','${member.userId}')"><img src="/library/image/silk/cancel.png"></a>
-									${profile_connection_accept}
+									<span class="rosterActionAlignment">${profile_connection_accept}</span>
 								</span>
 							{/if}
 						{/if}
@@ -516,9 +516,9 @@ else
 					{/if}
 				</div>
 				{/if}
-				<div class="rosterIcons">
+				<div class="rosterActions">
 					{if true == viewEmail && member.email.length > 0}
-						<span><a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a></span>
+						<span><a href="mailto:${member.email}" title="${profile_email} ${member.email}"><img class="rosterActionAlignment" src="/library/image/silk/email.png" alt="${profile_email} ${member.email}"></a></span>
 					{/if}
 					{if true == viewConnections}
 						{if currentUserId == member.userId}
@@ -539,7 +539,7 @@ else
 								<span id=${divId}>
 									<a href="javascript:;" onclick="return confirmFriendRequest('${currentUserId}','${member.userId}')"><img src="/library/image/silk/accept.png"></a>
 									<a href="javascript:;" onclick="return ignoreFriendRequest('${currentUserId}','${member.userId}')"><img src="/library/image/silk/cancel.png"></a>
-									${profile_connection_accept}
+									<span class="rosterActionAlignment">${profile_connection_accept}</span>
 								</span>
 							{/if}
 						{/if}
