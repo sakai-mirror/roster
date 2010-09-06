@@ -126,7 +126,7 @@ $.tablesorter.addParser({
 	setLanguage(arg.language);
 	
 	getRosterCurrentUserPermissions();
-		
+	
 	// process sakai.properties
 	if (arg.firstNameLastName) {
 		if ('true' == arg.firstNameLastName) {
@@ -300,6 +300,7 @@ function switchState(state, arg, searchQuery) {
 				'currentUserId':rosterCurrentUser.id,
 				'groupToView':groupToView, 'viewSingleColumn':viewSingleColumn,
 				'hideNames':hideNames,
+				'viewUserDisplayId':viewUserDisplayId,
 				'viewProfile':rosterCurrentUserPermissions.viewProfile,
 				'viewConnections':(undefined != window.friendStatus)},
 				'roster_content');
@@ -494,7 +495,6 @@ function getRosterMembership(groupId, sorted, sortField, sortDirection, state) {
 function getRosterEnrollment() {
 	
 	var enrollment;
-	// TODO pass enrollment status required?
 	var url = "/direct/roster-membership/" + rosterSiteId + "/get-enrollment.json?enrollmentSetId=" + enrollmentSetToView;
 	
 	jQuery.ajax({
@@ -912,11 +912,21 @@ function getRosterCurrentUserPermissions() {
 
 function configureOverviewTableSort() {
 	
+	// having a URL sorter on non-URLs work fine, so no need to check
+	
 	// user display ID has view profile URL attached to it
 	if (true === viewUserDisplayId) {
-		overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:DEFAULT_SORT_LIST};
+		if (true === viewEmail) {
+			overviewSortParams = {headers:{1: {sorter:'urls'}, 2: {sorter:'urls'}}, sortList:DEFAULT_SORT_LIST};
+		} else {
+			overviewSortParams = {headers:{1: {sorter:'urls'}}, sortList:DEFAULT_SORT_LIST};
+		}
 	} else {
-		overviewSortParams = {headers:{}, sortList:DEFAULT_SORT_LIST};
+		if (true === viewEmail) {
+			overviewSortParams = {headers:{0: {sorter:'urls'}, 1: {sorter:'urls'}}, sortList:DEFAULT_SORT_LIST};
+		} else {
+			overviewSortParams = {headers:{}, sortList:DEFAULT_SORT_LIST};
+		}
 	}
 	
 	// now set the initial sort column
@@ -960,14 +970,14 @@ function configureOverviewTableSort() {
 }
 
 function configureGroupMembershipTableSort() {
-	
 	// group membership has user display ID but no email column
-	
-	// user display ID has view profile URL attached to it
+		
 	if (true === viewUserDisplayId) {
+		// user ID column (1) has view profile URL attached to it
 		groupSortParams = {headers:{1: {sorter:'urls'}, 3: {sorter:false}}, sortList:DEFAULT_SORT_LIST};
 	} else {
-		groupSortParams = {headers:{2: {sorter:false}}, sortList:DEFAULT_SORT_LIST};
+		// user name column (0) has view profile URL attached to it
+		groupSortParams = {headers:{0: {sorter:'urls'}, 2: {sorter:false}}, sortList:DEFAULT_SORT_LIST};
 	}
 	
 	// now set the initial sort column
@@ -990,8 +1000,8 @@ function configureGroupMembershipTableSort() {
 
 function configureEnrollmentStatusTableSort() {
 	
-	// enrollment status has both user display ID and email column, but think
-	// we probably don't want to hide user display IDs on the enrollment table
+	// enrollment status has both user display ID and email column, but we
+	// probably don't want to hide user display IDs on the enrollment table
 	
 	if (true == viewEmail) {
 		enrollmentSortParams = {headers:{1: {sorter:'urls'}, 2: {sorter:'urls'}}, sortList:[[0,0]]};

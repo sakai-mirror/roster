@@ -365,24 +365,39 @@ else
 	{else}
 		{for member in membership}
 			<tr>
-				<td>
-					{if true == firstNameLastName}
-						${member.displayName}
-					{else}
-						${member.sortName}
-					{/if}
-				</td>
 				{if true == viewUserDisplayId}
 					<td>
+						{if true == firstNameLastName}
+							${member.displayName}
+						{else}
+							${member.sortName}
+						{/if}
+					</td>
+					<td>
 						{if true == viewProfile}
-							<a href="${member.profileUrl}" "title="${show_profile}">
-								${member.displayId}
-							</a>
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.displayId}</a>
 						{else}
 							${member.displayId}
 						{/if}
 					</td>
+				{else}
+					<td>
+					{if true == viewProfile}
+						{if true == firstNameLastName}
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.displayName}</a>
+						{else}
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.sortName}</a>
+						{/if}
+					{else}
+						{if true == firstNameLastName}
+							${member.displayName}
+						{else}
+							${member.sortName}
+						{/if}
+					{/if}
+					</td>
 				{/if}
+				
 				{if true == viewEmail}
 					<td><a href="mailto:${member.email}">${member.email}</a></td>
 				{/if}
@@ -441,9 +456,13 @@ else
 					{/if}
 				</div>
 				{if false == hideNames}
-					<div>
-						<span title="${memberName}">${memberName}</span>
-					</div>
+					{if true == viewUserDisplayId}
+						<div><span title="${memberName}">${memberName}</span></div>
+					{else}
+						{if true == viewProfile}
+							<a href="${member.profileUrl}" "title="${show_profile}">${memberName}</a>
+						{/if}
+					{/if}
 				{/if}
 				{if true == viewUserDisplayId}
 				<div>
@@ -503,9 +522,13 @@ else
 					{/if}
 				</div>
 				{if false == hideNames}
-					<div>
-						<span title="${memberName}">${memberName}</span>
-					</div>
+					{if true == viewUserDisplayId}
+						<div><span title="${memberName}">${memberName}</span></div>
+					{else}
+						{if true == viewProfile}
+							<a href="${member.profileUrl}" "title="${show_profile}">${memberName}</a>
+						{/if}
+					{/if}
 				{/if}
 				{if true == viewUserDisplayId}
 				<div>
@@ -610,23 +633,37 @@ else
 							{for member in membership}
 								{if siteGroupUser == member.userId}
 									<tr>
-										<td>
-											{if true == firstNameLastName}
-												${member.displayName}
-											{else}
-												${member.sortName}
-											{/if}
-										</td>
 										{if true == viewUserDisplayId}
-										<td>
-											{if true == viewProfile}
-												<a href="${member.profileUrl}" "title="${show_profile}">
+											<td>
+												{if true == firstNameLastName}
+													${member.displayName}
+												{else}
+													${member.sortName}
+												{/if}
+											</td>
+											<td>
+												{if true == viewProfile}
+													<a href="${member.profileUrl}" "title="${show_profile}">${member.displayId}</a>
+												{else}
 													${member.displayId}
-												</a>
+												{/if}
+											</td>
+										{else}
+											<td>
+											{if true == viewProfile}
+												{if true == firstNameLastName}
+													<a href="${member.profileUrl}" "title="${show_profile}">${member.displayName}</a>
+												{else}
+													<a href="${member.profileUrl}" "title="${show_profile}">${member.sortName}</a>
+												{/if}
 											{else}
-												${member.displayId}
+												{if true == firstNameLastName}
+													${member.displayName}
+												{else}
+													${member.sortName}
+												{/if}
 											{/if}
-										</td>
+											</td>
 										{/if}
 										<td>${member.role}</td>
 										<td>${member.groupsToString}</td>
@@ -662,23 +699,37 @@ else
 	<tbody>
 		{for member in membership}
 			<tr>
-				<td>
-					{if true == firstNameLastName}
-						${member.displayName}
-					{else}
-						${member.sortName}
-					{/if}
-				</td>
 				{if true == viewUserDisplayId}
-				<td>
-					{if true == viewProfile}
-						<a href="${member.profileUrl}" "title="${show_profile}">
+					<td>
+						{if true == firstNameLastName}
+							${member.displayName}
+						{else}
+							${member.sortName}
+						{/if}
+					</td>
+					<td>
+						{if true == viewProfile}
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.displayId}</a>
+						{else}
 							${member.displayId}
-						</a>
+						{/if}
+					</td>
+				{else}
+					<td>
+					{if true == viewProfile}
+						{if true == firstNameLastName}
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.displayName}</a>
+						{else}
+							<a href="${member.profileUrl}" "title="${show_profile}">${member.sortName}</a>
+						{/if}
 					{else}
-						${member.displayId}
+						{if true == firstNameLastName}
+							${member.displayName}
+						{else}
+							${member.sortName}
+						{/if}
 					{/if}
-				</td>
+					</td>
 				{/if}
 				<td>${member.role}</td>
 				<td>${member.groupsToString}</td>
