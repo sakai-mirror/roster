@@ -232,7 +232,7 @@ function switchState(state, arg, searchQuery) {
 				'displayTitleMsg':rosterCurrentUserPermissions.viewAllMembers},
 				'roster_header');
 		
-		if (site.siteGroups.length > 0/* && members.length > 0*/) {
+		if (site.siteGroups.length > 0) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
@@ -279,7 +279,7 @@ function switchState(state, arg, searchQuery) {
 		SakaiUtils.renderTrimpathTemplate('roster_pics_header_template',
 				{'siteTitle':site.title}, 'roster_header');
 		
-		if (site.siteGroups.length > 0/* && members.length > 0*/) {
+		if (site.siteGroups.length > 0) {
 			
 			SakaiUtils.renderTrimpathTemplate('roster_section_filter_template',
 					{'groupToViewText':groupToViewText,'siteGroups':site.siteGroups},
