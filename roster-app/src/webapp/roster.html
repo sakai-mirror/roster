@@ -357,7 +357,7 @@ else
 		</tr>
 	{else}
 		{for member in membership}
-			<tr>
+			<tr onMouseOver="this.className='rosterTableRowHighlight'" onMouseOut="this.className='rosterTableRow'">
 				{if true == viewUserDisplayId}
 					<td>
 						{if true == firstNameLastName}
@@ -622,7 +622,7 @@ else
 						{for siteGroupUser in siteGroup.userIds}
 							{for member in membership}
 								{if siteGroupUser == member.userId}
-									<tr>
+									<tr onMouseOver="this.className='rosterTableRowHighlight'" onMouseOut="this.className='rosterTableRow'">
 										{if true == viewUserDisplayId}
 											<td>
 												{if true == firstNameLastName}
@@ -688,7 +688,7 @@ else
 	</thead>
 	<tbody>
 		{for member in membership}
-			<tr>
+			<tr onMouseOver="this.className='rosterTableRowHighlight'" onMouseOut="this.className='rosterTableRow'">
 				{if true == viewUserDisplayId}
 					<td>
 						{if true == firstNameLastName}
@@ -761,29 +761,29 @@ else
 		{for member in enrollment}
 			{if enrollmentStatus == roster_enrollment_status_all ||
 				member.status == enrollmentStatus}
-			<tr>
-				<td>
-					{if true == firstNameLastName}
-						${member.displayName}
-					{else}
-						${member.sortName}
-					{/if}
-				</td>
-				<td>
-					{if true == viewProfile}
-						<a href="${member.profileUrl}" "title="${show_profile}">
+					<tr onMouseOver="this.className='rosterTableRowHighlight'" onMouseOut="this.className='rosterTableRow'">
+					<td>
+						{if true == firstNameLastName}
+							${member.displayName}
+						{else}
+							${member.sortName}
+						{/if}
+					</td>
+					<td>
+						{if true == viewProfile}
+							<a href="${member.profileUrl}" "title="${show_profile}">
+								${member.displayId}
+							</a>
+						{else}
 							${member.displayId}
-						</a>
-					{else}
-						${member.displayId}
+						{/if}
+					</td>
+					{if true == viewEmail}
+						<td><a href="mailto:${member.email}">${member.email}</a></td>
 					{/if}
-				</td>
-				{if true == viewEmail}
-					<td><a href="mailto:${member.email}">${member.email}</a></td>
-				{/if}
-				<td>${member.status}</td>
-				<td>${member.credits}</td>
-			</tr>
+					<td>${member.status}</td>
+					<td>${member.credits}</td>
+				</tr>
 			{/if}
 		{/for}
 	{/if}

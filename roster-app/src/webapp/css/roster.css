@@ -101,4 +101,14 @@ table.rosterPictures td {
 	margin-top:0.5em;
 }
 
+/* mouse-over actions on tables */
+
+.rosterTableRow {
+	background-color:#FFFFFF;
+}
+
+.rosterTableRowHighlight {
+	background-color:#FFFFC0;
+}
+
 @media print  { .noprint  { display: none; } }
