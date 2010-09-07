@@ -36,6 +36,36 @@ table.rosterPageHeader {
 .filterElement {
 }
 
+.navIntraTool.rosterNavBar {
+	overflow: hidden;
+}
+
+.instruction.rosterTitleMessage {
+	display: block;
+}
+
+.instruction.rosterRoleGrouped {
+	text-align:right;
+}
+
+.rosterRoleTopLine {
+	padding-top:10px;
+	padding-left:10px;
+}
+
+.rosterRoleBottomLine {
+	padding-left:10px;
+}
+
+.rosterRoleTopLineGrouped {
+	padding-top:10px;
+	padding-right:10px;
+}
+
+.rosterRoleBottomLineGrouped {
+	padding-right:10px;
+}
+
 table.searchFilter {
 	/*margin-top:1em;*/
 }

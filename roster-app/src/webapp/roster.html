@@ -69,7 +69,7 @@ else
 </div>
 
 <div id="roster_navbar_template" style="display:none"><!--
-<div style="overflow: hidden;" class="navIntraTool">
+<div class="navIntraTool rosterNavBar">
 	<div id="roster_navbar_items">
 		<a id="navbar_overview_link" title="${navbar_overview_tooltip}"
 			href="javascript:;">${navbar_overview}</a>
@@ -99,7 +99,7 @@ else
 	</tbody>
 </table>
 {if true == displayTitleMsg}
-<span class="instruction" style="display: block;">${title_msg}</span>
+	<span class="instruction rosterTitleMessage">${title_msg}</span>
 {/if}
 -->
 </div>
@@ -135,7 +135,7 @@ else
 	</tbody>
 </table>
 {if true == displayTitleMsg}
-<span class="instruction" style="display: block;">${title_msg_groups}</span>
+	<span class="instruction rosterTitleMessage">${title_msg}</span>
 {/if}
 -->
 </div>
@@ -203,12 +203,10 @@ else
 		</td>
 		<td>
 			<span class="instruction">
-				<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
-				<div style="padding-left: 10px;">
-				{for frag in roleFragments}
-					${frag}
-				{/for}
-				</div>
+				<span class="rosterRoleTopLine">${participants}</span><br />
+				<span class="rosterRoleBottomLine">
+				{for frag in roleFragments}${frag}{/for}
+				</span>
 			</span>
 		</td>
 	</tr>
@@ -273,12 +271,10 @@ else
 			</td>
 			<td>
 				<span class="instruction">
-					<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
-					<div style="padding-left: 10px;">
-						{for frag in roleFragments}
-							${frag}
-						{/for}
-					</div>
+					<span class="rosterRoleTopLine">${participants}</span><br />
+					<span class="rosterRoleBottomLine">
+					{for frag in roleFragments}${frag}{/for}
+					</span>
 				</span>
 			</td>
 		</tr>
@@ -305,7 +301,7 @@ else
 			</td>
 			<td>
 				<span class="instruction">
-					<div style="padding-top: 10px;padding-left: 10px;">${students}</div>
+					<span class ="rosterRoleTopLine">${students}</span>
 				</span>
 			</td>
 		</tr>
@@ -316,14 +312,11 @@ else
 
 <div id="roster_participants_template" style="display:none"><!--
 <span class="instruction">
-	<div style="padding-top: 10px;padding-left: 10px;">${participants}</div>
-	<div style="padding-left: 10px;">
-	{for frag in roleFragments}
-		${frag}
-	{/for}
-	</div>
+	<span class="rosterRoleTopLine">${participants}</span><br />
+	<span class="rosterRoleBottomLine">
+	{for frag in roleFragments}${frag}{/for}
+	</span>
 </span>
-
 -->
 </div>
 
@@ -434,7 +427,6 @@ else
 	</tbody>
 	{/if}
 </table>
-<div class="instruction"></div>
 <table class="rosterPictures">
 	<tbody>
 	{if membership.length == 0}
@@ -593,14 +585,12 @@ else
 						<tr>
 						<td><h3>${siteGroup.title}</h3></td>
 						<td>
-							<span style="text-align: right" class="instruction">
-								<div style="padding-left:10px;">${rolesText[siteGroup.id].participants}</div>
-								<div style="padding-left:10px;">
-								{for role in rolesText[siteGroup.id].roles}
-									${role.frag}
-								{/for}
-								</div>
-							</span>
+							<div class="instruction rosterRoleGrouped">
+								<span class="rosterRoleTopLineGrouped">${rolesText[siteGroup.id].participants}</span><br />
+								<span class="rosterRoleBottomLineGrouped">
+									{for role in rolesText[siteGroup.id].roles}${role.frag}{/for}
+								</span>
+							</div>
 						</td>
 						</tr>
 					</tbody>
