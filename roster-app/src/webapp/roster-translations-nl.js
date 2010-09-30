@@ -99,4 +99,4 @@ view_profile_list_sort_id="Sorteer op gebruiker-id";
 view_profile_list_sort_name="Sorteer op naam";
 view_profile_list_sort_role="Sorteer op rol";
 view_profile_list_sort_sections="Sorteer op secties of groepen";
-view_profile_title="Bekijk profiel van
+view_profile_title="Bekijk profiel van";

@@ -18,7 +18,7 @@ profile_site_roster="List of Members";
 title_show_roster="List of Members";
 print_title_for="List of Members for";
 print_title="List of Members";
-title_msg=To add or remove participants from the site, visit the Site Info tool.";
+title_msg="To add or remove participants from the site, visit the Site Info tool.";
 
 profile_school="Division";
 roster_title="Site Members";

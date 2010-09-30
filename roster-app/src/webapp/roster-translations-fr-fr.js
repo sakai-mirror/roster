@@ -140,4 +140,4 @@ view_profile_list_sort_id="Trier par ID d'utilisateur";
 view_profile_list_sort_name="Trier par nom";
 view_profile_list_sort_role="Trier par r\u00F4le";
 view_profile_list_sort_sections="Trier par sections ou groupes";
-view_profile_title="Afficher le profil pour
+view_profile_title="Afficher le profil pour";

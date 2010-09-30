@@ -68,7 +68,7 @@ view_profile_list_all_users="Todos los usuarios";
 profile_public_information_summary="La siguiente tabla contiene informaci\u00F3n acerca de esta persona. La primera columna es el tipo de informaci\u00F3n y la segunda la informaci\u00F3n en s\u00ED.";
 profile_personal_information_summary="La siguiente tabla contiene informaci\u00F3n acerca de esta persona. La primera columna es el tipo de informaci\u00F3n y la segunda la informaci\u00F3n en s\u00ED.";
 profile_picture_alt="Fotograf\u00EDa de";
-#Revisi\u00F3n de la versi\u00F3n 2.1.2";
+// #Revisi\u00F3n de la versi\u00F3n 2.1.2";
 hide_id_photo="Ocultar foto oficial";
 show_id_photo="Mostrar foto oficial";
 

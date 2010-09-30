@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-profile_first_name="Nom";";
+profile_first_name="Nom";
 profile_last_name="Cognom";
 profile_nick_name="Sobrenom";
 profile_position="Cˆrrec";
