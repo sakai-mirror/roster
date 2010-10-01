@@ -54,8 +54,8 @@ enrollment_status_filter_label="Enrollment Status";
 view_table="View in Table";
 view_single="View in Single Column";
 // Print and export buttons
-print_="Print";
-export_="Export";
+print_roster="Print";
+export_roster="Export";
 // Show/hide names button
 roster_show_names="Show Names";
 roster_hide_names="Hide Names";
