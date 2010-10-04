@@ -187,45 +187,49 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			String viewType, boolean byGroup, String enrollmentSetId,
 			String enrollmentStatus) {
 
-		String filename = "";
+		StringBuffer filename = new StringBuffer();
 
 		if (VIEW_OVERVIEW.equals(viewType)) {
 
-			filename = site.getTitle();
+			filename.append(site.getTitle());
 			
 			if (null != groupId && !DEFAULT_GROUP_ID.equals(groupId)) {
 
 				for (RosterGroup group : site.getSiteGroups()) {
 					if (group.getId().equals(groupId)) {
-						filename += FILENAME_SEPARATOR + group.getTitle();
+						filename.append(FILENAME_SEPARATOR);
+						filename.append(group.getTitle());
 						break;
 					}
 				}
 			}
 		} else if (VIEW_GROUP_MEMBERSHIP.equals(viewType)) {
 
-			filename = site.getTitle();
-
+			filename.append(site.getTitle());
+			filename.append(FILENAME_SEPARATOR);
+			
 			if (true == byGroup) {
-				filename += FILENAME_SEPARATOR + FILENAME_BYGROUP;
+				filename.append(FILENAME_BYGROUP);
 			} else {
-				filename += FILENAME_SEPARATOR + FILENAME_UNGROUPED;
+				filename.append(FILENAME_UNGROUPED);
 			}
 		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
-
-			filename = enrollmentSetId + FILENAME_SEPARATOR + enrollmentStatus;
+			filename.append(enrollmentSetId);
+			filename.append(FILENAME_SEPARATOR);
+			filename.append(enrollmentStatus);
 		}
 
 		Date date = new Date();
 		// ISO formatted date
 		DateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		filename += FILENAME_SEPARATOR + isoFormat.format(date);
+		filename.append(FILENAME_SEPARATOR);
+		filename.append(isoFormat.format(date));
 
-		filename = filename.replaceAll("\\W", FILENAME_SEPARATOR);
-		filename += FILE_EXTENSION;
+		filename = new StringBuffer(filename.toString().replaceAll("\\W", FILENAME_SEPARATOR));
+		filename.append(FILE_EXTENSION);
 
-		return filename;
+		return filename.toString();
 	}
 	
 	private void export(HttpServletResponse response, RosterSite site,
