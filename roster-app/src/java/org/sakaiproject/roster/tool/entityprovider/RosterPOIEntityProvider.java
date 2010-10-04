@@ -43,6 +43,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutab
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.RequestAware;
 import org.sakaiproject.entitybroker.entityprovider.extension.RequestGetter;
+import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.roster.api.RosterEnrollment;
 import org.sakaiproject.roster.api.RosterFunctions;
@@ -71,9 +72,9 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 	public final static String MSG_INVALID_ID			= "Invalid site ID";
 	public final static String MSG_NO_SESSION			= "Must be logged in";
 	public final static String MSG_NO_SITE_ID			= "Must provide a site ID";
-	public final static String MSG_NO_PARAMETERS		= "Must provide parameters";
 	public final static String MSG_NO_FILE_CREATED		= "Error creating file";
 	public final static String MSG_NO_EXPORT_PERMISSION = "Current user does not have export permission";
+	public final static String MSG_UNABLE_TO_RETRIEVE_SITE = "Unable to retrieve the requested site";
 	
 	// roster views
 	public final static String VIEW_OVERVIEW			= "overview";
@@ -143,21 +144,14 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		String userId = sakaiProxy.getCurrentUserId();
 		if (null == userId) {
 
-			writeOut(response, MSG_NO_SESSION);
-			return;
+			throw new EntityException(MSG_NO_SESSION, reference.getReference());
 		}
 
 		String siteId = reference.getId();
 		if (StringUtils.isBlank(reference.getId())
 				|| DEFAULT_ID.equals(reference.getId())) {
-
-			writeOut(response, MSG_NO_SITE_ID);
-			return;
-		}
-
-		if (null == parameters) {
-			writeOut(response, MSG_NO_PARAMETERS);
-			return;
+			
+			throw new EntityException(MSG_NO_SITE_ID, reference.getReference());
 		}
 
 		try {
@@ -167,31 +161,21 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 				RosterSite site = sakaiProxy.getRosterSite(siteId);
 				if (null == site) {
-					
+					throw new EntityException(MSG_UNABLE_TO_RETRIEVE_SITE, reference.getReference());
 				}
 				export(response, site, parameters);
 				
 			} else {
-								
-				writeOut(response, MSG_NO_EXPORT_PERMISSION);
-				return;
+				throw new EntityException(MSG_NO_EXPORT_PERMISSION, reference.getReference());
 			}
 		} catch (IOException e) {
 
 			e.printStackTrace();
-			writeOut(response, MSG_NO_FILE_CREATED);
+
+			throw new EntityException(MSG_NO_FILE_CREATED, reference.getReference());
 		}
 	}
-	
-	private void writeOut(HttpServletResponse response, String message) {
 		
-		try {
-			response.getOutputStream().write(message.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private void addResponseHeader(HttpServletResponse response, String filename) {
 		
 		response.addHeader("Content-Encoding", "base64");
