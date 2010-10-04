@@ -41,7 +41,7 @@ public class RosterTool extends HttpServlet {
 
 	private static final Log log = LogFactory.getLog(RosterTool.class);
 
-	private SakaiProxy sakaiProxy = null;
+	private transient SakaiProxy sakaiProxy = null;
 	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -49,8 +49,6 @@ public class RosterTool extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("init");
 		}
-		
-		sakaiProxy = SakaiProxyImpl.instance();
 	}
 
 	protected void doGet(HttpServletRequest request,
@@ -60,13 +58,13 @@ public class RosterTool extends HttpServlet {
 			log.debug("doGet()");
 		}
 		
-		if (sakaiProxy == null) {
-			throw new ServletException("sakaiProxy MUST be initialised.");
+		if (null == sakaiProxy) {
+			sakaiProxy = SakaiProxyImpl.instance();
 		}
 
 		String userId = sakaiProxy.getCurrentUserId();
 
-		if (userId == null) {
+		if (null == userId) {
 			// We are not logged in
 			throw new ServletException("getCurrentUser returned null.");
 		}
