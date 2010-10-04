@@ -28,6 +28,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutab
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
+import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.roster.api.RosterMember;
 import org.sakaiproject.roster.api.RosterMemberComparator;
@@ -83,7 +84,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 			Map<String, Object> parameters) {
 
 		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
-			return ERROR_INVALID_SITE;
+			throw new EntityException(ERROR_INVALID_SITE, reference.getReference());
 		}
 
 		String groupId = null;
@@ -92,6 +93,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		}
 
 		List<RosterMember> membership = null;
+		// if no group ID specified, retrieve site membership, else retrieve group
 		if (null == groupId) {
 			membership = sakaiProxy.getSiteMembership(reference.getId());
 		} else {
@@ -99,7 +101,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 		}
 		
 		if (null == membership) {
-			return null;
+			throw new EntityException("Unable to retrieve membership", reference.getReference());
 		}
 
 		if (true == getSortedValue(parameters)) {
@@ -117,7 +119,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	public Object getSite(EntityReference reference) {
 		
 		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
-			return ERROR_INVALID_SITE;
+			throw new EntityException(ERROR_INVALID_SITE, reference.getReference());
 		}
 		
 		return sakaiProxy.getRosterSite(reference.getId());
@@ -127,7 +129,7 @@ public class RosterSiteEntityProvider extends AbstractEntityProvider implements
 	public Object getEnrollment(EntityReference reference, Map<String, Object> parameters) {
 		
 		if (null == reference.getId() || DEFAULT_ID.equals(reference.getId())) {
-			return ERROR_INVALID_SITE;
+			throw new EntityException(ERROR_INVALID_SITE, reference.getReference());
 		}
 		
 		String enrollmentSetId = null;
