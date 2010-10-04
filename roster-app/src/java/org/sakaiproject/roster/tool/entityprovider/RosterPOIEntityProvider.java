@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -170,7 +169,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 			}
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			log.error(MSG_NO_FILE_CREATED, e);
 
 			throw new EntityException(MSG_NO_FILE_CREATED, reference.getReference());
 		}
@@ -244,7 +243,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		String enrollmentSetTitle = null;
 		if (null != enrollmentSetId) {
-			// TODO look at using maps in RosterSite instead
 			for (RosterEnrollment enrollmentSet : site.getSiteEnrollmentSets()) {
 
 				if (enrollmentSetId.equals(enrollmentSet.getId())) {
@@ -259,8 +257,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		List<List<String>> dataInRows = new ArrayList<List<String>>();
 
-		// may add this later on instead and style it (will need to change
-		// this depending on view type e.g. overview, group membership etc.
 		createSpreadsheetTitle(dataInRows, site, groupId, viewType,
 				enrollmentSetTitle);
 
@@ -345,9 +341,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 
 		List<RosterMember> rosterMembers = sakaiProxy.getEnrollmentMembership(
 				siteId, enrollmentSetId);
-
-		// TODO filter here, but could perhaps have additional method in
-		// SakaiProxy to filter for us.
 		
 		List<RosterMember> membersByStatus = null;
 		if (DEFAULT_ENROLLMENT_STATUS.equals(enrollmentStatus)) {
@@ -362,6 +355,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 				}
 			}
 		}
+		
 		Collections.sort(membersByStatus, new RosterMemberComparator(sortField,
 				sortDirection, sakaiProxy.getFirstNameLastName()));
 
@@ -546,7 +540,6 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 		} else {
 			return DEFAULT_SORT_DIRECTION;
 		}
-		
 	}
 
 	private boolean getByGroupValue(Map<String, Object> parameters) {
@@ -651,31 +644,7 @@ public class RosterPOIEntityProvider extends AbstractEntityProvider implements
 					}
 				}
 			}
-		} else if (VIEW_ENROLLMENT_STATUS.equals(viewType)) {
-			
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private void logConfiguration(String groupId, String viewType,
-			boolean byGroup, int sortDirection, String sortField,
-			List<String> header) {
-
-		StringBuilder headerStr = new StringBuilder();
-		Iterator<String> iterator = header.iterator();
-		while (iterator.hasNext()) {
-			
-			headerStr.append(iterator.next());
-			
-			if (iterator.hasNext()) {
-				headerStr.append(" | ");
-			}
-		}
-		
-		log.info("Roster spreadsheet export configuration:\n\tgroupId="
-				+ groupId + "\n\tviewType=" + viewType + "\n\tbyGroup="
-				+ byGroup + "\n\tsortDirection=" + sortDirection
-				+ "\n\tsortField=" + sortField + "\n\theader=" + headerStr);
 	}
 		
 	/**
