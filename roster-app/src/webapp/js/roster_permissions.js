@@ -19,7 +19,7 @@
  * Adrian Fish (a.fish@lancaster.ac.uk) 
  */
 
-// See http://confluence.sakaiproject.org/display/SRT/Default+permissions
+// See http://confluence.sakaiproject.org/display/RSTR/Roster2
 function RosterPermissions(data) {
 	
 	for(var i = 0, j = data.length; i < j; i++) {
