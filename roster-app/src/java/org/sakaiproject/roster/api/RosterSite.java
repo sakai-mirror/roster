@@ -18,9 +18,9 @@ package org.sakaiproject.roster.api;
 import java.util.List;
 
 /**
+ * Container for a site.
  * 
  * @author d.b.robinson@lancaster.ac.uk
- *
  */
 public class RosterSite {
 
