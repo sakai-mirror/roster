@@ -84,8 +84,7 @@ $.tablesorter.addParser({
 	type: 'text'
 });
 
-/* New Roster functions */
-
+/* New Roster2 functions */
 (function() {
 	    
 	// We need the toolbar in a template so we can swap in the translations
