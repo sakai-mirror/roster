@@ -329,26 +329,26 @@ public abstract class RosterManagerImpl implements RosterManager {
             }
             
             String groupsString = "";
+			StringBuffer sb = new StringBuffer();
             for (Group group : groups)
             {
             	Member member = group.getMember(userId);
-            	StringBuffer sb = new StringBuffer();
             	if (member !=null)
             	{
         			sb.append(group.getTitle() + ", ");
             	}
-            	groupsString = sb.toString();
             }
             
-            if (groupsString != "")
+            if (sb.length() > 0)
             {
-            	int endIndex = groupsString.lastIndexOf(", ");
+            	int endIndex = sb.lastIndexOf(", ");
 		if(endIndex > 0)
 		{
-            		groupsString = groupsString.substring(0, endIndex);
+            		groupsString = sb.substring(0, endIndex);
+		} else {
+					groupsString = sb.toString();
 		}
             }
-
             participants.add(new ParticipantImpl(userRole.user, profile, userRole.role, groupsString));
         }
         return participants;
