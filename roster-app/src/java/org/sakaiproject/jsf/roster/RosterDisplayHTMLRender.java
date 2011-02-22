@@ -28,6 +28,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.Renderer;
 
+import org.sakaiproject.util.FormattedText;
+
 public class RosterDisplayHTMLRender extends Renderer
 {
   public boolean supportsComponentType(UIComponent component)
@@ -41,7 +43,10 @@ public class RosterDisplayHTMLRender extends Renderer
     if (!component.isRendered()) return;
     ResponseWriter writer = context.getResponseWriter();
 
-    String value = (String) component.getAttributes().get("value");
+    String rawValue = (String) component.getAttributes().get("value");
+
+    //process HTML and strip evil tags.
+    String value = FormattedText.processFormattedText(rawValue, new StringBuilder(), true, false);
 
     if ((value != null) && (!value.equals("")))
     {
