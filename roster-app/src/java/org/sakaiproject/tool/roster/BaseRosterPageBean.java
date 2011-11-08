@@ -209,7 +209,7 @@ public abstract class BaseRosterPageBean {
 	
 	protected String getDownloadFileName(String rawString) {
         String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
-        return rawString.replaceAll("\\W","_")+ "_"+dateString;
+        return (rawString + "_" + dateString).replaceAll("[\\W&&[^\\u0080-\\uffff]]", "_");
     }
   
 	public String groupMembership()
