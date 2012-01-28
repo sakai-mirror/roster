@@ -104,6 +104,10 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
      </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+     </dependency>
   </dependencies>
   <build>
     <resources>
