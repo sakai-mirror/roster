@@ -21,6 +21,8 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -54,8 +56,13 @@ public class RosterStatus extends BaseRosterPageBean {
 				if(status1 == null && status2 == null) {
 					return BaseRosterPageBean.sortNameComparator.compare(one, another);
 				}
-				int comparison = Collator.getInstance().compare(p1.getEnrollmentStatus(),
-						p2.getEnrollmentStatus());
+				int comparison = 0;
+				try{
+					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+					comparison = r_collator.compare(p1.getEnrollmentStatus(), p2.getEnrollmentStatus());
+				}catch(ParseException e){
+					comparison = Collator.getInstance().compare(p1.getEnrollmentStatus(), p2.getEnrollmentStatus());
+				}
 				return comparison == 0 ? BaseRosterPageBean.sortNameComparator.compare(one,
 						another) : comparison;
 			}
@@ -77,8 +84,13 @@ public class RosterStatus extends BaseRosterPageBean {
 				if(credits1 == null && credits2 == null) {
 					return BaseRosterPageBean.sortNameComparator.compare(one, another);
 				}
-				int comparison = Collator.getInstance().compare(p1.getEnrollmentCredits(),
-						p2.getEnrollmentCredits());
+				int comparison = 0;
+				try{
+					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+					comparison = r_collator.compare(p1.getEnrollmentCredits(), p2.getEnrollmentCredits());
+				}catch(ParseException e){
+					comparison = Collator.getInstance().compare(p1.getEnrollmentCredits(), p2.getEnrollmentCredits());
+				}
 				return comparison == 0 ? BaseRosterPageBean.sortNameComparator.compare(one,
 						another) : comparison;
 			}

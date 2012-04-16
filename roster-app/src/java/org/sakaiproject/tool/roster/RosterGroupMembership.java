@@ -21,6 +21,8 @@
 package org.sakaiproject.tool.roster;
 
 import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -156,7 +158,12 @@ public class RosterGroupMembership extends BaseRosterPageBean {
     	Comparator<GroupedParticipants> groupComparator = new Comparator<GroupedParticipants>() {
 			public int compare(GroupedParticipants one, GroupedParticipants another)
 			{
-				return Collator.getInstance().compare(one.getGroupTitle(),another.getGroupTitle());
+				try{
+					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+					return r_collator.compare(one.getGroupTitle(), another.getGroupTitle());
+				}catch(ParseException e){
+					return Collator.getInstance().compare(one.getGroupTitle(), another.getGroupTitle());
+				}
 			}
     	};
         return groupComparator;

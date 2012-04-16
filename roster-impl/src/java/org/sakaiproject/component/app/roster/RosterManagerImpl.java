@@ -22,6 +22,8 @@
 package org.sakaiproject.component.app.roster;
 
 import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -358,7 +360,12 @@ public abstract class RosterManagerImpl implements RosterManager {
     	Comparator<Group> groupComparator = new Comparator<Group>() {
 			public int compare(Group one, Group another)
 			{
-				return Collator.getInstance().compare(one.getTitle(),another.getTitle());
+				try{
+					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+					return r_collator.compare(one.getTitle(),another.getTitle());
+				}catch(ParseException e){
+					return Collator.getInstance().compare(one.getTitle(),another.getTitle());
+				}
 			}
     	};
         return groupComparator;
