@@ -2,7 +2,7 @@
 <h:outputText value="#{filter.init}" />
 
 <h:panelGrid columns="3">
-    <h:outputText value="#{msgs.section_filter_pre}" styleClass="filterLabel" />
+    <h:outputText value="#{msgs.section_filter}" styleClass="filterLabel" />
     <h:selectOneMenu id="group_filter" value="#{filter.groupFilter}" onchange="this.form.submit()" immediate="true">
         <f:selectItems value="#{filter.groupSelectItems}" />
     </h:selectOneMenu>
