@@ -129,13 +129,21 @@ public class FilteredParticipantListingBean implements Serializable {
 		SortedMap<String, Integer> roleCountMap = new TreeMap<String, Integer>();
 		for(Participant participant : participants) {
 			String role = participant.getRoleTitle();
-
-			if(roleCountMap.containsKey(role)) {
-				int count = roleCountMap.get(role) + 1;
-				roleCountMap.put(role, count);
-			} else {
-				roleCountMap.put(role, 1);
-			}
+            if (role != null) {
+                if(roleCountMap.containsKey(role)) {
+                    int count = roleCountMap.get(role) + 1;
+                    roleCountMap.put(role, count);
+                } else {
+                    roleCountMap.put(role, 1);
+                }
+            } else {
+                String partName = "Unknown";
+                //This doesn't seem likely either, but just in case!
+                if (participant.getUser() != null) {
+                  partName = participant.getUser().getDisplayId();
+                }
+    		    log.info("Role null for participant:" + partName);
+            }
 		}
 		return roleCountMap;
 	}
