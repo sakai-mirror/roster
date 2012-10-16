@@ -110,7 +110,7 @@ public class RosterPreferences {
 	
 	private String determineSortColumn() {
 		String sortColumn;
-		String defaultSortColumn = this.services.serverConfigurationService.getString("roster.defaultSortColumn");
+		String defaultSortColumn = this.services.serverConfigurationService.getString("roster.defaultSortColumn", Column.DISPLAY_NAME.toString());
 		if (valid(defaultSortColumn)) {
 			sortColumn = defaultSortColumn;
 		}
