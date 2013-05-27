@@ -104,12 +104,18 @@ public class FilteredParticipantListingBean implements Serializable {
 
 	protected List<Participant> findParticipants() {
 		// Only get the participants we need
-		List<Participant> participants;
-		if(sectionFilter != null && isDisplaySectionsFilter()) {
+		List<Participant> participants = new ArrayList();
+		try {
+		    if(sectionFilter != null && isDisplaySectionsFilter()) {
 			participants = services.rosterManager.getRoster(sectionFilter);
-		} else {
+		    } else {
 			participants = services.rosterManager.getRoster();
+		    }
 		}
+		catch (Exception e) {
+		    log.warn("Exception getting Roster",e);
+		}
+
 		for(Iterator<Participant> iter = participants.iterator(); iter.hasNext();) {
 			Participant participant = iter.next();
 			if(filterParticipant(participant)) iter.remove();
