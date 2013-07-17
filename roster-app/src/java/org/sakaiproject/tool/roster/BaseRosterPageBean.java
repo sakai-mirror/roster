@@ -53,28 +53,39 @@ public abstract class BaseRosterPageBean {
 
     static {
 		sortNameComparator = new Comparator<Participant>() {
+			Collator r_collator;
+    		{
+    			r_collator = Collator.getInstance();
+    			try
+    			{
+    				r_collator = new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+    			}
+    			catch(ParseException e)
+    			{
+    			}
+    		}
 			public int compare(Participant one, Participant another) {
 				int comparison = 0;
-				try{
-					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
-					comparison = r_collator.compare(one.getUser().getSortName(),another.getUser().getSortName());
-				}catch(ParseException e){
-					comparison = Collator.getInstance().compare(one.getUser().getSortName(),another.getUser().getSortName());
-				}
-
+				comparison = r_collator.compare(one.getUser().getSortName(),another.getUser().getSortName());
 				return comparison == 0 ? displayIdComparator.compare(one,
 						another) : comparison;
 			}
 		};
 
 		displayIdComparator = new Comparator<Participant>() {
+			Collator r_collator;
+    		{
+    			r_collator = Collator.getInstance();
+    			try
+    			{
+    				r_collator = new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+    			}
+    			catch(ParseException e)
+    			{
+    			}
+    		}
 			public int compare(Participant one, Participant another) {
-				try{
-					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
-					return r_collator.compare(one.getUser().getDisplayId(),another.getUser().getDisplayId());
-				}catch(ParseException e){
-					return Collator.getInstance().compare(one.getUser().getDisplayId(),another.getUser().getDisplayId());
-				}
+				return r_collator.compare(one.getUser().getDisplayId(),another.getUser().getDisplayId());
 			}
 		};
 
@@ -99,14 +110,21 @@ public abstract class BaseRosterPageBean {
 		};
 
 		roleComparator = new Comparator<Participant>() {
+			Collator r_collator;
+    		{
+    			r_collator = Collator.getInstance();
+    			try
+    			{
+    				r_collator = new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
+    			}
+    			catch(ParseException e)
+    			{
+    			}
+    		}
 			public int compare(Participant one, Participant another) {
 				int comparison = 0;
-				try{
-					RuleBasedCollator r_collator= new RuleBasedCollator(((RuleBasedCollator)Collator.getInstance()).getRules().replaceAll("<'\u005f'", "<' '<'\u005f'"));
-					comparison = r_collator.compare(one.getRoleTitle(),another.getRoleTitle());
-				}catch(ParseException e){
-					comparison = Collator.getInstance().compare(one.getRoleTitle(),another.getRoleTitle());
-				}
+				comparison = r_collator.compare(one.getRoleTitle(),another.getRoleTitle());
+
 				return comparison == 0 ? sortNameComparator.compare(one,
 						another) : comparison;
 			}
