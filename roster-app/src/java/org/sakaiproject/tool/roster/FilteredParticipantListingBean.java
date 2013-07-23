@@ -191,13 +191,13 @@ public class FilteredParticipantListingBean implements Serializable {
      * @return true or false
      */
     public boolean isHideSingleGroupFilter() {
-        if("true".equals(services.serverConfigurationService.getString("roster.display.hideSingleGroupFilter")))return true;
+        if("true".equalsIgnoreCase(services.serverConfigurationService.getString("roster.display.hideSingleGroupFilter")))return true;
         return false;
     }
 
 
     public boolean isDisplayPhotoFirstNameLastName(){
-       if("true".equals(services.serverConfigurationService.getString("roster.display.firstNameLastName"))) return true;
+       if("true".equalsIgnoreCase(services.serverConfigurationService.getString("roster.display.firstNameLastName"))) return true;
        return false;
     }
     
