@@ -39,6 +39,10 @@ public class RosterSimpleEscapedLinkRenderer extends HtmlLinkRenderer {
 		    String rawValue = (String) component.getAttributes().get("value");
 		    //We eliminate all suspicious html tags 
 		    String value = FormattedText.processFormattedText(rawValue, new StringBuilder(), true, false);
+			//Can't put null value in component
+			if (value == null) {
+				value = "";
+			}
  		    component.getAttributes().put ("value", value);
 		    super.encodeBegin (context,component);
 		    
