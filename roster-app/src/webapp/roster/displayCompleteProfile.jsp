@@ -40,7 +40,7 @@
 		            <h:outputLink value="mailto:#{profileBean.participant.profile.email}"><h:outputText value="#{profileBean.participant.profile.email}"/></h:outputLink>
 					<h:outputText value="#{msgs.profile_homepage}"/>
 					<%--need to test for empty value here - and omit the outputLink if null --%>				
-					<h:outputLink target="_blank" value="#{profileBean.participant.profile.homepage}">
+					<h:outputLink converter="escapeLinkConverter" target="_blank" value="#{profileBean.participant.profile.homepage}">
 						<h:outputText value="#{profileBean.participant.profile.homepage}"/>
 					</h:outputLink>
 					<h:outputText  value="#{msgs.profile_work_phone}"/>
